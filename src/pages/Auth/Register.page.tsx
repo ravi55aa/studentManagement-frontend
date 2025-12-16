@@ -1,8 +1,9 @@
 import { SocialLogin,FormBody } from "@/components/Auth";
-
+import { useNavigate } from "react-router-dom";
 
 
 const Login = () => {
+    const navigate=useNavigate();
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB]">
@@ -32,7 +33,7 @@ const Login = () => {
             {/* Footer */}
             <p className="text-xs text-gray-500 mt-6">
                 Have an account?{" "}
-                <span className="text-green-700 cursor-pointer">Sign In</span>
+                <span onClick={():void|Promise<void>=>navigate("/login")} className="text-green-700 cursor-pointer">Sign In</span>
             </p>
             </div>
         </div>

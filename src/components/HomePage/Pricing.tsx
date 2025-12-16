@@ -5,8 +5,8 @@ import { CheckCircle } from "lucide-react";
 const pricingPlans = [
     {
         name: "Starter",
-        price: "$29",
-        monthly: "/month",
+        price: "Free",
+        monthly: "",
         description: "Perfect for small schools and tutoring centers",
         features: [
         "Up to 100 students",
@@ -145,9 +145,11 @@ const PricingSection: React.FC = () => {
 
                 {/* Button */}
                 <button
-                    className={`${plan.buttonColor} mt-8 w-full py-3 rounded-xl font-semibold`}
+                    className={`${plan.buttonColor} 
+                    ${index!==0 ?"cursor-not-allowed" :"cursor-pointer"}
+                    mt-8 w-full py-3 rounded-xl font-semibold`}
                 >
-                    Get Started
+                    {index!=0?"NA":"Get Started"}
                 </button>
                 </motion.div>
             ))}

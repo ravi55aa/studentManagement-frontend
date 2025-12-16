@@ -1,52 +1,32 @@
 import { handleAdminRegister } from "@/api/auth.api";
 import { RegisterSchema } from "@/validation/register.schema";
-import { ChangeEventHandler, useEffect, useState } from "react"
+import { ChangeEventHandler, useState } from "react"
 import {  useNavigate } from "react-router-dom";
-
-
-export interface FormDataShouldBe{
-    name:string|null;
-    email:string|null;
-    password:string|null;
-    reEnter:string|null;
-    profile:File|null
-}
+import { IFormdata } from "@/interfaces/IRegister";
 
 
 
 const RegisterFormBody = () => {
-    const [isSubmit,setSubmit]=useState(false);
-    const [formData,setFormData]=useState<FormDataShouldBe>({
-        name:"",
-        email:"",
-        password:"",
-        reEnter:"",
-        profile:null,
+    const [formData, setFormData] = useState<IFormdata>({
+    name: "",
+    email: "",
+    password: "",
+    reEnter: "",
+    profile: null,
+
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
+    phone: "",
     });
 
     const navigate=useNavigate();
 
-    useEffect(()=>{
-        (async()=>{
-            const convertedFD=new FormData();
-            Object.entries(formData).forEach(([key, value]) => {
-                if(key=="profile"){
-                    convertedFD.append(key, formData.profile);
-                } else{
-                    convertedFD.append(key, value);
-                }
-            });
-
-            const responseObj=await handleAdminRegister(convertedFD);
-            if(responseObj.success){
-                navigate("/school/create");
-            } else {
-                navigate("/login");
-            }
-        })();
-    },[isSubmit]);
-
-    const handleInputChange:ChangeEventHandler<HTMLInputElement>=(e)=>{
+    const handleInputChange
+        :ChangeEventHandler<HTMLInputElement>
+            =(e)=>{
         //if profile i can i do it later
         e.preventDefault();
 
@@ -65,37 +45,67 @@ const RegisterFormBody = () => {
         return setFormData((prev)=>({...prev,[name]:value}));
     }
 
-    const handleSubmit=(e: React.FormEvent<HTMLFormElement>):boolean=>{
-        e.preventDefault();
+    const handleValidatePayload
+        =():boolean=>
+            {
 
         const isValidate=RegisterSchema.safeParse(formData);
+        console.log("IsValidaexd");
 
         if(!isValidate.success){
-            const errorObj=isValidate.error.format();
+            const errorObj = 
+                isValidate.error.format();
+            
             for (const [key, val] of Object.entries(errorObj)) {
 
-            if(typeof val === "object" && val !== null && "_errors" in val){
-                
-                const errorMessage = val?._errors?.[0] || "";
-                
-                if(key=="confirmPassword"){
-                    document.getElementById("reEnter").textContent=errorMessage ?? "Dear Admin; password should match";
-                }
-    
-                const errorElement = document.getElementById(key);
-    
-                if (errorElement) {
-                    errorElement.textContent = errorMessage;
+                if(typeof val === "object" 
+                    && val !== null 
+                        && "_errors" in val){
+                    
+                    const errorMessage = val?._errors?.[0] || "";
+                    
+                    if(key=="confirmPassword"){
+                        document.getElementById("reEnter1").textContent=errorMessage 
+                            ?? "Dear Admin; password should match";
+                    }
+                    const errorElement = 
+                        document.getElementById(key+"1");
+                    
+
+                    if (errorElement) {
+                        errorElement.textContent = errorMessage;
+                    }
                 }
             }
-
-    }
-            
-            return isValidate.success;
         }
 
-        setSubmit((prev)=>!prev);
         return true;
+    }
+
+    const handleSubmit = 
+        async(e: React.FormEvent<HTMLFormElement>)=>{
+        e.preventDefault();
+
+        if(!handleValidatePayload()){
+            return false;
+        }
+
+        const payload=new FormData();
+            Object.entries(formData).forEach(([key, value]) => {
+                if(key=="profile"){
+                    payload.append(key, formData.profile);
+                } else{
+                    payload.append(key, value);
+                }
+            });
+
+            const responseObj=await handleAdminRegister(payload);
+            if(responseObj.success){
+                navigate("/createSchool");
+            } else {
+                navigate("/register");
+            }
+            return responseObj.success;
     }
 
     return (
@@ -110,7 +120,7 @@ const RegisterFormBody = () => {
                     placeholder="Enter your name"
                     className="border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700 w-full"
                     />
-                    <span id="name" className="text-red-500 errorDisplay"></span>
+                    <span id="name1" className="text-red-500 errorDisplay"></span>
                 </div>
 
 
@@ -122,7 +132,7 @@ const RegisterFormBody = () => {
                     placeholder="Enter your email"
                     className="border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700 w-full"
                     />
-                    <span id="email" className="text-red-500 errorDisplay"></span>
+                    <span id="email1" className="text-red-500 errorDisplay"></span>
                 </div>
 
                     <div className="flex flex-col items-start"> 
@@ -133,7 +143,7 @@ const RegisterFormBody = () => {
                     placeholder="Password"
                     className="border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700 w-full"
                     />
-                    <span id="password" className="text-red-500 errorDisplay"></span>
+                    <span id="password1" className="text-red-500 errorDisplay"></span>
                     </div>
 
                     <div className="flex flex-col items-start">
@@ -144,7 +154,7 @@ const RegisterFormBody = () => {
                     placeholder="Re-enter Password"
                     className="border w-full border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700"
                     />
-                    <span id="reEnter" className="text-red-500 errorDisplay"></span>
+                    <span id="reEnter1" className="text-red-500 errorDisplay"></span>
                     </div>
                     
 
@@ -159,6 +169,80 @@ const RegisterFormBody = () => {
                     className="text-sm text-gray-600"
                     />
 
+                    {/* Phone */}
+                    <div className="flex flex-col items-start">
+                        <input
+                            type="text"
+                            name="phone"
+                            onChange={handleInputChange}
+                            placeholder="Enter phone number"
+                            className="border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700 w-full"
+                        />
+                        <span id="phone1" className="text-red-500 errorDisplay"></span>
+                    </div>
+
+                    {/* Street */}
+                    <div className="flex flex-col items-start">
+                        <input
+                            type="text"
+                            name="street"
+                            onChange={handleInputChange}
+                            placeholder="Street address"
+                            className="border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700 w-full"
+                        />
+                        <span id="street1" className="text-red-500 errorDisplay"></span>
+                    </div>
+
+                    {/* City */}
+                    <div className="flex flex-col items-start">
+                        <input
+                            type="text"
+                            name="city"
+                            onChange={handleInputChange}
+                            placeholder="City"
+                            className="border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700 w-full"
+                        />
+                        <span id="city1" className="text-red-500 errorDisplay"></span>
+                    </div>
+
+                    {/* State */}
+                    <div className="flex flex-col items-start">
+                        <input
+                            type="text"
+                            name="state"
+                            onChange={handleInputChange}
+                            placeholder="State"
+                            className="border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700 w-full"
+                        />
+                        <span id="state1" className="text-red-500 errorDisplay"></span>
+                    </div>
+
+                    {/* Zip */}
+                    <div className="flex flex-col items-start">
+                        <input
+                            type="text"
+                            name="zip"
+                            onChange={handleInputChange}
+                            placeholder="ZIP Code"
+                            className="border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700 w-full"
+                        />
+                        <span id="zip1" className="text-red-500 errorDisplay"></span>
+                    </div>
+
+                    {/* Country */}
+                    <div className="flex flex-col items-start">
+                        <input
+                            type="text"
+                            name="country"
+                            onChange={handleInputChange}
+                            placeholder="Country"
+                            className="border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700 w-full"
+                        />
+                        <span id="country1" className="text-red-500 errorDisplay"></span>
+                    </div>
+
+
+
                     {/* Button */}
                     <button  
                     type="submit"
@@ -171,3 +255,4 @@ const RegisterFormBody = () => {
 }
 
 export default RegisterFormBody
+

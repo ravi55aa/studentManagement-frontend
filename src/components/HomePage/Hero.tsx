@@ -1,7 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Hero: React.FC = () => {
+    const navigate=useNavigate()
+
     return (
         <section className="w-full bg-gradient-to-r from-[#6EEB83] to-[#3ACB78] px-6 py-20">
         <div className="max-w-6xl mx-auto text-center text-white">
@@ -27,6 +30,7 @@ const Hero: React.FC = () => {
             communication between teachers, students, and parents in one
             powerful platform.
             </motion.p>
+            
 
             {/* Buttons */}
             <motion.div
@@ -39,6 +43,7 @@ const Hero: React.FC = () => {
             <motion.button
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.97 }}
+                onClick={():void|Promise<void>=>navigate("/register")}
                 className="bg-[#1E9E3A] text-white font-semibold px-8 py-3 rounded-xl shadow-lg flex items-center gap-2"
             >
                 Get Started →
