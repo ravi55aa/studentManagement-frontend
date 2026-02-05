@@ -59,7 +59,7 @@ const SignInSchool = () => {
         const res = await handleSchoolSignIn(form);
 
         if(res.success){
-            navigate("/createSchool");
+            navigate("/school/dashboard");
         }
 
         setError(res.error.message);

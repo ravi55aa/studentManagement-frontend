@@ -3,7 +3,7 @@ export interface IFormdata {
     email: string | null;
     password: string | null;
     reEnter: string | null;
-    profile: File | null;
+    profile: string | null;
 
     street: string | null;
     city: string | null;
@@ -14,15 +14,40 @@ export interface IFormdata {
 }
 
 
+/** 
+ * Document
+ */
+export interface IUploadedDoc {
+    url: string;
+    fileName: string;
+}
+
+export interface IDocument {
+    tenantId?: string;
+    userId?: string;
+    role?: string|null;
+    docs: IUploadedDoc[];
+}
+
+
+/**
+ * Address
+ */
 export interface IAddress{
     street: string | null;
     city: string | null;
     state: string | null;
     zip: string | null;
     country: string | null;
+    _id?:string|null;
+    userId?:string|null;
+    userType?:string|null;
 }
 
 
+/**
+ * SchoolMeta
+ */
 export interface ISchoolFormData{
     adminName:string|null,
     schoolName:string|null
@@ -30,5 +55,5 @@ export interface ISchoolFormData{
     password: string | null;
     reEnter: string | null;
     phone: string | null;
-    profile: File | null;
+    profile: string | null;
 }

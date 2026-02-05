@@ -4,7 +4,7 @@ export const handleAdminRegister = async (payload:FormData) => {
     try {
         const { data } = await axiosBaseURL.post("/auth/admin/register", payload, {
             headers: {
-                "role": "admin"
+                "role": "Admin"
             }
         });
 
@@ -23,7 +23,7 @@ export const handleAdminRegister = async (payload:FormData) => {
 export const handleAdminSignIn=async(payload:object)=>{
     try{
         const response=await axiosBaseURL.post("/auth/admin/login",payload,{
-            headers:{role:"admin"}
+            headers:{role:"Admin"}
         });
         return {success:true,data:response?.data};
     } catch(error){

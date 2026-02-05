@@ -1,6 +1,6 @@
 import { ZodSchema, ZodIssue } from "zod";
 
-export const handleValidationOF = <T extends Record<string, unknown>>(
+export const handleValidationOF = <T extends object>(
     schema: ZodSchema<T>,
     formData: T
 ) => {
@@ -8,9 +8,17 @@ export const handleValidationOF = <T extends Record<string, unknown>>(
 
         if (!result.success) {
             const issues: ZodIssue[] = result.error.issues; 
+
+            console.log("issues",issues);
             
             issues.forEach((issue) => {
-                const fieldName = issue.path[0]?.toString();
+                const fieldName = issue.path.join(" ");
+                console.log("The fieldName",fieldName);   
+
+                // if(issue.path.length>1){
+                //     fieldName=issue.path.join(",")[0]?.toString();
+                // }
+
                 const spanTag = document.getElementById(fieldName);
 
                 if (spanTag) {

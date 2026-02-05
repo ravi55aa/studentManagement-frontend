@@ -10,6 +10,7 @@ import { handleValidationOF }
     from "@/validation/validateFormData";
 import { emailVerificationSchema } 
     from "@/validation/otpReset";
+import { IOtp } from "./Otp.page";
 
 
 const ForgotPasswordEmailVerify = () => {
@@ -43,17 +44,21 @@ const ForgotPasswordEmailVerify = () => {
 
         setError("");
 
-        const config:HandleApiOptions<null>={
-            method:"get",
-            endPoint:"/auth/forgot-password/verify",
-            params:{email:form.email}
+        const config:HandleApiOptions<object>={
+            method:"post",
+            endPoint:"/auth/forgot-password/verifyEmail",
+            payload:{email:form.email,model:"admin"},
+            headers:{role:"admin"}
         }
 
-        const res = await handleApi(config);
+        const res = await handleApi<object, IOtp>(config);
 
         if (res.success) {
-        navigate("/reset-password");
-        return;
+        
+            localStorage.setItem("idToResetPassword",JSON.stringify(res.data.data._id));
+        
+            navigate("/passwordReset/otp");
+            return; 
         }
 
         setError(res?.error);
@@ -96,14 +101,14 @@ const ForgotPasswordEmailVerify = () => {
                 type="submit"
                 className="w-full bg-green-700 text-white py-2 rounded-md font-medium hover:bg-green-800 transition"
             >
-                Send Verification Email
+                Verify Email
             </button>
             </form>
 
             {/* Footer */}
             <p className="text-xs text-gray-500 mt-6">
             Remember your password?{" "}
-            <Link to="/signin" className="text-green-700 font-semibold">
+            <Link to="/login" className="text-green-700 font-semibold">
                 Login
             </Link>
             </p>

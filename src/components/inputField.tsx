@@ -5,23 +5,32 @@ import { inputStyleRegisterSchoolAddress }
 
 
 const InputField = (props) => {
-    const {uniqueKey,name,placeholder,type,onChange} = props;
-    
+    const {uniqueKey,
+            label,
+                name,
+                    placeholder,
+                        type,
+                            onChange,
+                                value} = props;
+
     
     return (
         <div key={uniqueKey} className="flex flex-col items-start">
+                <label className="block capitalize text-sm font-medium mb-1" htmlFor={name}>{label??name}</label>
                 <input
-                type={type}
-                name={name}
-                onChange={onChange}
-                placeholder={placeholder}
-                className={inputStyleRegisterSchoolAddress}
+                    {...props}
+                    type={type}
+                    name={name}
+                    onChange={onChange}
+                    className={inputStyleRegisterSchoolAddress}
+                    placeholder={placeholder}
+                    value={value}
                 />
-                <span id={name} className="text-red-500 errorDisplay"></span>
+                <span id={name?.includes(".")?name.split(".").join(" ") :name} className="text-red-500 errorDisplay"></span>
         </div>
     )
-
 }
+
 
 export default InputField
 

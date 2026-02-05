@@ -71,3 +71,34 @@ export default defineConfig([
   },
 ])
 ```
+
+
+**4-2-2026**
+1.Started Teacher ui/ux
+    
+    - List Teachers ui is ready
+
+    - View a Teacher Modal is ready
+
+    - Create Teacher flow
+  
+        Step 1: Basic Details (VISIBLE)
+        --------------------------------
+        • Personal info
+        • Profile photo
+        • Documents
+        • Submit → Create Teacher
+
+        ⬇ backend returns teacher._id ⬇
+
+        Step 2: Professional Details (HIDDEN → SHOWN)
+        --------------------------------
+        • Batches (checkboxes)
+        • Subjects (multi-select)
+        • Employment status
+        • Designation
+        • Department
+        • Dates
+        • Save & Finish 
+
+    - zod validation is done

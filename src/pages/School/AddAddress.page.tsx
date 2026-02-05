@@ -12,7 +12,7 @@ import { handleValidationOF }
     from "@/validation/validateFormData";
 import { handleAddressCreateSchoolApi } 
     from "@/api/school.api";
-
+import { useAppHandleInputChange as _useAppHandleInputChange  } from "@/hooks/useHandleInputChange";
 
 
 
@@ -29,30 +29,6 @@ export default function AddAddress() {
     const navigate
         = useNavigate();
     
-    
-    
-    const handleInputChange=
-            (e:React.ChangeEvent<HTMLInputElement>)=>{
-        e.preventDefault();
-
-        
-        const {name,value} = e.target;
-
-        const spanTag = 
-        document.getElementById(name);
-        
-        spanTag.textContent = "";
-
-        if(name=="profile"){
-            return setFormData(
-                (prev)=>
-                    ({...prev,[name]:e.target.files[0]}));
-        }
-
-        return setFormData((prev)=>({...prev,[name]:value}));
-    }
-
-
 
 
     const handleOnSubmit = 
@@ -71,7 +47,7 @@ export default function AddAddress() {
                     console.log(res);
                 if(!res.success){return res.success;}
     
-                navigate("/school/dashboard");
+                navigate("/school/register/uploadDocuments");
                 return res.success;
         }
 
@@ -100,7 +76,7 @@ export default function AddAddress() {
                     <InputField 
                     key={i}
                     uniqueKey={ele.name+i+i}
-                    onChange={handleInputChange}
+                    onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{_useAppHandleInputChange(e,setFormData)}}
                     name={ele.name}
                     type={ele.type}
                     placeholder={ele.placeholder}

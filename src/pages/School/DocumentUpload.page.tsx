@@ -12,6 +12,7 @@ export default function UploadDocuments() {
 
     const [docs, setDocs] = useState<File[]>([]);
     const [error, setError] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
     const navigate=useNavigate();
 
 
@@ -36,16 +37,15 @@ export default function UploadDocuments() {
     };
 
 
-
     const removeFile = (index: number) => {
         setDocs((prev) => prev.filter((_, i) => i !== index));
     };
 
 
-
     
     const handleOnSubmit = 
             async(e: React.MouseEvent<HTMLElement>) => {
+                setLoading(true);
                 e.preventDefault();
                 
                 //validation pending
@@ -57,14 +57,14 @@ export default function UploadDocuments() {
 
                 const res = 
                     await handleDocsUploadCreateSchoolApi(formData);
-                    console.log(res);
-                if(!res.success){return res.success;}
-    
+                
+                setLoading(false);
+
+                if(!res.success){ return res.success; }
+                
                 navigate("/school/dashboard");
                 return res.success;
     }
-    
-
 
 
 
@@ -85,7 +85,7 @@ export default function UploadDocuments() {
 
             <div>
                 <label className="block text-gray-600 mb-2 font-medium">
-                Upload Certificates (PDF / Image)
+                Upload Documents (PDF / Image)
                 </label>
 
                 <input
@@ -127,7 +127,7 @@ export default function UploadDocuments() {
 
             {/* Next Button */}
             <button onClick={handleOnSubmit} className="w-full bg-[#05A845] text-white font-semibold py-3 rounded-md mt-4 hover:bg-green-700">
-                Next
+                {loading ? "Uploading..." :"Complete"}
             </button>
             </div>
         </div>

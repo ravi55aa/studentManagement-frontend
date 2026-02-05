@@ -10,12 +10,14 @@ import React, { useState }
     from "react";
 import { handleAdminSignIn } 
     from "@/api/auth.api";
-import { useNavigate, Link } 
+import { useNavigate } 
     from "react-router-dom";
+import {Link} from "react-router";
 import { signInSchema } 
     from "@/validation/register.schema"; 
 import { handleValidationOF } 
     from "@/validation/validateFormData";
+
 
 
 
@@ -50,16 +52,12 @@ const SignIn = () => {
         const res = await handleAdminSignIn(form);
 
         if(res.success){
-            navigate("/school/signin");
+            navigate("/school/login");
         }
 
         setError(res.error.message);
         return res.success;
     };
-
-    const handleForgotPassword=()=>{
-        return navigate("/forgot-password");
-    }
 
 
 
@@ -106,12 +104,14 @@ const SignIn = () => {
                 onChange={handleInputChange}
                 className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700"
             />
-            <button 
-            onClick={handleForgotPassword}
-            type="button" 
-            className="text-sm ps-2 text-end! w-[100]">
-                forgot password
-            </button>
+            
+                <button 
+                type="button" 
+                className="text-sm ps-2 text-end! w-[100]">
+                    <Link to="/passwordReset/emailVerify">
+                        forgot password
+                    </Link> 
+                </button>
             <br />
             <span id="password" className="ps-2 text-red-500"></span>
             </div>

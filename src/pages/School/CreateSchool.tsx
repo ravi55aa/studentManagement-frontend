@@ -67,20 +67,20 @@ function CreateSchool() {
             if(!isValidated.success)
                 {return isValidated.success;}
 
-            console.log("api request sent");
-            const res = 
+            
+            const res= 
                 await handleMetaDataCreateSchoolApi(formData);
-                console.log(res);
-            if(!res.success){return res.success;}
+            
+            if(!res.success) return res.success;
 
-            navigate("/school/dashboard");
+            navigate("/school/register/address");
             return res.success;
     }
 
 
 
     return (
-        <div 
+        <div  
             className="min-h-screen flex items-center justify-center bg-white">
         <div 
             className="text-center w-full max-w-md px-4">

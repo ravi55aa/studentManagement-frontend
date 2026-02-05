@@ -5,6 +5,8 @@ export {default as EmailVerify} from "./ForgotPassword/EmailVerify.page";
 
 export {default as OTP} from "./ForgotPassword/Otp.page";
 
+export {default as PasswordReset} from "./ForgotPassword/PasswordReset.page";
+
 
 
 

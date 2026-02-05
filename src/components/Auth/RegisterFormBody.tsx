@@ -101,7 +101,7 @@ const RegisterFormBody = () => {
 
             const responseObj=await handleAdminRegister(payload);
             if(responseObj.success){
-                navigate("/createSchool");
+                navigate("/login");
             } else {
                 navigate("/register");
             }

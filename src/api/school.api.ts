@@ -21,11 +21,11 @@ export const returnErrorObj=(err)=>{
 
 
 export const handleMetaDataCreateSchoolApi = 
-    async (formData:ISchoolFormData):Promise<IResponse>=>
+    async (formData:ISchoolFormData):Promise<IResponse<null>>=>
         {
         try {
-            const res:IResponse = 
-                await axiosBaseURL.post("/school/createSchool",formData,
+            const res:IResponse<null> = 
+                await axiosBaseURL.post("/school/register",formData,
                     { headers: { "role": "admin"}});
                 
             return res.data;
@@ -39,11 +39,11 @@ export const handleMetaDataCreateSchoolApi =
 
 
 export const handleAddressCreateSchoolApi = 
-    async (formData:IAddress):Promise<IResponse>=>
+    async (formData:IAddress):Promise<IResponse<null>>=>
         {
         try {
-            const res:IResponse = 
-                await axiosBaseURL.post("/school/createSchool/addAddress",formData,
+            const res:IResponse<null> = 
+                await axiosBaseURL.post("/school/register/addAddress",formData,
                     { headers: { "role": "admin"}});
                 
             return res.data;
@@ -57,11 +57,11 @@ export const handleAddressCreateSchoolApi =
 
 
 export const handleDocsUploadCreateSchoolApi = 
-    async (formData):Promise<IResponse>=>
+    async (formData):Promise<IResponse<null>>=>
         {
         try {
-            const res:IResponse = 
-                await axiosBaseURL.post("/school/createSchool/uploadDocument",formData,
+            const res:IResponse<null> = 
+                await axiosBaseURL.post("/school/register/uploadDocument",formData,
                     { headers: 
                         { "role": "admin","Content-Type":"multipart/formData"}
                     });
