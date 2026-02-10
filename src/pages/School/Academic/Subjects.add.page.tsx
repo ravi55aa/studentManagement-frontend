@@ -111,9 +111,11 @@ const AddSubject = () => {
             console.log("referenceBooks",form.referenceBooks)
     }
 
+
     const removeFile = (index: number) => {
         setForm((prev) =>({...prev,referenceBooks:prev.referenceBooks.filter((_, i) => i !== index)}));
     };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

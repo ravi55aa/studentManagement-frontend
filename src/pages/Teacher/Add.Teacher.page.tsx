@@ -2,21 +2,35 @@ import React, { ReactNode, useState } from "react";
 import InputField from "@/components/inputField";
 import { Select } from "@/components/Select";
 import { toast } from "react-toastify";
-import { handleApi, HandleApiOptions } from "@/api/global.api";
+
 import { EDepartment, Gender_types } from "@/types/enums";
 import { ITeacher,ITeacherBio } from "@/interfaces/ITeacher";
-import { useAppNavigate } from "@/hooks/navigate.hook";
-import DocumentUploadModal from "@/components/Document/Document.upload.modal";
-import { handleValidationOF } from "@/validation/validateFormData";
-import { teacherAssignmentSchema, teacherBioFormSchema } from "@/validation/teacher.validation";
+import { handleApi, HandleApiOptions } from "@/api/global.api";
+
 import { useAppSelector } from "@/hooks/storeHooks";
+import { department_obj } from "@/constants/deparment";
+import { useAppNavigate } from "@/hooks/navigate.hook";
+import { handleValidationOF } from "@/validation/validateFormData";
+import DocumentUploadModal from "@/components/Document/Document.upload.modal";
+
+import { employmentStatusOptions, teacherDesignationOptions } from "@/constants/teacher";
+import { teacherAssignmentSchema, teacherBioFormSchema } from "@/validation/teacher.validation";
+
+
+import { 
+  CheckList_for_ACADEMIC,
+  CheckList_for_BATCHES,
+  CheckList_for_SUBJECTS,
+  CheckBox,
+  RadioGroup } from "@/components/Teacher";
+
+
+
 /* ------------------------------------------------ */
 
 
-
-
 const AddTeacherPage = () => {
-    const [teacherId, setTeacherId] = useState<string | null>(null);
+    const [teacherId, setTeacherId] = useState<string | null>("567567");
     const [utils,setUtils]=useState(
             {   error:"",
                 loading:false,
@@ -43,22 +57,26 @@ const AddTeacherPage = () => {
 
     /* ---------- STEP 2 ---------- */
     const [professionalForm, setProfessionalForm] = useState<Partial<ITeacher>>({
-        classTeacherOf: [] as string[],
+        classTeacherOf: null,
         employmentStatus: null,
         assignedSubjects: [] as string[],
         designation: null,
         department: [] as EDepartment[],
         dateOfJoining: null,
         dateOfLeaving: null,
+        centerId: null,
     });
+
+
     
     const {goBack}=useAppNavigate();
 
     /*-----------REDUX STATES-------*/
     const batchStore=useAppSelector((state)=>state.batch);
     const subjectStore=useAppSelector((state)=>state.schoolSubject);
+    const centersReduxStore=useAppSelector((state)=>state.center);
     const yearStore=useAppSelector((state)=>state.schoolYear);
-    console.log(yearStore.years);
+
 
 
 
@@ -98,6 +116,50 @@ const AddTeacherPage = () => {
         }
     };
 
+    const handleClassTeacherChange = (batchCode: string,key:string) => {
+      if(key=="batches"){
+        setProfessionalForm((prev) => ({
+          ...prev,
+          classTeacherOf: batchCode,
+        }));
+      } else {
+        setProfessionalForm((prev) => ({
+          ...prev,
+          academicYearId: batchCode,
+        }));
+      }
+    };
+
+
+    const handleSubjectsToggle = (subjectId: string) => {
+      setProfessionalForm((prev) => {
+        const exists = prev.assignedSubjects.includes(subjectId);
+
+        return {
+        ...prev,
+        assignedSubjects: exists
+            ? prev.assignedSubjects.filter((id) => id !== subjectId)
+            : [...prev.assignedSubjects, subjectId],
+        };
+    });
+    };
+
+    const handleDepartmentToggle = (e:React.ChangeEvent<HTMLInputElement> ) => {
+      const {name}=e.target;
+
+      const dept=department_obj[name]
+
+      setProfessionalForm((prev) => {
+          const exists = prev.department.includes(dept);
+
+          return {
+          ...prev,
+          department: exists
+              ? prev.department.filter((id) => id !== dept)
+              : [...prev.department, dept],
+          };
+      });
+    };
 
     
     const handleCreateTeacherBio = async():Promise<boolean> => {
@@ -109,16 +171,51 @@ const AddTeacherPage = () => {
         return isValid.success;
       }
 
-        const config:HandleApiOptions<Partial<ITeacherBio>>={
+      const formData = new FormData();
+
+    // text fields      
+      const fieldsToAvoid=["firstName","lastName","email","phone","gender","qualification"];  
+
+      for(const field of fieldsToAvoid){
+        formData.append(field, basicForm[field]);
+      }
+
+      // dates → always send as string
+      if (basicForm.dateOfBirth) {
+        formData.append("dateOfBirth", new Date(basicForm.dateOfBirth).toISOString());
+      }
+
+
+      // numbers → convert to string
+      formData.append("experience", String(basicForm.experience));
+
+      // single file
+      if (basicForm.profilePhoto) {
+        formData.append("profile", basicForm.profilePhoto);
+      }
+
+      // multiple files / mixed array
+      basicForm.documents?.forEach((doc) => {
+      if (doc) {
+        // new upload
+        formData.append("docs", doc);
+      } else if (typeof doc === "string") {
+        // existing document (url / filename)
+        formData.append("docs", doc);
+      }
+    });
+
+
+        const config:HandleApiOptions<FormData>={
           endPoint:"/teacher/bio/create",
           method:"post",
-          payload:basicForm,
+          payload:formData,
           headers:{role:"School"}
         };
 
         const res =
         await 
-        handleApi<Partial<ITeacherBio>,Partial<ITeacherBio>>(config);
+        handleApi<FormData,Partial<ITeacherBio>>(config);
 
         if(!res.success){
           toast.error("Cannot Create the teacher Err:500");
@@ -127,11 +224,13 @@ const AddTeacherPage = () => {
         }
         const teacher=res.data.data;
 
+
         //Store the teacher._id at LS=localStorage
         //later delete the ._id form the LS;
         //after adding teacher_professionalism data.
         localStorage.setItem("teacherId",JSON.stringify(teacher._id));
         setTeacherId(teacher._id);
+        toast.success("Updated..")
         return res.success;
     };
 
@@ -257,30 +356,19 @@ const AddTeacherPage = () => {
       </Section>
 
       {/* ================= STEP 2 ================= */}
-      {true && (
+      {teacherId && (
         <Section title="Professional Details">
           <Grid>
             <Select
               label="Employment Status"
               name="employmentStatus"
-              options={[
-                "active",
-                "inactive",
-                "on_leave",
-                "resigned",
-                "terminated",
-              ]}
+              options={employmentStatusOptions}
               onChange={handleBasicChange}
             />
 
             <Select
               label="Designation"
-              options={[
-                "teacher",
-                "assistant_teacher",
-                "head_of_department",
-                "head_master",
-              ]}
+              options={teacherDesignationOptions}
               name="designation"
               onChange={handleBasicChange}
             />
@@ -289,33 +377,59 @@ const AddTeacherPage = () => {
             <InputField type="date" name="dateOfLeaving" onChange={handleBasicChange} label="Date of Leaving" />
           </Grid>
 
+           {/* Center */}
+            <div>
+                <label className="block text-sm font-medium mb-1">
+                Center *
+                </label>
+                <select
+                name="centerId"
+                value={professionalForm.centerId}
+                onChange={handleBasicChange}
+                className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
+                >
+                <option value="">Select center</option>
+                {centersReduxStore.centers?.map((batch)=>{
+                    return   (
+                    <option value={batch?._id}>{batch?.name}</option>
+                  )
+
+                })}
+                </select>
+                <span id="centerId" className="text-red-500 errorDisplay"></span>
+            </div>
+
+
           {/* Batches */}
-          <CheckboxList
+          <CheckList_for_BATCHES
             label="Class Teacher Of"
-            items={batchStore.batches}
-            name="classTeacherOf"
-            onChange={(e)=>handleBasicChange(e)}
+            batches={batchStore.batches}
+            onChange={handleClassTeacherChange}
+            form={professionalForm}
+          />
+
+          {/* ACADEMIC YEAR  */}
+          <CheckList_for_ACADEMIC
+            label="Select Academic Year"
+            batches={yearStore.years}
+            onChange={handleClassTeacherChange}
+            form={professionalForm}
           />
 
           {/* Subjects */}
-          <CheckboxList
+          <CheckList_for_SUBJECTS
             label="Assigned Subjects"
-            items={subjectStore?.subjects}
-            name="assignedSubjects"
-            onChange={(e)=>handleBasicChange(e)}
+            subjects={subjectStore?.subjects}
+            onChange={handleSubjectsToggle}
+            form={professionalForm}
           />
 
           {/* Department */}
-          <CheckboxList
+          <CheckBox
             label="Department"
-            items={[
-              "mathematics",
-              "science",
-              "english",
-              "computer_science",
-            ]}
+            items={department_obj}
             name="department"
-            onChange={(e)=>handleBasicChange(e)}
+            onChange={handleDepartmentToggle}
           />
 
           <ActionBar>
@@ -354,47 +468,7 @@ const Grid = ({ children }: GridProps) => (
 );
 
 
-function RadioGroup(
-  { label, options, name, onChange }: 
-  {label:string,options:unknown[],
-    name:string,onChange:(
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    )=>void}
-  ) {
-  return (
-    <div>
-      <p className="text-sm font-medium mb-2">{label}</p>
-      <div className="flex gap-6">
-        {options.map((o: string) => (
-          <label key={o} className="flex gap-2 text-sm">
-            <input type="radio" name={name} value={o} onChange={onChange} />
-            {o}
-          </label>
-        ))}
-      </div>
-    </div>
-  );
-}
 
-
-function CheckboxList({ label, items,name,onChange }: {label:string,items:unknown[],name:string,onChange:(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>)=>void
-}) {
-  return (
-    <div>
-      <p className="text-sm font-medium mb-2">{label}</p>
-      <div className="grid grid-cols-2 gap-2">
-        {items.map((i: string) => (
-          <label key={i} className="flex gap-2 text-sm">
-            <input onChange={onChange} type="checkbox" />
-            {i}
-          </label>
-        ))}
-        
-      </div>
-      <span id={name} onChange={onChange} className="text-red-500 text-sm errorDisplay"></span>
-    </div>
-  );
-}
 
 
 function FileUpload({ label, ...props }) {

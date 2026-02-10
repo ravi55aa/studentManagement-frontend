@@ -122,7 +122,7 @@ export const centerSchema = z.object({
         ,
 
     totalCapacity: z.coerce
-        .string({message:"Total capacity value is required"})
+        .number({message:"Total capacity value is required"})
         .min(10, "Min capacity should be 10 ")
         .max(150, "Max applicable students 150, according to your subscription")
     ,

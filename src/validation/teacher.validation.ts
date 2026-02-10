@@ -39,7 +39,7 @@ export const teacherBioFormSchema = z.object({
 
     qualification: z
         .string()
-        .max(3, "Qualification is Required")
+        .min(3, "Qualification is Required")
         .max(100, "Qualification is too long")
         .optional()
         .nullable(),
@@ -61,8 +61,9 @@ export const teacherBioFormSchema = z.object({
 
 export const teacherAssignmentSchema = z.object({
     classTeacherOf: z
-        .array(z.string())
-        .min(1, "At least one class/batch must be assigned").optional(),
+        .string()
+        .min(1, "Please select a class")
+        .optional(),
 
     employmentStatus: z
         .nativeEnum(EmploymentStatus)

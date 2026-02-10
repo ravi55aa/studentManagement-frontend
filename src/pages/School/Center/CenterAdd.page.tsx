@@ -117,16 +117,16 @@ const AddCenter = () => {
      */
 
     const handleAddAddressSubmit =   
-                async(e: React.FormEvent<HTMLFormElement>) => {
-                    e.preventDefault();
-                    
+        async(e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            
 
-                    const isValidated = //cross check given data
-                        handleValidationOF(
-                            addressValidate,formData);
-                        //validateMethod(Schema,data)
-                    
-                    if(!isValidated.success){return isValidated.success;}
+        const isValidated = //!cross check given data
+            handleValidationOF(
+                addressValidate,formData);
+            
+        //validateMethod(Schema,data)
+        if(!isValidated.success){return isValidated.success;}
 
         const id = 
             JSON.parse(
@@ -200,12 +200,10 @@ const AddCenter = () => {
                 return (
                     <InputField 
                     key={i}
-                    uniqueKey={ele.name+i+i+i}
                     onChange={handleChange}
-                    name={ele.name}
-                    type={ele.type}
-                    placeholder={ele.placeholder}
+                    uniqueKey={ele.name+i+i+i}
                     disabled={ele?.disabled}
+                    {...ele}
                     />
             )})}
 

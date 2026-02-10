@@ -7,7 +7,8 @@ import {
     schoolSubReducer,
     addressReducer,
     schoolCourseReducer,
-    school_MDA_Reducer
+    school_MDA_Reducer,
+    teacherReducer
 } from "../index";
 
 
@@ -20,6 +21,7 @@ export const store=configureStore({
         address:addressReducer,
         courses:schoolCourseReducer,
         schoolMDA:school_MDA_Reducer,
+        teacher:teacherReducer,
     },
     middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

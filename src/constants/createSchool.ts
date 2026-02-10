@@ -111,7 +111,8 @@ export const addCenter_Form_Fields = [
     //to understand the no of students in a center
     {
         name: "totalCapacity",
+        label:"Total Capacity",
         placeholder: "Enter total capacity",
-        type: "string",
+        type: "number",
     },
 ];

@@ -1,5 +1,10 @@
 import { EDepartment, EmploymentStatus, Gender_types, TeacherDesignation } from "@/types/enums";
 
+export interface IGetAllTeachers{
+    teacherBio:ITeacherBio[],
+    teachersSchoolData:ITeacher[]
+}
+
 
 export interface ITeacherBio {
     _id:string|null;
@@ -20,7 +25,7 @@ export interface ITeacher {
     teacherId: string | null;
     academicYearId: string | null;
     employeeId: string | null;
-    classTeacherOf: string[] | null;
+    classTeacherOf: string | null;
     employmentStatus: EmploymentStatus | null;
     assignedSubjects: string[]|null;
     designation: TeacherDesignation | null;
