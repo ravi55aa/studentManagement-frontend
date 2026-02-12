@@ -30,7 +30,7 @@ import {
 
 
 const AddTeacherPage = () => {
-    const [teacherId, setTeacherId] = useState<string | null>("567567");
+    const [teacherId, setTeacherId] = useState<string | null>("2131323");
     const [utils,setUtils]=useState(
             {   error:"",
                 loading:false,
@@ -61,6 +61,7 @@ const AddTeacherPage = () => {
         employmentStatus: null,
         assignedSubjects: [] as string[],
         designation: null,
+        academicYearId:null,
         department: [] as EDepartment[],
         dateOfJoining: null,
         dateOfLeaving: null,
@@ -116,8 +117,8 @@ const AddTeacherPage = () => {
         }
     };
 
-    const handleClassTeacherChange = (batchCode: string,key:string) => {
-      if(key=="batches"){
+    const handleClassTeacherChange = (batchCode: string,name:string) => {
+      if(name=="classTeacherOf"){
         setProfessionalForm((prev) => ({
           ...prev,
           classTeacherOf: batchCode,
@@ -214,15 +215,14 @@ const AddTeacherPage = () => {
         };
 
         const res =
-        await 
-        handleApi<FormData,Partial<ITeacherBio>>(config);
+        await handleApi<FormData,Partial<ITeacherBio>>(config);
 
         if(!res.success){
           toast.error("Cannot Create the teacher Err:500");
           console.log("@AddTeacher.page res",res);
           return false;
         }
-        const teacher=res.data.data;
+        const teacher=res?.data.data;
 
 
         //Store the teacher._id at LS=localStorage
@@ -403,6 +403,7 @@ const AddTeacherPage = () => {
           {/* Batches */}
           <CheckList_for_BATCHES
             label="Class Teacher Of"
+            name="classTeacherOf"
             batches={batchStore.batches}
             onChange={handleClassTeacherChange}
             form={professionalForm}
@@ -411,6 +412,7 @@ const AddTeacherPage = () => {
           {/* ACADEMIC YEAR  */}
           <CheckList_for_ACADEMIC
             label="Select Academic Year"
+            name="academicYearId"
             batches={yearStore.years}
             onChange={handleClassTeacherChange}
             form={professionalForm}

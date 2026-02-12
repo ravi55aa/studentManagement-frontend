@@ -22,7 +22,7 @@ const TeachersListPage = () => {
                 const config:HandleApiOptions<null>=
                     {
                         method:"get",
-                        endPoint:"/teacher/read",
+                        endPoint:"/teacher/all",
                         payload:null,
                         headers:{role:"School"}
                     }
@@ -30,7 +30,7 @@ const TeachersListPage = () => {
                 const res=await handleApi<null,IGetAllTeachers>(config);
                 
                 if(!res.success){
-                    toast.warn("Something went down, kindly re-login");
+                    toast.warn(res.data.error);
                     return;
                 }
 

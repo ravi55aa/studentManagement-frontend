@@ -3,11 +3,13 @@ import { ITeacher } from "@/interfaces/ITeacher";
 
 export default  function CheckList_for_Batches({
     label,
+    name,
     batches,
     onChange,
     form,
     }: {
     label: string;
+    name:string;
     batches: IBatches[];
     onChange: (batchId: string,key:string) => void;
     form: Partial<ITeacher>;
@@ -32,10 +34,10 @@ export default  function CheckList_for_Batches({
                 >
                 <input
                     type="radio"
-                    name="classTeacherOf" // 🔑 SAME NAME → radio behavior
+                    name={name}
                     value={batch.code}
                     checked={form.classTeacherOf === batch.code}
-                    onChange={() => onChange(batch.code,"batches")}
+                    onChange={() => onChange(batch.code,"classTeacherOf")}
                     className="accent-green-700"
                 />
 

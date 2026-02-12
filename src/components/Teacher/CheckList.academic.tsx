@@ -3,11 +3,13 @@ import { ITeacher } from "@/interfaces/ITeacher";
 
 function CheckList_for_ACADEMIC({
     label,
+    name,
     batches,
     onChange,
     form,
     }: {
     label: string;
+    name: string;
     batches: IAcademicYear[];
     onChange: (batchId: string,key:string) => void;
     form: Partial<ITeacher>;
@@ -32,9 +34,9 @@ function CheckList_for_ACADEMIC({
                 >
                 <input
                     type="radio"
-                    name="classTeacherOf" // 🔑 SAME NAME → radio behavior
+                    name={name}
                     value={batch.code}
-                    checked={form.classTeacherOf === batch.code}
+                    checked={form.academicYearId === batch.code}
                     onChange={() => onChange(batch.code,"years")}
                     className="accent-green-700"
                 />
