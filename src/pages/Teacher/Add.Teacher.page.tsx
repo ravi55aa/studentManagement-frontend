@@ -54,7 +54,7 @@ const AddTeacherPage = () => {
 
     /* ---------- STEP 2 ---------- */
     const [professionalForm, setProfessionalForm] = useState<Partial<ITeacher>>({
-        classTeacherOf: null,
+        
         employmentStatus: null,
         assignedSubjects: [] as string[],
         designation: null,
@@ -70,7 +70,6 @@ const AddTeacherPage = () => {
     const {goBack}=useAppNavigate();
 
     /*-----------REDUX STATES-------*/
-    const batchStore=useAppSelector((state)=>state.batch);
     const subjectStore=useAppSelector((state)=>state.schoolSubject);
     const centersReduxStore=useAppSelector((state)=>state.center);
     const yearStore=useAppSelector((state)=>state.schoolYear);
@@ -370,23 +369,6 @@ const AddTeacherPage = () => {
                 </select>
                 <span id="centerId" className="text-red-500 errorDisplay"></span>
             </div>
-
-
-          {/* Batches */}
-          <CheckList
-            label="Class Teacher Of"
-            items={batchStore.batches}
-            type="radio"
-            name="classTeacherOf"
-            selected={professionalForm.classTeacherOf}
-            displayKey="name"
-            onChange={(code) =>
-              setProfessionalForm((prev) => ({
-                ...prev,
-                classTeacherOf: code,
-              }))
-            }
-          />
 
 
 

@@ -183,7 +183,6 @@ const EditTeacherProfessional = ({
     const [professionalForm, setForm] = useState<Partial<ITeacher>>({
         employmentStatus: teacher.employmentStatus,
         designation: teacher.designation,
-        classTeacherOf: teacher.classTeacherOf,
         academicYearId: teacher.academicYearId,
         assignedSubjects: teacher.assignedSubjects || [],
         department: teacher.department || [],
@@ -192,7 +191,6 @@ const EditTeacherProfessional = ({
         centerId: teacher.centerId?._id,
     });
 
-    const batchStore=useAppSelector((state)=>state.batch);
     const subjectStore=useAppSelector((state)=>state.schoolSubject);
     const centersReduxStore=useAppSelector((state)=>state.center);
     const yearStore=useAppSelector((state)=>state.schoolYear);
@@ -305,23 +303,6 @@ const EditTeacherProfessional = ({
                 </select>
                 <span id="centerId" className="text-red-500 errorDisplay"></span>
             </div>
-
-
-            {/* Batches */}
-            <CheckList
-            label="Class Teacher Of"
-            items={batchStore.batches}
-            type="radio"
-            name="classTeacherOf"
-            selected={professionalForm.classTeacherOf}
-            displayKey="name"
-            onChange={(code) =>
-                setForm((prev) => ({
-                ...prev,
-                classTeacherOf: code,
-                }))
-            }
-            />
 
 
 

@@ -25,7 +25,6 @@ export interface ITeacher {
     teacherId: string | null;
     academicYearId: string | null;
     employeeId: string | null;
-    classTeacherOf: string | null;
     employmentStatus: EmploymentStatus | null;
     assignedSubjects: string[]|null;
     designation: TeacherDesignation | null;

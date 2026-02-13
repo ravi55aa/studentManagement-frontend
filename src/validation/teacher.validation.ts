@@ -60,10 +60,6 @@ export const teacherBioFormSchema = z.object({
 
 
 export const teacherAssignmentSchema = z.object({
-    classTeacherOf: z
-        .string()
-        .min(1, "Please select a class")
-        .optional(),
 
     employmentStatus: z
         .nativeEnum(EmploymentStatus)
