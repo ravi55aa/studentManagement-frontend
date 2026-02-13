@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { useState } from "react";
 import InputField from "@/components/inputField";
 import { Select } from "@/components/Select";
 import { toast } from "react-toastify";
@@ -21,6 +21,8 @@ import {
   CheckBox,
   RadioGroup,CheckList } from "@/components/Teacher";
 import { basicTeacherFields } from "@/constants/teacher.Fields";
+import { ActionBar, FileUpload,Grid } from "@/components/Teacher/ActionBar";
+import { Section } from "@/components/Teacher/Section";
 
 
 
@@ -455,38 +457,3 @@ const AddTeacherPage = () => {
 export default AddTeacherPage;
 
 
-function Section({ title, children }: {title:string,children:ReactNode}) {
-    return (
-    
-        <div className="border rounded-lg p-6 shadow-sm space-y-6">
-            <h2 className="text-lg font-semibold">{title}</h2>
-            {children}
-        </div>
-    );
-}
-
-interface GridProps {
-  children: ReactNode;
-}
-
-const Grid = ({ children }: GridProps) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{children}</div>
-);
-
-
-
-
-
-function FileUpload({ label, ...props }) {
-    return (
-        <div>
-        <p className="text-sm font-medium mb-1">{label}</p>
-        <input type="file" {...props} />
-        </div>
-    );
-}
-
-
-const ActionBar = ({ children }:GridProps) => (
-    <div className="flex justify-end mt-6">{children}</div>
-);
