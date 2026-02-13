@@ -23,9 +23,6 @@ import {
 import { basicTeacherFields } from "@/constants/teacher.Fields";
 import { ActionBar, FileUpload,Grid } from "@/components/Teacher/ActionBar";
 import { Section } from "@/components/Teacher/Section";
-
-
-
 /* ------------------------------------------------ */
 
 
