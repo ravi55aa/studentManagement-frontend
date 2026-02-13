@@ -4,14 +4,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ITeacherReducer  {
     bio: ITeacherBio[];
-    schoolData: ITeacher[];
+    professional: ITeacher[];
     loading: boolean;
     error: string | null;
 }
 
 const initialSubState: ITeacherReducer = {
     bio: [],
-    schoolData: [],
+    professional: [],
     loading: false,
     error: null,
 };
@@ -23,7 +23,7 @@ const teacherSlice=createSlice({
     reducers:{
         storeTeachers(state,action:PayloadAction<IGetAllTeachers>){
             state.bio=action.payload.teacherBio;
-            state.schoolData=action.payload.teachersSchoolData;
+            state.professional=action.payload.teachersSchoolData;
         },
         toggleTeachersAdding(state){
             state.loading=state.loading?false:true;
@@ -35,3 +35,5 @@ const teacherSlice=createSlice({
 export const { storeTeachers,toggleTeachersAdding} = teacherSlice.actions;
 
 export default teacherSlice.reducer;
+
+

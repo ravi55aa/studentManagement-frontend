@@ -5,14 +5,20 @@ import { HandleApiOptions,handleApi } from "@/api/global.api";
 import { useAppDispatch, useAppSelector } from "@/hooks/storeHooks";
 import { storeBatches } from "@/utils/Redux/Reducer/batchReducer";
 import { IBatches } from "@/interfaces/ISchool";
+import { ITeacherBio } from "@/interfaces/ITeacher";
+import AssignTeacherModal from "@/components/Teacher/AssignTeacherModal";
+import { toast } from "react-toastify";
 
 
 const BatchesPage = () => {
     const [search, setSearch] = useState("");
     const dispatch=useAppDispatch();
     const batchReduxStore=useAppSelector((state)=>state.batch);
-    // const centerReduxStore=useAppSelector((state)=>state.center);
+    const [unAssignedTeachers,setUnAssignedTeachers]=useState<ITeacherBio[]|[]>([])
+    const [isAssignOpen, setIsAssignOpen] = useState(false);
+    const [selectedBatchId, setSelectedBatchId] = useState<string>("");
 
+    // const centerReduxStore=useAppSelector((state)=>state.center);
 
     useEffect(()=>{
         (async()=>{
@@ -20,13 +26,30 @@ const BatchesPage = () => {
                         method:"get",
                         endPoint:"/school/batches",
                         payload:null,
-                        headers:{role:"school"}
+                        headers:{role:"School"}
                 }
 
             const fetchData= await handleApi<null,null>(config);
             dispatch(storeBatches(fetchData.data.data));
         })();
-    },[])
+    },[dispatch]);
+
+
+    useEffect(()=>{
+        (async()=>{
+            const config:HandleApiOptions<null>={
+                        method:"get",
+                        endPoint:"/teacher/all/unAssigned",
+                        payload:null,
+                        headers:{role:"School"}
+                }
+
+            const res= await handleApi<null,ITeacherBio[]>(config);
+            const teachers=res.data.data
+            setUnAssignedTeachers(teachers);
+            return true;
+        })();
+    },[]);
     
 
     /* ---------- Filtering ---------- */
@@ -40,8 +63,28 @@ const BatchesPage = () => {
     // const handleEnrollStudents = (id: string) =>
     //     console.log("Enroll students:", id);
 
-    // const handleAssignTeachers = (id: string) =>
-    //     console.log("Assign teachers:", id);
+    const handleOpenAssign = (batchId: string) => {
+        setSelectedBatchId(batchId);
+        setIsAssignOpen(true);
+    };
+
+    const handleAssignTeacher = async (teacherId: string) => {
+        const config: HandleApiOptions<object> = {
+            endPoint: `/school/batch/assign-teacher/${selectedBatchId}`,
+            method: "patch",
+            payload: { teacherId },
+            headers: { role: "School" }
+        };
+        const res = await handleApi(config);
+
+        if (!res.success) {
+            toast.error("Failed to assign teacher");
+            return;
+        }
+        toast.success("Teacher assigned successfully");
+        
+    };
+
 
     // const handlePromoteStudents = (id: string) =>
     //     console.log("Promote students:", id);
@@ -100,12 +143,18 @@ const BatchesPage = () => {
                 >
                     <td className="px-4 py-3">{batch?.name}</td>
                     {/* <td className="px-4 py-3">{batch?.center && batch?.center.name}</td> */}
-                    <td className="px-4 py-3">Murali Manohar</td>
+                    <td className="px-4 py-3">{batch.batchCounselor?.firstName}</td>
                     <td className="px-4 py-3">{batch?.code}</td>
                     <td className="px-4 py-3">
                     <div className="flex flex-wrap justify-center gap-2">
                         <ActionBtn label="Enroll" path={`edit/:${batch?._id}`}  />
-                        <ActionBtn label="Assign" path={`edit/:${batch?._id}`} />
+                        <button
+                            onClick={() => handleOpenAssign(batch._id)}
+                            className="px-3 py-1 rounded-md bg-gray-200 text-xs hover:bg-gray-300"
+                            >
+                            Assign
+                            </button>
+
                         <ActionBtn label="Promote" path={`edit/:${batch?._id}`} />
                         <ActionBtn label="Edit" path={`edit/${batch?._id}`} />
                     </div>
@@ -115,6 +164,15 @@ const BatchesPage = () => {
             </tbody>
             </table>
         </div>
+
+        <AssignTeacherModal
+        open={isAssignOpen}
+        teachers={unAssignedTeachers}
+        batchId={selectedBatchId}
+        onClose={() => setIsAssignOpen(false)}
+        onAssign={handleAssignTeacher}
+        />
+
 
         {/* ---------- Mobile Card View ---------- */}
         <div className="lg:hidden space-y-4">

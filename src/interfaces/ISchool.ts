@@ -1,5 +1,7 @@
 //import { ICenter } from "./ICenter";
 
+import { ITeacherBio } from "./ITeacher";
+
 export interface IAcademicYear  {
     code: string | null;
     startDate: string | null;
@@ -32,7 +34,7 @@ export interface IBatches {
     status: string | null;
     course: string | null;
     center: string | null;
-    batchCounselor: string | null;
+    batchCounselor: string | ITeacherBio|null;
     schedule: {
         endTime: string | null;
         startTime: string | null;

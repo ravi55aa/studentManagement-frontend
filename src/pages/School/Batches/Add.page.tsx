@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/storeHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { batchSchema } from "@/validation/school.validator";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useAppNavigate } from "@/hooks/navigate.hook";
 import InputField from "@/components/inputField";
+import { ITeacherBio } from "@/interfaces/ITeacher";
 
 
 const AddBatch = () => {
@@ -17,7 +18,25 @@ const AddBatch = () => {
         endDate: "",
         isActive: true,
     });
+    const [unAssignedTeachers,setUnAssignedTeachers]=useState<ITeacherBio[]|[]>([]);
+
     const {goBack}=useAppNavigate()
+
+    useEffect(()=>{
+            (async()=>{
+                const config:HandleApiOptions<null>={
+                            method:"get",
+                            endPoint:"/teacher/all/unAssigned",
+                            payload:null,
+                            headers:{role:"School"}
+                    }
+    
+                const res= await handleApi<null,ITeacherBio[]>(config);
+                const teachers=res.data.data
+                setUnAssignedTeachers(teachers);
+                return true;
+            })();
+        },[]);
 
     
 
@@ -140,8 +159,13 @@ const AddBatch = () => {
                 className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
                 >
                 <option value="">Select counselor</option>
-                <option value="1">Kristin Watson</option>
-                <option value="2">Jane Cooper</option>
+                {unAssignedTeachers?.map((counselor:ITeacherBio)=>{
+                    return (
+                        <option value={counselor?._id}>
+                            {counselor?.firstName} {counselor?.lastName}
+                        </option>
+                    )
+                })}
                 </select>
                 <span id="counselor" className="text-red-500 errorDisplay"></span>
             </div>
