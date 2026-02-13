@@ -128,7 +128,7 @@ const TeachersListPage = () => {
                         <Eye className="w-4 h-4 hover:text-green-700 cursor-pointer" />
                         </Link>
 
-                        <Link to={`edit/${teacher?.email}`}>
+                        <Link to={`edit/${teacher?._id}`}>
                         <Pencil className="w-4 h-4 hover:text-green-700 cursor-pointer" />
                         </Link>
                     </div>
