@@ -18,11 +18,9 @@ import { teacherAssignmentSchema, teacherBioFormSchema } from "@/validation/teac
 
 
 import { 
-  CheckList_for_ACADEMIC,
-  CheckList_for_BATCHES,
-  CheckList_for_SUBJECTS,
   CheckBox,
-  RadioGroup } from "@/components/Teacher";
+  RadioGroup,CheckList } from "@/components/Teacher";
+import { basicTeacherFields } from "@/constants/teacher.Fields";
 
 
 
@@ -30,7 +28,7 @@ import {
 
 
 const AddTeacherPage = () => {
-    const [teacherId, setTeacherId] = useState<string | null>("2131323");
+    const [teacherId, setTeacherId] = useState<string | null>("");
     const [utils,setUtils]=useState(
             {   error:"",
                 loading:false,
@@ -92,8 +90,14 @@ const AddTeacherPage = () => {
           spanTag.textContent="";
         }
 
-        setProfessionalForm((p)=> ({ ...p, [name]: value }));
+        if (name in basicForm) {
         setBasicForm((p) => ({ ...p, [name]: value }));
+      }
+
+      if (name in professionalForm) {
+        setProfessionalForm((p) => ({ ...p, [name]: value }));
+      }
+
     };
 
     const handleFileChange = (
@@ -117,33 +121,6 @@ const AddTeacherPage = () => {
         }
     };
 
-    const handleClassTeacherChange = (batchCode: string,name:string) => {
-      if(name=="classTeacherOf"){
-        setProfessionalForm((prev) => ({
-          ...prev,
-          classTeacherOf: batchCode,
-        }));
-      } else {
-        setProfessionalForm((prev) => ({
-          ...prev,
-          academicYearId: batchCode,
-        }));
-      }
-    };
-
-
-    const handleSubjectsToggle = (subjectId: string) => {
-      setProfessionalForm((prev) => {
-        const exists = prev.assignedSubjects.includes(subjectId);
-
-        return {
-        ...prev,
-        assignedSubjects: exists
-            ? prev.assignedSubjects.filter((id) => id !== subjectId)
-            : [...prev.assignedSubjects, subjectId],
-        };
-    });
-    };
 
     const handleDepartmentToggle = (e:React.ChangeEvent<HTMLInputElement> ) => {
       const {name}=e.target;
@@ -289,13 +266,9 @@ const AddTeacherPage = () => {
 
       <Section title="Basic Teacher Information">
         <Grid>
-          <InputField label="First Name" type="text"  name="firstName" onChange={handleBasicChange} />
-          <InputField label="Last Name" type="text" name="lastName" onChange={handleBasicChange} />
-          <InputField label="Email" name="email" type="email" onChange={handleBasicChange} />
-          <InputField label="Phone" type="tel" name="phone" onChange={handleBasicChange} />
-          <InputField label="Qualification" type="text" name="qualification" onChange={handleBasicChange} />
-          <InputField label="Date of Birth" type="date" name="dateOfBirth" onChange={handleBasicChange} />
-          <InputField label="Experience (years)" type="number" name="experience" onChange={handleBasicChange} />
+          {basicTeacherFields.map((field,ind)=>{
+            return (<InputField key={ind} label={field.label} type={field.type}  name={field.name} onChange={handleBasicChange} />) 
+          })}
         </Grid>
 
         {/* Gender */}
@@ -401,30 +374,61 @@ const AddTeacherPage = () => {
 
 
           {/* Batches */}
-          <CheckList_for_BATCHES
+          <CheckList
             label="Class Teacher Of"
+            items={batchStore.batches}
+            type="radio"
             name="classTeacherOf"
-            batches={batchStore.batches}
-            onChange={handleClassTeacherChange}
-            form={professionalForm}
+            selected={professionalForm.classTeacherOf}
+            displayKey="name"
+            onChange={(code) =>
+              setProfessionalForm((prev) => ({
+                ...prev,
+                classTeacherOf: code,
+              }))
+            }
           />
+
+
 
           {/* ACADEMIC YEAR  */}
-          <CheckList_for_ACADEMIC
-            label="Select Academic Year"
-            name="academicYearId"
-            batches={yearStore.years}
-            onChange={handleClassTeacherChange}
-            form={professionalForm}
-          />
+          <CheckList
+          label="Select Academic Year"
+          items={yearStore.years}
+          type="radio"
+          name="academicYear"
+          selected={professionalForm.academicYearId}
+          displayKey="year"
+          onChange={(code) =>
+            setProfessionalForm((prev) => ({
+              ...prev,
+              academicYearId: code,
+            }))
+          }
+        />
+
 
           {/* Subjects */}
-          <CheckList_for_SUBJECTS
+          <CheckList
             label="Assigned Subjects"
-            subjects={subjectStore?.subjects}
-            onChange={handleSubjectsToggle}
-            form={professionalForm}
+            items={subjectStore.subjects}
+            type="checkbox"
+            selected={professionalForm.assignedSubjects}
+            displayKey="name"
+            onChange={(code) =>
+              setProfessionalForm((prev) => {
+                const exists = prev.assignedSubjects.includes(code);
+
+                return {
+                  ...prev,
+                  assignedSubjects: exists
+                    ? prev.assignedSubjects.filter((id) => id !== code)
+                    : [...prev.assignedSubjects, code],
+                };
+              })
+            }
           />
+
 
           {/* Department */}
           <CheckBox
