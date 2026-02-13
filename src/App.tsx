@@ -25,6 +25,7 @@ import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { EmailVerify,OTP,PasswordReset } from "@/pages/Auth"
+import EditTeacherPage from "./pages/Teacher/Edit.Teacher.page";
 
 
 const App = () => {
@@ -84,7 +85,7 @@ const App = () => {
           <Route path="teachers"> 
             <Route index element={<Teachers/>}  />
             <Route path="add" element={<AddTeachers/>}  />
-            <Route path="edit/:id" element={<Teachers/>}  />
+            <Route path="edit/:id" element={<EditTeacherPage/>}  />
           </Route>
 
 

@@ -14,7 +14,12 @@ import { basicTeacherFields } from "@/constants/teacher.Fields";
 import { useParams } from "react-router-dom";
 import { ActionBar,Grid } from "@/components/Teacher/ActionBar";
 import { Section } from "@/components/Teacher/Section";
-
+import { CheckBox, CheckList } from "@/components/Teacher";
+import { employmentStatusOptions, teacherDesignationOptions } from "@/constants/teacher";
+import { Select } from "@/components/Select";
+import { useAppSelector } from "@/hooks/storeHooks";
+import { department_obj } from "@/constants/deparment";
+import { Teachers } from "@/types/types";
 /* ------------------------------------------------ */
 
 
@@ -23,7 +28,7 @@ const EditTeacherPage = () => {
     const { goBack } = useAppNavigate();
 
     const [loading, setLoading] = useState(true);
-    const [teacher, setTeacher] = useState<Partial<ITeacherBio>>(null);
+    const [teachers, setTeachers] = useState<Teachers>({teacher:null,teacherBio:null});
 
     useEffect(() => {
         if (!id) return;
@@ -37,14 +42,14 @@ const EditTeacherPage = () => {
             headers: { role: "School" },
         };
 
-        const res = await handleApi<null, Partial<ITeacherBio>>(config);
+        const res = await handleApi<null, Teachers>(config);
 
         if (!res.success) {
             toast.error("Failed to fetch teacher");
             return;
         }
 
-        setTeacher(res.data.data);
+        setTeachers(res.data?.data);
         setLoading(false);
         };
 
@@ -52,12 +57,12 @@ const EditTeacherPage = () => {
     }, [id]);
 
     if (loading) return <div>Loading...</div>;
-    if (!teacher) return null;
+    if (!teachers.teacherBio) return null;
 
     return (
         <div className="p-6 bg-white min-h-screen max-w-6xl space-y-8">
-        <EditTeacherBio teacher={teacher} />
-        <EditTeacherProfessional teacher={teacher} goBack={goBack} />
+        <EditTeacherBio teacher={teachers.teacherBio} />
+        <EditTeacherProfessional teacher={teachers.teacher} goBack={goBack} />
         </div>
     );
 };
@@ -113,7 +118,7 @@ const EditTeacherBio = ({ teacher }: { teacher: Partial<ITeacherBio> }) => {
         }
 
         form.documents?.forEach((doc) => {
-        if (doc instanceof File) {
+        if (doc ) {
             formData.append("docs", doc);
         } else {
             formData.append("existingDocs", doc);
@@ -121,10 +126,10 @@ const EditTeacherBio = ({ teacher }: { teacher: Partial<ITeacherBio> }) => {
         });
 
         const config: HandleApiOptions<FormData> = {
-        endPoint: `/teacher/bio/update/${teacher._id}`,
-        method: "patch",
-        payload: formData,
-        headers: { role: "School" },
+            endPoint: `/teacher/bio/update/${teacher._id}`,
+            method: "patch",
+            payload: formData,
+            headers: { role: "School" },
         };
 
         const res = await handleApi(config);
@@ -174,7 +179,8 @@ const EditTeacherProfessional = ({
     teacher: Partial<ITeacher>
     goBack: () => void;
     }) => {
-    const [form, setForm] = useState<Partial<ITeacher>>({
+
+    const [professionalForm, setForm] = useState<Partial<ITeacher>>({
         employmentStatus: teacher.employmentStatus,
         designation: teacher.designation,
         classTeacherOf: teacher.classTeacherOf,
@@ -184,20 +190,58 @@ const EditTeacherProfessional = ({
         dateOfJoining: teacher.dateOfJoining?.split("T")[0],
         dateOfLeaving: teacher.dateOfLeaving?.split("T")[0],
         centerId: teacher.centerId?._id,
+    });
+
+    const batchStore=useAppSelector((state)=>state.batch);
+    const subjectStore=useAppSelector((state)=>state.schoolSubject);
+    const centersReduxStore=useAppSelector((state)=>state.center);
+    const yearStore=useAppSelector((state)=>state.schoolYear);
+
+
+    const handleBasicChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
+        const { name, value } = e.target;
+        const spanTag=document.getElementById(name);
+
+        if(spanTag){
+            spanTag.textContent="";
+        }
+
+        setForm((p) => ({ ...p, [name]: value }));
+    };
+
+
+    const handleDepartmentToggle = (e:React.ChangeEvent<HTMLInputElement> ) => {
+        const {name}=e.target;
+
+        const dept=department_obj[name]
+
+        setForm((prev) => {
+            const exists = prev.department.includes(dept);
+
+            return {
+            ...prev,
+            department: exists
+                ? prev.department.filter((id) => id !== dept)
+                : [...prev.department, dept],
+            };
         });
+    };
+
 
     const handleUpdateProfessional = async () => {
         const isValid = handleValidationOF(
         teacherAssignmentSchema,
-        form
+        professionalForm
         );
 
         if (!isValid.success) return;
 
         const config: HandleApiOptions<Partial<ITeacher>> = {
-        endPoint: `/teacher/update/${teacher._id}`,
+        endPoint: `/teacher/update/${teacher.teacherId}`,
         method: "patch",
-        payload: form,
+        payload: professionalForm,
         headers: { role: "School" },
         };
 
@@ -212,18 +256,135 @@ const EditTeacherProfessional = ({
         goBack();
     };
 
+
     return (
         <Section title="Professional Details">
         {/* All your selects + CheckList components here */}
+
+        <Section title="Professional Details">
+            <Grid>
+            <Select
+                label="Employment Status"
+                name="employmentStatus"
+                value={professionalForm.employmentStatus}
+                options={employmentStatusOptions}
+                onChange={handleBasicChange}
+            />
+
+            <Select
+                label="Designation"
+                value={professionalForm.designation}
+                options={teacherDesignationOptions}
+                name="designation"
+                onChange={handleBasicChange}
+            />
+
+            <InputField type="date" value={professionalForm.dateOfJoining} name="dateOfJoining" onChange={handleBasicChange} label="Date of Joining" />
+
+            <InputField type="date" value={professionalForm.dateOfLeaving}  name="dateOfLeaving" onChange={handleBasicChange} label="Date of Leaving" />
+            </Grid>
+
+            {/* Center */}
+            <div>
+                <label className="block text-sm font-medium mb-1">
+                Center *
+                </label>
+                <select
+                name="centerId"
+                value={professionalForm.centerId}
+                onChange={handleBasicChange}
+                className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
+                >
+                <option value="">Select center</option>
+                {centersReduxStore.centers?.map((batch)=>{
+                    return   (
+                    <option value={batch?._id}>{batch?.name}</option>
+                    )
+
+                })}
+                </select>
+                <span id="centerId" className="text-red-500 errorDisplay"></span>
+            </div>
+
+
+            {/* Batches */}
+            <CheckList
+            label="Class Teacher Of"
+            items={batchStore.batches}
+            type="radio"
+            name="classTeacherOf"
+            selected={professionalForm.classTeacherOf}
+            displayKey="name"
+            onChange={(code) =>
+                setForm((prev) => ({
+                ...prev,
+                classTeacherOf: code,
+                }))
+            }
+            />
+
+
+
+            {/* ACADEMIC YEAR  */}
+            <CheckList
+            label="Select Academic Year"
+            items={yearStore.years}
+            type="radio"
+            name="academicYear"
+            selected={professionalForm.academicYearId}
+            displayKey="year"
+            onChange={(code) =>
+            setForm((prev) => ({
+                ...prev,
+                academicYearId: code,
+            }))
+            }
+        />
+
+
+            {/* Subjects */}
+            <CheckList
+            label="Assigned Subjects"
+            items={subjectStore.subjects}
+            type="checkbox"
+            selected={professionalForm.assignedSubjects}
+            displayKey="name"
+            onChange={(code) =>
+                setForm((prev) => {
+                const exists = prev.assignedSubjects.includes(code);
+
+                return {
+                    ...prev,
+                    assignedSubjects: exists
+                    ? prev.assignedSubjects.filter((id) => id !== code)
+                    : [...prev.assignedSubjects, code],
+                };
+                })
+            }
+            />
+        
+        
+                {/* Department */}
+                <CheckBox
+                    label="Department"
+                    items={department_obj}
+                    name="department"
+                    onChange={handleDepartmentToggle}
+                    form={professionalForm.department}
+                />
+
+            </Section>
+
         <ActionBar>
             <button
             onClick={handleUpdateProfessional}
-            className="bg-green-700 text-white px-6 py-2 rounded-md"
-            >
-            Update Professional Details
+            className="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800">
+                Update Professional Details
             </button>
         </ActionBar>
         </Section>
     );
 };
+
+
 

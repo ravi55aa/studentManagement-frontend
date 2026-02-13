@@ -1,98 +1,130 @@
-import { X } from "lucide-react";
+import { Detail } from "@/components/Teacher/ActionBar";
+import { ITeacherBio } from "@/interfaces/ITeacher";
 
-interface ITeacher {
-    name: string;
-    facultyNo: string;
-    phone: string;
-    email: string;
-    gender: string;
-    department?: string;
-    qualification?: string;
-}
-
-interface Props {
-    teacher: ITeacher;
+type TeacherDetailsModalProps = {
+    open: boolean;
+    teacher: ITeacherBio; // replace with your combined type
     onClose: () => void;
-}
+    };
+
+export default function TeacherDetailsModal({
+    open,
+    teacher,
+    onClose,
+}: TeacherDetailsModalProps) {
+
+    if (!open || !teacher) return null;
+
+    const formatDate = (date: string) => {
+        if (!date) return "-";
+        return new Date(date).toLocaleDateString();
+    };
+    console.log(formatDate("23/3/24"));
 
 
-//TODO: Move code to MAIN.Teacher.page;
-// const [selectedTeacher, setSelectedTeacher] = useState<ITeacher | null>(null);
-
-// {/* inside table action */}
-// <Eye
-//   className="w-4 h-4 cursor-pointer hover:text-green-700"
-//   onClick={() => setSelectedTeacher(teacher)}
-// />
-
-// {/* modal */}
-// {selectedTeacher && (
-//   <ViewTeacherModal
-//     teacher={selectedTeacher}
-//     onClose={() => setSelectedTeacher(null)}
-//   />
-// )}
+return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center 
+        backdrop-blur-lg bg-black/20">
 
 
+        {/* Modal Container */}
+        <div className="bg-white w-[800px] max-h-[90vh] overflow-y-auto rounded-xl shadow-lg p-6 relative">
 
-
-
-const ViewTeacherModal = ({ teacher, onClose }: Props) => {
-    return (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-        {/* Modal Box */}
-        <div className="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6 relative">
-
-            {/* Header */}
-            <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">
-                Teacher Details
-            </h2>
-            <button onClick={onClose}>
-                <X className="w-5 h-5 text-gray-500 hover:text-red-600" />
+            {/* Close Button */}
+            <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-lg"
+            >
+            ✕
             </button>
+
+            <h2 className="text-2xl font-semibold mb-6">
+            Teacher Details
+            </h2>
+
+            {/* ---------------- BASIC INFO ---------------- */}
+            <div className="mb-6">
+            <h3 className="text-lg font-medium mb-3 border-b pb-2">
+                Basic Information
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4 text-sm">
+                <Detail label="First Name" value={teacher.firstName} />
+                <Detail label="Last Name" value={teacher.lastName} />
+                <Detail label="Email" value={teacher.email} />
+                <Detail label="Phone" value={teacher.phone} />
+                <Detail label="Qualification" value={teacher.qualification} />
+                {/* <Detail
+                label="Date of Birth"
+                value={formatDate(teacher?.dateOfBirth)}
+                /> */}
+                <Detail label="Experience" value={`${teacher.experience} years`} />
+                <Detail label="Gender" value={teacher.gender} />
+            </div>
             </div>
 
-            {/* Content */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+            {/* ---------------- PROFESSIONAL INFO ---------------- */}
+            <div>
+            <h3 className="text-lg font-medium mb-3 border-b pb-2">
+                Professional Details
+            </h3>
 
-            <Info label="Name" value={teacher.name} />
-            <Info label="Faculty Number" value={teacher.facultyNo} />
-            <Info label="Phone" value={teacher.phone} />
-            <Info label="Email" value={teacher.email} />
-            <Info label="Gender" value={teacher.gender} />
-            <Info
-                label="Department"
-                value={teacher.department || "—"}
-            />
-            <Info
-                label="Qualification"
-                value={teacher.qualification || "—"}
-            />
+            {/* <div className="grid grid-cols-2 gap-4 text-sm">
+                <Detail label="Employment Status" value={teacher.employmentStatus} />
+                <Detail label="Designation" value={teacher.designation} />
+                <Detail
+                label="Center"
+                value={teacher.centerId?.name}
+                />
+                <Detail
+                label="Academic Year"
+                value={teacher.academicYearId?.year}
+                />
+                <Detail
+                label="Class Teacher Of"
+                value={teacher.classTeacherOf?.name}
+                />
+                <Detail
+                label="Date of Joining"
+                value={formatDate(teacher.dateOfJoining)}
+                />
+                <Detail
+                label="Date of Leaving"
+                value={formatDate(teacher.dateOfLeaving)}
+                />
+            </div> */}
+
+            {/* Subjects */}
+            {/* <div className="mt-4">
+                <p className="font-medium">Assigned Subjects:</p>
+                <ul className="list-disc ml-5 text-sm">
+                {teacher.assignedSubjects?.map((sub: any) => (
+                    <li key={sub._id}>
+                    {sub.name} ({sub.code})
+                    </li>
+                ))}
+                </ul>
+            </div> */}
+
+            {/* Department */}
+            {/* <div className="mt-4">
+                <p className="font-medium">Department:</p>
+                <p className="text-sm">
+                {teacher.department?.join(", ")}
+                </p>
+            </div> */}
             </div>
 
-            {/* Footer */}
-            <div className="flex justify-end mt-8">
+            {/* Footer Close Button */}
+            <div className="mt-8 flex justify-end">
             <button
                 onClick={onClose}
-                className="px-6 py-2 border rounded-md text-sm text-gray-600 hover:bg-gray-100"
+                className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600"
             >
                 Close
             </button>
             </div>
         </div>
-        </div>
-    );
-};
-
-export default ViewTeacherModal;
-
-/* ---------- Small helper ---------- */
-function Info({ label, value }: { label: string; value: string }) {
-    return (
-        <div>
-        <p className="text-xs text-gray-500">{label}</p>
-        <p className="font-medium text-gray-800">{value}</p>
         </div>
     );
     }

@@ -2,16 +2,25 @@ import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useAppDispatch, useAppSelector } from "@/hooks/storeHooks";
 import { IGetAllTeachers, ITeacherBio } from "@/interfaces/ITeacher";
 import { Eye, Pencil, Bell } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { storeTeachers } from "@/utils/Redux/Reducer/teacher.reducer";
+import TeacherDetailsModal from "./ViewTeacher.page";
 
 
 const TeachersListPage = () => {
 
     const dispatch=useAppDispatch();
     const teachersStore=useAppSelector((state)=>state.teacher);
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedTeacher, setSelectedTeacher] = useState<ITeacherBio | null>(null);
+
+    const handleOpen = (teacher: ITeacherBio) => {
+        setSelectedTeacher(teacher);
+        setIsOpen(true);
+    };
+
 
 
     /**
@@ -124,9 +133,16 @@ const TeachersListPage = () => {
 
                     <td className="px-4 py-3">
                     <div className="flex justify-center gap-4 text-gray-600">
-                        <Link to={`view/${teacher?.email}`}>
+                        
+                        <button onClick={() => handleOpen(teacher)}>
                         <Eye className="w-4 h-4 hover:text-green-700 cursor-pointer" />
-                        </Link>
+                            </button>
+
+                            <TeacherDetailsModal
+                            open={isOpen}
+                            teacher={selectedTeacher}
+                            onClose={() => setIsOpen(false)}
+                            />
 
                         <Link to={`edit/${teacher?._id}`}>
                         <Pencil className="w-4 h-4 hover:text-green-700 cursor-pointer" />
