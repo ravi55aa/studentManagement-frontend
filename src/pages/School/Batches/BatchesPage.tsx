@@ -75,14 +75,14 @@ const BatchesPage = () => {
             payload: { teacherId },
             headers: { role: "School" }
         };
+
         const res = await handleApi(config);
 
         if (!res.success) {
-            toast.error("Failed to assign teacher");
+            toast.error(res.data?.message??"Cannot assign the teacher");
             return;
         }
-        toast.success("Teacher assigned successfully");
-        
+        toast.success("New Teacher assigned successfully");
     };
 
 
@@ -143,7 +143,11 @@ const BatchesPage = () => {
                 >
                     <td className="px-4 py-3">{batch?.name}</td>
                     {/* <td className="px-4 py-3">{batch?.center && batch?.center.name}</td> */}
-                    <td className="px-4 py-3">{batch.batchCounselor?.firstName}</td>
+                    <td className="px-4 py-3">
+                        { 
+                        batch.batchCounselor && 
+                        batch.batchCounselor?.firstName }
+                    </td>
                     <td className="px-4 py-3">{batch?.code}</td>
                     <td className="px-4 py-3">
                     <div className="flex flex-wrap justify-center gap-2">
@@ -152,7 +156,7 @@ const BatchesPage = () => {
                             onClick={() => handleOpenAssign(batch._id)}
                             className="px-3 py-1 rounded-md bg-gray-200 text-xs hover:bg-gray-300"
                             >
-                            Assign
+                            Assign New Teacher
                             </button>
 
                         <ActionBtn label="Promote" path={`edit/:${batch?._id}`} />

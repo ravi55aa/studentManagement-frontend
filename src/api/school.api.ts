@@ -82,8 +82,11 @@ export const handleDocsUploadCreateSchoolApi =
             console.log(payload);
             const response=await axiosBaseURL.get("/school/register",{
                 params:payload,
-                headers:{role:"admin"}
+                headers:{role:"Admin"}
             });
+            const school=response.data;
+            localStorage.setItem("authUserId",school._id);
+            localStorage.setItem("authUserModel","School");
 
             return {success:true,data:response?.data};
         } catch(error){
