@@ -10,9 +10,9 @@ import {  useState }
     from "react";
 import { HandleApiOptions,handleApi } 
     from "@/api/global.api";
-import { useAppSelector,useAppDispatch } from "@/hooks/storeHooks";
+import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import { toast } from "react-toastify";
-import {useAppNavigate} from "@/hooks/navigate.hook";
+import {useAppNavigate} from "@/hooks/useNavigate.hook";
 //import { toggleBatchLoading } from "@/utils/Redux/Reducer/batchReducer";
 import { toggleAcademicLoading } from "@/utils/Redux/Reducer/schoolYearReducer";
 import { Select } from "@/components/Select";

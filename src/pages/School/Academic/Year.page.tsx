@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2, Bell } from "lucide-react";
 import {Link} from "react-router";
-import { useAppDispatch,useAppSelector } from "@/hooks/storeHooks";
+import { useAppDispatch,useAppSelector } from "@/hooks/useStoreHooks";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
 import { storeSchoolAcademicYears, toggleAcademicLoading } from "@/utils/Redux/Reducer/schoolYearReducer";
 import Swal from "sweetalert2";

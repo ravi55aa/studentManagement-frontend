@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Pencil, Trash2, Bell } from "lucide-react";
 import {Link} from "react-router";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
-import { useAppSelector,useAppDispatch } from "@/hooks/storeHooks";
+import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import {storeSchoolAcademicSubjects,toggleAcademicSubLoading } from "@/utils/Redux/Reducer/subjectReducer";
 import Swal from "sweetalert2";
 

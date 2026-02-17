@@ -3,7 +3,7 @@ import { Pencil, X , Lock, } from "lucide-react";
 import { handleApi,HandleApiOptions } from "@/api/global.api";
 import InputField from "@/components/inputField";
 import { school_Register_SchemaFor_Address } from "@/constants/createSchool";
-import { useAppDispatch, useAppSelector } from "@/hooks/storeHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import { toast } from "react-toastify";
 import { IDocument,IUploadedDoc } from "@/interfaces/IRegister";
 import Swal from "sweetalert2";

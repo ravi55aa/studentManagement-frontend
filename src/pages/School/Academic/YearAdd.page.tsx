@@ -2,7 +2,7 @@ import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { schoolAcademicYearSchema } from "@/validation/school.validator";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { useState } from "react";
-import { useAppNavigate } from "@/hooks/navigate.hook";
+import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { toast } from "react-toastify";
 import InputField from "@/components/inputField"; 
 

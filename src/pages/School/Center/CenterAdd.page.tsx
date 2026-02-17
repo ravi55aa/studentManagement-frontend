@@ -14,7 +14,7 @@ import InputField
     from "@/components/inputField";
 import { addCenter_Form_Fields, inputStyleRegisterSchoolAddress, school_Register_SchemaFor_Address } from "@/constants/createSchool";
 import { toast } from "react-toastify";
-import { useAppNavigate } from "@/hooks/navigate.hook";
+import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { useAppHandleInputChange as _useAppHandleInputChange } from "@/hooks/useHandleInputChange";
 import { IAddress } from "@/interfaces/IRegister";
 

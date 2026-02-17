@@ -14,7 +14,9 @@
   AcademicSubjects ,AcademicSubjectsAdd, AcademicSubjectsEdit ,
   AcademicCourses,AcademicCoursesAdd ,AcademicCoursesEdit,
   ViewSchool ,
-  Teachers,AddTeachers
+  Teachers,AddTeachers,
+
+  Notifications
 } from "@/pages/index"
 
 
@@ -88,6 +90,7 @@ const App = () => {
             <Route path="edit/:id" element={<EditTeacherPage/>}  />
           </Route>
 
+          <Route path="notifications" element={<Notifications/>}  />
 
         </Route>
 

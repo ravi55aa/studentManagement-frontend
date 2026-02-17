@@ -1,239 +1,205 @@
-// import { io } from "socket.io-client";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useAppSelector } from "@/hooks/useStoreHooks";
+import { handleApi, HandleApiOptions } from "@/api/global.api";
+import { useSocket } from "@/hooks/useAppContext";
 
-// import { useState } from "react";
-// import { toast } from "react-toastify";
-// import { useAppSelector } from "@/hooks/storeHooks"; 
-// import { handleApi } from "@/api/global.api";
+export default function AddNotificationPage() {
 
-// const socket = io("http://localhost:5000", {
-//     auth: {
-//         userId: currentUser._id,
-//         role: currentUser.role,
-//     },
-// });
+    const socket=useSocket();
+    
+    console.log("Socket value:", socket);
 
-// socket.on("connect", () => {
-//     console.log("Connected:", socket.id);
-// });
+    
+    useEffect(()=>{
+        if(!socket) {
+            console.log("No-socket");
+            return;
+        }
+        
+        // socket.onAny((event, ...args) => {
+        //     console.log("Event received:", event, args);
+        //});
 
-// socket.on("notification:new", (data) => {
-//     console.log("data",data);
-// });
+        socket.on("notification:new",(data)=>{
+            alert(`${data.title} - ${data.message}`);
+        });
 
-
-
-// export default function AddNotificationPage() {
-
-//     const currentUser = useAppSelector(
-//         (state) => state.auth.user
-//     );
-
-//     const teachers = useAppSelector(
-//         (state) => state.teacher.teachers
-//     );
-
-//     const students = useAppSelector(
-//         (state) => state.student.students
-//     );
-
-//     const [form, setForm] = useState({
-//         type: "GENERAL",
-//         title: "",
-//         message: "",
-//         link: "",
-//         attachmentUrl: "",
-//         recipientModel:
-//         currentUser.role === "Admin"
-//             ? "Teacher"
-//             : "Student",
-//         recipientIds: [] as string[],
-//     });
-
-//     const recipients =
-//         form.recipientModel === "Teacher"
-//         ? teachers
-//         : students;
-
-//     const handleChange = (
-//         e: React.ChangeEvent<
-//         HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-//         >
-//     ) => {
-//         const { name, value } = e.target;
-//         setForm((prev) => ({ ...prev, [name]: value }));
-//     };
-
-//     const toggleRecipient = (id: string) => {
-//         setForm((prev) => {
-//         const exists = prev.recipientIds.includes(id);
-
-//         return {
-//             ...prev,
-//             recipientIds: exists
-//             ? prev.recipientIds.filter(
-//                 (r) => r !== id
-//                 )
-//             : [...prev.recipientIds, id],
-//         };
-//         });
-//     };
-
-//     const handleSubmit = async () => {
-
-//         if (!form.title || !form.message) {
-//         toast.error("Title & Message required");
-//         return;
-//         }
-
-//         if (form.recipientIds.length === 0) {
-//         toast.error("Select at least one recipient");
-//         return;
-//         }
-
-//         const payload = {
-//         type: form.type,
-//         title: form.title,
-//         message: form.message,
-//         link: form.link || undefined,
-//         attachmentUrl:
-//             form.attachmentUrl || undefined,
-
-//         sender: {
-//             model: currentUser.role,
-//             id: currentUser._id,
-//         },
-
-//         recipients: [
-//             {
-//             model: form.recipientModel,
-//             ids: form.recipientIds,
-//             },
-//         ],
-//         };
-
-//         const res = await handleApi({
-//         endPoint: "/notification",
-//         method: "post",
-//         payload,
-//         });
-
-//         if (!res.success) {
-//         toast.error("Failed to send notification");
-//         return;
-//         }
-
-//         toast.success("Notification sent");
-
-//         setForm((prev) => ({
-//         ...prev,
-//         title: "",
-//         message: "",
-//         recipientIds: [],
-//         }));
-//     };
-
-//     return ( 
-//     <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md space-y-6">
-
-//         <h2 className="text-xl font-semibold">Send Notification</h2>
-
-//         <div>
-//             <label className="block text-sm mb-1">
-//             Type
-//             </label>
-//             <select
-//             name="type"
-//             value={form.type}
-//             onChange={handleChange}
-//             className="w-full border rounded-md p-2"
-//             >
-//             <option value="GENERAL">
-//                 General
-//             </option>
-//             <option value="ALERT">
-//                 Alert
-//             </option>
-//             <option value="REMINDER">
-//                 Reminder
-//             </option>
-//             </select>
-//         </div>
-
-//         <div>
-//             <label className="block text-sm mb-1">
-//             Title
-//             </label>
-//             <input
-//             name="title"
-//             value={form.title}
-//             onChange={handleChange}
-//             className="w-full border rounded-md p-2"
-//             />
-//         </div>
+        return ()=>{
+            socket.off("notification:new")
+        };
+    },[socket]);
 
 
-//         <div>
-//             <label className="block text-sm mb-1">
-//             Message
-//             </label>
-//             <textarea
-//             name="message"
-//             value={form.message}
-//             onChange={handleChange}
-//             rows={4}
-//             className="w-full border rounded-md p-2"
-//             />
-//         </div>
+    const currentUser = useAppSelector(
+        (state) => state.currentUser.user
+    );
 
-//         <div>
-//             <label className="block text-sm mb-1">
-//             Link (optional)
-//             </label>
-//             <input
-//             name="link"
-//             value={form.link}
-//             onChange={handleChange}
-//             className="w-full border rounded-md p-2"
-//             />
-//         </div>
+    const [form, setForm] = useState({
+        type: "GENERAL",
+        title: "",
+        message: "",
+        link: "",
+        attachmentUrl: "",
+    });
 
+    const [loading, setLoading] = useState(false);
 
-//         <div>
-//             <p className="text-sm font-medium mb-2">
-//             Select Recipients
-//             </p>
+    const handleChange = (
+        e: React.ChangeEvent<
+        HTMLInputElement |
+        HTMLSelectElement |
+        HTMLTextAreaElement
+        >
+    ) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+    };
 
-//             <div className="border rounded-md p-3 max-h-48 overflow-y-auto space-y-2">
+    const handleSubmit = async () => {
 
-//             {recipients.map((user) => (
-//                 <label
-//                 key={user._id}
-//                 className="flex items-center gap-2 text-sm"
-//                 >
-//                 <input
-//                     type="checkbox"
-//                     checked={form.recipientIds.includes(
-//                     user._id
-//                     )}
-//                     onChange={() =>
-//                     toggleRecipient(user._id)
-//                     }
-//                 />
-//                 {user.firstName} {user.lastName}
-//                 </label>
-//             ))}
-//             </div>
-//         </div>
+        if (!form.title.trim() || !form.message.trim()) {
+        toast.error("Title & Message are required");
+        return;
+        }
 
-//         <div className="flex justify-end">
-//             <button
-//             onClick={handleSubmit}
-//             className="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800"
-//             >
-//             Send
-//             </button>
-//         </div>
+        try {
+        setLoading(true);
 
-//         </div>
-//     );
-// }
+        const payload = {
+            type: form.type,
+            title: form.title.trim(),
+            message: form.message.trim(),
+            link: form.link || undefined,
+            attachmentUrl: form.attachmentUrl || undefined,
+
+            sender: {
+            model: currentUser.role,
+            id: currentUser.id,
+            },
+        };
+
+        const config:HandleApiOptions<object>={
+            endPoint: "/notification/new",
+            method: "post",
+            payload,
+            headers:{role:"Admin"}
+        }
+
+        const res = await handleApi(config);
+
+        if (!res.success) {
+            toast.error("Failed to send notification");
+            return;
+        }
+
+        toast.success("Notification sent successfully");
+
+        // Reset form
+        setForm({
+            type: "GENERAL",
+            title: "",
+            message: "",
+            link: "",
+            attachmentUrl: "",
+        });
+
+        } catch (error) {
+            toast.error(`Something went wrong ${error}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md space-y-6">
+
+        <h2 className="text-xl font-semibold">
+            Send Notification
+        </h2>
+
+        {/* Type */}
+        <div>
+            <label className="block text-sm mb-1">
+            Type
+            </label>
+            <select
+            name="type"
+            value={form.type}
+            onChange={handleChange}
+            className="w-full border rounded-md p-2"
+            >
+            <option value="GENERAL">General</option>
+            <option value="ALERT">Alert</option>
+            <option value="REMINDER">Reminder</option>
+            <option value="ANNOUNCEMENT">Announcement</option>
+            <option value="SYSTEM">System</option>
+            </select>
+        </div>
+
+        {/* Title */}
+        <div>
+            <label className="block text-sm mb-1">
+            Title
+            </label>
+            <input
+            name="title"
+            value={form.title}
+            onChange={handleChange}
+            className="w-full border rounded-md p-2"
+            />
+        </div>
+
+        {/* Message */}
+        <div>
+            <label className="block text-sm mb-1">
+            Message
+            </label>
+            <textarea
+            name="message"
+            value={form.message}
+            onChange={handleChange}
+            rows={4}
+            className="w-full border rounded-md p-2"
+            />
+        </div>
+
+        {/* Optional Link */}
+        <div>
+            <label className="block text-sm mb-1">
+            Link (optional)
+            </label>
+            <input
+            name="link"
+            value={form.link}
+            onChange={handleChange}
+            className="w-full border rounded-md p-2"
+            />
+        </div>
+
+        {/* Optional Attachment */}
+        <div>
+            <label className="block text-sm mb-1">
+            Attachment URL (optional)
+            </label>
+            <input
+            name="attachmentUrl"
+            value={form.attachmentUrl}
+            onChange={handleChange}
+            className="w-full border rounded-md p-2"
+            />
+        </div>
+
+        <div className="flex justify-end">
+            <button
+            disabled={loading}
+            onClick={handleSubmit}
+            className="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 disabled:opacity-50"
+            >
+            {loading ? "Sending..." : "Send"}
+            </button>
+        </div>
+
+        </div>
+    );
+}

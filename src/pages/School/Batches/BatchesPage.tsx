@@ -2,7 +2,7 @@ import {  useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 import {Link} from "react-router";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
-import { useAppDispatch, useAppSelector } from "@/hooks/storeHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import { storeBatches } from "@/utils/Redux/Reducer/batchReducer";
 import { IBatches } from "@/interfaces/ISchool";
 import { ITeacherBio } from "@/interfaces/ITeacher";

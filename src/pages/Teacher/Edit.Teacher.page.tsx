@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { ITeacher,ITeacherBio } from "@/interfaces/ITeacher";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
 
-import { useAppNavigate } from "@/hooks/navigate.hook";
+import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { handleValidationOF } from "@/validation/validateFormData";
 
 import { teacherAssignmentSchema, teacherBioFormSchema } from "@/validation/teacher.validation";
@@ -17,7 +17,7 @@ import { Section } from "@/components/Teacher/Section";
 import { CheckBox, CheckList } from "@/components/Teacher";
 import { employmentStatusOptions, teacherDesignationOptions } from "@/constants/teacher";
 import { Select } from "@/components/Select";
-import { useAppSelector } from "@/hooks/storeHooks";
+import { useAppSelector } from "@/hooks/useStoreHooks";
 import { department_obj } from "@/constants/deparment";
 import { Teachers } from "@/types/types";
 /* ------------------------------------------------ */

@@ -1,0 +1,13 @@
+export enum NotificationType {
+    GENERAL = "GENERAL",
+    ALERT = "ALERT",
+    REMINDER = "REMINDER",
+    ASSIGNMENT = "ASSIGNMENT",
+    EXAM = "EXAM",
+    EVENT = "EVENT",
+    RESULT = "RESULT",
+    ANNOUNCEMENT = "ANNOUNCEMENT",
+    CLASS_UPDATE = "CLASS_UPDATE",
+    ATTENDANCE = "ATTENDANCE",
+    SYSTEM = "SYSTEM",
+}

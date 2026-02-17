@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useAppSelector } from "@/hooks/storeHooks";
+import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { batchSchema } from "@/validation/school.validator";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
-import { useAppNavigate } from "@/hooks/navigate.hook";
+import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import InputField from "@/components/inputField";
 import { ITeacherBio } from "@/interfaces/ITeacher";
 

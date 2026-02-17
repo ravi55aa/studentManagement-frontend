@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
 import {IAcademicCourse,IAcademicCourseMeta} from "@/interfaces/ISchool.ts"
 import { storeSchoolAcademicCourses, storeSchoolAcademicCoursesMeta, toggleAcademicCourseLoading } from "@/utils/Redux/Reducer/courses.reducer";
-import { useAppDispatch, useAppSelector } from "@/hooks/storeHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import Swal from "sweetalert2";
 
 

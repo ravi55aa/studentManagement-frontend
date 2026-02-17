@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
 import { Link } from "react-router";
-import { useAppDispatch, useAppSelector } from "@/hooks/storeHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import { setCenters,toggleCenterLoading } from "@/utils/Redux/Reducer/centerReducer";
 import { storeAddress } from "@/utils/Redux/Reducer/address.reducer";
 import { IAddress } from "@/interfaces/IRegister";

@@ -17,7 +17,7 @@ import { addCenter_Form_Fields,
     school_Register_SchemaFor_Address 
     } from "@/constants/createSchool";
 import { useParams } from "react-router-dom";
-import { useAppNavigate } from "@/hooks/navigate.hook";
+import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { toast } from "react-toastify";
 import { ICenterForm } from "@/interfaces/ISchool";
 import { IAddress } from "@/interfaces/IRegister";

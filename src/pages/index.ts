@@ -39,7 +39,7 @@ export {default as "AcademicSubjectsEdit"} from "./School/Academic/Subject.edit.
 export {default as "AcademicCourses"} from "./School/Academic/Course/Courses.page";
 export {default as "AcademicCoursesAdd"} from "./School/Academic/Course/Course.add.page";
 export {default as "AcademicCoursesEdit"} from "./School/Academic/Course/Course.edit";
-
+export {default as "Notifications"} from "@/components/Notification/WriteNotification.page.tsx";
 
 export {default as "Teachers"} from "./Teacher/Teacher.main.page";
 export {default as "AddTeachers"} from "./Teacher/Add.Teacher.page";

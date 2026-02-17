@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HandleApiOptions, handleApi } from "@/api/global.api";
 import { toast } from "react-toastify";
-import { useAppSelector } from "@/hooks/storeHooks";
+import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { courseValSchema,courseFormSchema } from "@/validation/school.validator";
 import InputField from "@/components/inputField";

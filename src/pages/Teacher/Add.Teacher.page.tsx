@@ -7,9 +7,9 @@ import { EDepartment, Gender_types } from "@/types/enums";
 import { ITeacher,ITeacherBio } from "@/interfaces/ITeacher";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
 
-import { useAppSelector } from "@/hooks/storeHooks";
+import { useAppSelector } from "@/hooks/useStoreHooks";
 import { department_obj } from "@/constants/deparment";
-import { useAppNavigate } from "@/hooks/navigate.hook";
+import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { handleValidationOF } from "@/validation/validateFormData";
 import DocumentUploadModal from "@/components/Document/Document.upload.modal";
 

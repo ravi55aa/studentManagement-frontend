@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { HandleApiOptions, handleApi } from "@/api/global.api";
 import { toast } from "react-toastify";
-import { useAppSelector } from "@/hooks/storeHooks";
+import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { courseValSchema,courseFormSchema } from "@/validation/school.validator";
-import { _useFormatDateForInput } from "@/hooks/dateFormata";
+import { _useFormatDateForInput } from "@/hooks/useDateFormata";
 import {  IBatches } from "@/interfaces/ISchool";
 import { ICourseForm } from "./Course.add.page";
 

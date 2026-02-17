@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useAppSelector } from "@/hooks/storeHooks";
+import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { batchSchema } from "@/validation/school.validator";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useParams } from "react-router-dom";
 import { IBatches } from "@/interfaces/ISchool";
-import { useAppNavigate } from "@/hooks/navigate.hook";
-import { _useFormatDateForInput } from "@/hooks/dateFormata";
+import { useAppNavigate } from "@/hooks/useNavigate.hook";
+import { _useFormatDateForInput } from "@/hooks/useDateFormata";
 import InputField from "@/components/inputField";
 
 const EditBatch = () => {

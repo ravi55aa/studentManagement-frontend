@@ -6,7 +6,7 @@
  */
 
 
-import React, { useState } 
+import React, {  useState } 
     from "react";
 import { useNavigate, Link } 
     from "react-router-dom";
@@ -20,6 +20,8 @@ import { schoolSignInSchema }
     from "@/validation/school.validator";
 import { handleSchoolSignIn } 
     from "@/api/school.api";
+import { useAppDispatch } from "@/hooks/useStoreHooks";
+import { storeCurrentUser } from "@/utils/Redux/Reducer/currentUser.reducer";
 
 
 
@@ -29,6 +31,7 @@ import { handleSchoolSignIn }
 const SignInSchool = () => {
 
     const navigate = useNavigate();
+    const dispatch=useAppDispatch();
 
     const [form, setForm] = useState({
         schoolName: "",
@@ -58,11 +61,16 @@ const SignInSchool = () => {
 
         const res = await handleSchoolSignIn(form);
 
-        if(res.success){
-            navigate("/school/dashboard");
+        //here update the new code
+        if(!res.success){
+            setError(res.error.message);
         }
 
-        setError(res.error.message);
+        const user={id:res.data._id,role:"Admin"};
+        dispatch(storeCurrentUser(user));
+
+        navigate("/school/dashboard");
+
         return res.success;
     };
 

@@ -1,5 +1,5 @@
 import { handleApi, HandleApiOptions } from "@/api/global.api";
-import { useAppDispatch, useAppSelector } from "@/hooks/storeHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import { IGetAllTeachers, ITeacherBio } from "@/interfaces/ITeacher";
 import { Eye, Pencil, Bell } from "lucide-react";
 import { useEffect, useState } from "react";

@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface IUser{
     id:string,
-    model:string
+    role:string
 }
 
 interface ICurrentUser  {
@@ -23,8 +23,8 @@ const currentUserSlice=createSlice({
     name:"currentUser",
     initialState:initialSubState,
     reducers:{
-        storeCurrentUser(state,action:PayloadAction<ICurrentUser>){
-            state.user=action.payload.user;
+        storeCurrentUser(state,action:PayloadAction<IUser>){
+            state.user=action.payload;
         },
 
         toggleCurrentUserLoading(){},
