@@ -28,22 +28,20 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { EmailVerify,OTP,PasswordReset } from "@/pages/Auth"
 import EditTeacherPage from "./pages/Teacher/Edit.Teacher.page";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import { StripCheckout } from "./components";
+import CheckoutPage from "./components/Stripe.Checkout.page";
+import PaymentSuccess from "./components/Success.compo";
 
-const stripePromise = loadStripe("pk_test_your_key_here");
+
+
+
 
 
 const App = () => {
 
   return (
     <div>
+
       
-      //*STRIPE-PAYMENT-CHECKOUT-UI*/
-      <Elements stripe={stripePromise}>
-        <StripCheckout />
-      </Elements>;
 
     <ToastContainer position="top-right" autoClose={3000}/>
       <Routes>
@@ -59,6 +57,10 @@ const App = () => {
         <Route path="/passwordReset/emailVerify" element={<EmailVerify/>}/>
         <Route path="/passwordReset/otp" element={<OTP/>}/>
         <Route path="/passwordReset" element={<PasswordReset/>}/>
+
+        //*strip
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
 
 
         //*school

@@ -2,51 +2,38 @@ import {
     PaymentElement,
     useStripe,
     useElements,
-} from "@stripe/react-stripe-js";
-import { useState } from "react";
+    } from "@stripe/react-stripe-js";
 
-const Checkout = () => {
+    const Checkout = () => {
     const stripe = useStripe();
     const elements = useElements();
-    const [clientSecret, setClientSecret] = useState("");
-
-    const createPaymentIntent = async () => {
-        const response = await fetch("http://localhost:4000/api/payment/create-payment-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 1000 }),
-        });
-
-        const data = await response.json();
-        setClientSecret(data.clientSecret);
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!stripe || !elements) return;
 
-        const result = await stripe.confirmPayment({
+        const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-            return_url: "http://localhost:5173/success",
+            return_url: "http://localhost:5173/payment-success",
         },
         });
 
-        if (result.error) {
-        console.log(result.error.message);
+        if (error) {
+        console.error(`Stripe_Error:${ error.message}`);
         }
     };
 
     return (
         <form onSubmit={handleSubmit}>
-        <button type="button" onClick={createPaymentIntent}>
-            Initialize Payment
+        <PaymentElement />
+        <button
+            className="btn px-4 py-2 bg-violet-600 rounded-xl text-white mt-4"
+            type="submit"
+        >
+            Pay
         </button>
-
-        {clientSecret && <PaymentElement />}
-
-        <button type="submit">Pay</button>
         </form>
     );
 };

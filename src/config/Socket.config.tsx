@@ -27,9 +27,9 @@ const SocketProvider = ({ children }) => {
         });
 
         setSocket(newSocket);
+        newSocket.disconnect();
 
         return () => {
-        newSocket.disconnect();
         };
 
     }, [user?.id]);
