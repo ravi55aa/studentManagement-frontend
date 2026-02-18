@@ -11,23 +11,24 @@ const SocketProvider = ({ children }) => {
     useEffect(() => {
         if (!user?.id) return;
 
-        const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
-        auth: {
-            userId: user.id,
-            role: user.role,
-        },
-        });
+        // const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
+        // auth: {
+        //     userId: user.id,
+        //     role: user.role,
+        // },
+        // });
+        
 
-        newSocket.on("connect", () => {
-        console.log("Socket CONNECTED:", newSocket.id);
-        });
+        // newSocket.on("connect", () => {
+        // console.log("Socket CONNECTED:", newSocket.id);
+        // });
 
-        newSocket.on("disconnect", (reason) => {
-        console.log("Socket DISCONNECTED:", reason);
-        });
+        // newSocket.on("disconnect", (reason) => {
+        // console.log("Socket DISCONNECTED:", reason);
+        // });
 
-        setSocket(newSocket);
-        newSocket.disconnect();
+        // setSocket(newSocket);
+        // newSocket.disconnect();
 
         return () => {
         };

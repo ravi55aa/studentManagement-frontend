@@ -8,12 +8,14 @@
   DocumentUpload ,
   DashboardHome ,Dashboard ,
   
+  ViewSchool ,
+  Fees,AddFees,
   Centers ,AddCenter,EditCenter ,
   Batches ,AddBatches ,EditBatches ,
   AcademicYear , AcademicAddYear, AcademicEditYear ,
   AcademicSubjects ,AcademicSubjectsAdd, AcademicSubjectsEdit ,
   AcademicCourses,AcademicCoursesAdd ,AcademicCoursesEdit,
-  ViewSchool ,
+
   Teachers,AddTeachers,
 
   Notifications
@@ -101,6 +103,11 @@ const App = () => {
             <Route index element={<Teachers/>}  />
             <Route path="add" element={<AddTeachers/>}  />
             <Route path="edit/:id" element={<EditTeacherPage/>}  />
+          </Route>
+          
+          <Route path="fees"> 
+            <Route index element={<Fees/>}  />
+            <Route path="add" element={<AddFees/>}  />
           </Route>
 
           <Route path="notifications" element={<Notifications/>}  />

@@ -1,3 +1,5 @@
+
+
 export{default as "HomePage"} from "./HomePage"
 export{default as "NotFound"} from "./NotFound"
 
@@ -43,6 +45,11 @@ export {default as "Notifications"} from "@/components/Notification/writeNotific
 
 export {default as "Teachers"} from "./Teacher/Teacher.main.page";
 export {default as "AddTeachers"} from "./Teacher/Add.Teacher.page";
+
+
+export {default as "Fees"} from "./School/Fees/Fees";
+export {default as "AddFees"} from "./School/Fees/Fees.Add";
+
 
 
 

@@ -1,3 +1,5 @@
+import z from "zod"
+
 export enum Gender_types {
     Male='male',
     Female='female',
@@ -28,3 +30,18 @@ export enum EDepartment {
     PHYSICAL_EDUCATION = "physical education",
     ARTS = "arts",
 }
+
+export const FeeTypeEnum = z.enum([
+    "COURSE",
+    "ANNUAL",
+    "EXAM",
+    "CENTER",
+    "OTHER",
+]);
+
+export const AppliesModelEnum = z.enum([
+    "Course",
+    "School",
+    "Exam",
+    "Center",
+]);

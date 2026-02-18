@@ -1,4 +1,5 @@
 
+
 import * as z from "zod";
 
 
@@ -339,7 +340,7 @@ export const schoolSubjectSchema = z
 
 
 
-/************ ACADEMIC Course ************/
+//************ ACADEMIC Course ************//
 
     /* ---------- schema ---------- */
 export const courseValSchema = z.object({
@@ -462,6 +463,95 @@ export const passwordSchema = z
     })
     .refine((data) => data.pass1 === data.pass2, {
         message: "Passwords do not match",
-        path: ["password2"], // 👈 error shown under confirm password
+        path: ["password2"], // error shown under confirm password
     });
+    
+
+//************ FEES ************//
+
+
+/* -------------AUTO REMINDER-------------------- */
+
+export const autoReminderSchema = z
+    .object({
+        enabled: z.boolean(),
+
+        daysBeforeDue: z
+            .coerce
+            .number({message:"Total capacity value is required"})
+            .min(2, "Min capacity should be 10 ")
+            .optional()
+    })
+    .refine(
+        (data) => {
+        if (data.enabled && !data.daysBeforeDue) {
+            return false;
+        }
+        return true;
+        },
+        {
+        message: "Days before due is required when reminder is enabled",
+        path: ["daysBeforeDue"],
+        }
+    );
+
+/* ---------------=MAIN FEE SCHEMA--------------------- */
+
+export const feeSchema = z
+    .object({
+        name: z
+        .string()
+        .min(2, "Fee name must be at least 2 characters"),
+
+        code: z
+        .string()
+        .min(2, "Fee code must be at least 2 characters"),
+
+        type: z.string(),
+
+        appliesTo: z.object({
+        model: z.string(),
+        id: z
+            .string()
+            .min(1, "Please select a valid reference"),
+        }),
+
+        status: z
+        .string()
+        .default("ACTIVE"),
+
+        totalAmount: z.coerce
+        .number({message:"Total capacity value is required"})
+        .positive("Amount must be greater than 0"),
         
+        dueDate: z.preprocess(
+        (val) => (val ? new Date(val as string) : undefined),
+            z.date({ error: "Due date is required" })
+        ),
+
+        currency: z
+        .string()
+        .min(2, "Currency required (e.g. INR, USD)"),
+
+        autoReminder: autoReminderSchema,
+    })
+
+    /* ------------TYPE ↔ MODEL VALIDATION--------------- */
+
+    .refine(
+        (data) => {
+        const mapping = {
+            COURSE: "Course",
+            ANNUAL: "School",
+            EXAM: "Exam",
+            CENTER: "Center",
+            OTHER: data.appliesTo.model, // allow flexible
+        };
+
+        return mapping[data.type] === data.appliesTo.model;
+        },
+        {
+        message: "Invalid appliesTo model for selected fee type",
+        path: ["appliesTo", "model"],
+        }
+    );
