@@ -5,7 +5,8 @@ import { toast } from "react-toastify";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { courseValSchema,courseFormSchema } from "@/validation/school.validator";
-import InputField from "@/components/inputField";
+import {InputField} from "@/components";
+import { CourseRoute } from "@/constants/routes.contants";
 
 /* ===================== TYPES ===================== */
 
@@ -199,7 +200,7 @@ const CourseAddPage = () => {
 
         const config: HandleApiOptions<FormData> = {
             method: "post",
-            endPoint: "/school/academic/courses/add",
+            endPoint: CourseRoute.add,
             payload: formData,
             headers: { role: "school" },
         };

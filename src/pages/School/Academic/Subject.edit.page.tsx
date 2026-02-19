@@ -14,24 +14,16 @@ import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import { toast } from "react-toastify";
 import {useAppNavigate} from "@/hooks/useNavigate.hook";
 import { useParams } from "react-router-dom";
-//import { toggleBatchLoading } from "@/utils/Redux/Reducer/batchReducer";
 import { toggleAcademicLoading } from "@/utils/Redux/Reducer/schoolYearReducer";
 import { toggleAcademicSubLoading } from "@/utils/Redux/Reducer/subjectReducer";
 import { IAcademicSubject } from "@/interfaces/ISchool";
-
+import { SubjectRoute } from "@/constants/routes.contants";
 
 enum subjectType {
     theory="theory",
     practical="practical",
     both="both"
 }
-
-// enum subjectLevel {
-//     primary="primary", 
-//     secondary="secondary", 
-//     higher_secondary="higher-secondary", 
-//     degree="degree"
-// }
 
 
 const EditSubject = () => {
@@ -53,6 +45,7 @@ const EditSubject = () => {
         referenceBooks: [] as File[],
         status: "active",
     });
+
     const {goBack} =useAppNavigate();
     const dispatch=useAppDispatch();
 
@@ -68,7 +61,7 @@ const EditSubject = () => {
             dispatch(toggleAcademicSubLoading())
             const config:HandleApiOptions<null>={
                         method:"get",
-                        endPoint:`/school/academic/subjects/${id}`,
+                        endPoint:`${SubjectRoute.get}/${id}`,
                         payload:null,
                         headers:{role:"school"}
                 }
@@ -205,7 +198,7 @@ const EditSubject = () => {
         //api.call()
         const config:HandleApiOptions<object>={
             method:"post",
-            endPoint:`/school/academic/subjects/edit/v1/${id}`,
+            endPoint:`${SubjectRoute.edit}/v1/${id}`,
             payload:formData,
             headers:{role:"school"}
         }

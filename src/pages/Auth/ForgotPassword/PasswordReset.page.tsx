@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HandleApiOptions, handleApi } from "@/api/global.api";
+import { forgotPassword } from "@/constants/routes.contants";
 
 const ResetPassword = () => {
     const navigate = useNavigate();
@@ -62,7 +63,7 @@ const ResetPassword = () => {
 
         const config: HandleApiOptions<object> = {
             method: "patch",
-            endPoint: `/auth/forgot-password/updatePassword/${id}`,
+            endPoint: `${forgotPassword.updatePassword}/${id}`,
             payload: { newPassword: form.newPassword,modelName:"admin" },
             headers: { role: "admin" },
         };

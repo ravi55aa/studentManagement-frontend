@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { otpVerificationSchema } from "@/validation/otpReset";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
+import { forgotPassword } from "@/constants/routes.contants";
 
 
 export interface IOtp extends Document {
@@ -37,7 +38,7 @@ const OtpVerification = () => {
 
         const config:HandleApiOptions<null>={
                     method:"get",
-                    endPoint:`/auth/forgot-password/generateOtp/${id}`,
+                    endPoint:`${forgotPassword.generateOtp}/${id}`,
                     headers:{role:"admin"}
                 }
         
@@ -98,7 +99,7 @@ const OtpVerification = () => {
     
       const config:HandleApiOptions<object>={
                     method:"post",
-                    endPoint:`/auth/forgot-password/verifyOtp/${id}`,
+                    endPoint:`${forgotPassword.verifyOtp}/${id}`,
                     payload:{generatedOtp:otp,userEnteredOtp:form.otp},
                     headers:{role:"admin"}
                 }
@@ -110,8 +111,8 @@ const OtpVerification = () => {
       return;
     }
 
-    setError(res.error);
-    
+    setError("Password reset error, try again");
+    return false;
   };
 
   return (
@@ -149,7 +150,9 @@ const OtpVerification = () => {
               value={form.otp}
               onChange={handleInputChange}
               maxLength={6}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm outline-none tracking-widest text-center focus:ring-2 focus:ring-green-700"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 
+              text-sm outline-none tracking-widest text-center 
+              focus:ring-2 focus:ring-green-700"
             />
             <span id="otp" className="ps-2 text-red-500"></span>
           </div>

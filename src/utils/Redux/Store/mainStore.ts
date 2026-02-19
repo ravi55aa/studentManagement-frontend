@@ -13,7 +13,9 @@ import {
     school_MDA_Reducer,
     teacherReducer,
     currentUserSlice,
-    feeSlice
+    feeSlice,
+    schoolReducer,
+    notificationReducer,
 } from "../index";
 
 const rootReducer = combineReducers({
@@ -27,6 +29,8 @@ const rootReducer = combineReducers({
         teacher:teacherReducer,
         currentUser:currentUserSlice,
         fees:feeSlice,
+        schools:schoolReducer,
+        notifications:notificationReducer,
     });
 
 const persistConfig = {

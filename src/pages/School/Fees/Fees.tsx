@@ -2,7 +2,7 @@
 import { Section } from "@/components/Teacher/Section";
 import StatusBadge from "@/components/fee/StatusBadge.c";
 import TypeBadge from "@/components/fee/TypeBadge.c";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
@@ -11,12 +11,16 @@ import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import { storeFees,toggleFeeLoading } from "@/utils/Redux/Reducer/fee.reducer";
 import { Pagination,TopBar } from "@/components";
 import { toast } from "react-toastify";
+import { deleteSwal } from "@/utils/swal";
+
+
 
 
 export default function FeeListPage() {
 
     const dispatch = useAppDispatch();
     const feeStore = useAppSelector((state)=>state.fees);
+    const navigate=useNavigate();
 
 
     useEffect(()=>{
@@ -45,6 +49,9 @@ export default function FeeListPage() {
 
     const handleDelete=async(id:string)=>{
 
+        const result = await deleteSwal();
+        if(!result.isConfirmed) return;
+
         dispatch(toggleFeeLoading(true));
         const config:HandleApiOptions<null>={
                 method:"delete",
@@ -68,7 +75,12 @@ export default function FeeListPage() {
 
     return (
         <div className="p-8 bg-white-100 min-h-screen">
-            <TopBar to="add" />
+            <div className="flex justify-end ">
+                <button onClick={()=>navigate("students")} className=" mr-2 bg-green-600 text-white px-4 max-h-9 rounded-md text-sm">
+                    Watch Students
+                </button>
+                <TopBar to="add" />
+            </div>
 
         <Section title="All Fees">
 
@@ -129,7 +141,7 @@ export default function FeeListPage() {
 
                         <td className="p-3 flex justify-end text-right space-x-2">
 
-                        <Link to={`/fee/edit/${fee?._id}`}>
+                        <Link to={`/school/dashboard/fees/edit/${fee?._id}`}>
                         <Pencil className="w-4 h-4 text-green-600 hover:text-green-800 hover:underline cursor-pointer" />
                         </Link>
 

@@ -10,8 +10,8 @@ import { useState }
     from "react";
 import { HandleApiOptions,handleApi }
 from "@/api/global.api";
-import InputField 
-    from "@/components/inputField";
+import {InputField} 
+    from "@/components";
 import { addCenter_Form_Fields, inputStyleRegisterSchoolAddress, school_Register_SchemaFor_Address } from "@/constants/createSchool";
 import { toast } from "react-toastify";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";

@@ -4,7 +4,7 @@ import { handleValidationOF } from "@/validation/validateFormData";
 import { batchSchema } from "@/validation/school.validator";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
-import InputField from "@/components/inputField";
+import {InputField} from "@/components";
 import { ITeacherBio } from "@/interfaces/ITeacher";
 
 

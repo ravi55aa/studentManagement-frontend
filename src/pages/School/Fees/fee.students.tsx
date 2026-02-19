@@ -1,18 +1,22 @@
 
+import { useAppNavigate } from "@/hooks/useNavigate.hook";
+import { ArrowLeftFromLine } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+
+
 
 export default function FeesListPage() {
 
     const [search, setSearch] = useState("");
-    const navigate=useNavigate();
+    const {goBack}=useAppNavigate();
 
 
     const feesData = [
         {
         name: "Kevin Watson",
         class: "6 A",
-        center: "Dubai - 01",
+        center: "Canara - 01",
         program: "K - 12",
         feeDetails: "Tuition Fee - July 2025",
         amount: 1500,
@@ -21,7 +25,7 @@ export default function FeesListPage() {
         {
         name: "Marvin McKinney",
         class: "10 A",
-        center: "Dubai - 01",
+        center: "Ug - 01",
         program: "K - 12",
         feeDetails: "Tuition Fee - July 2025",
         amount: 1500,
@@ -34,9 +38,11 @@ export default function FeesListPage() {
 
         {/* Top Bar */}
         <div className="flex justify-between items-center mb-6">
-            <button onClick={()=>navigate("add")} className="bg-green-600 text-white px-4 py-2 rounded-md text-sm">
-            Add New
+            
+            <button type="button" >
+                <ArrowLeftFromLine onClick={goBack} className="h-6 w-8 px-2 rounded-2xl bg-green-500" />
             </button>
+            
         </div>
 
         {/* Filter + Search */}

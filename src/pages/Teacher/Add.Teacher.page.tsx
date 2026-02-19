@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import InputField from "@/components/inputField";
-import { Select } from "@/components/Select";
+import {InputField,Select} from "@/components";
 import { toast } from "react-toastify";
 
 import { EDepartment, Gender_types } from "@/types/enums";

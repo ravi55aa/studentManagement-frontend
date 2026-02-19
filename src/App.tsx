@@ -9,7 +9,7 @@
   DashboardHome ,Dashboard ,
   
   ViewSchool ,
-  Fees,AddFees,
+  Fees,AddFees,EditFees,FeesStudentsList,
   Centers ,AddCenter,EditCenter ,
   Batches ,AddBatches ,EditBatches ,
   AcademicYear , AcademicAddYear, AcademicEditYear ,
@@ -18,7 +18,7 @@
 
   Teachers,AddTeachers,
 
-  Notifications
+  Notifications,AddNotifications,
 } from "@/pages/index"
 
 
@@ -108,9 +108,14 @@ const App = () => {
           <Route path="fees"> 
             <Route index element={<Fees/>}  />
             <Route path="add" element={<AddFees/>}  />
+            <Route path="edit/:id" element={<EditFees/>}  />
+            <Route path="students" element={<FeesStudentsList/>}  />
           </Route>
 
-          <Route path="notifications" element={<Notifications/>}  />
+          <Route path="notifications"   >
+            <Route index element={<Notifications/>} />
+            <Route path="add" element={<AddNotifications/>}  />
+          </Route>
 
         </Route>
 

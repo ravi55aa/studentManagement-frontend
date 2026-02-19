@@ -3,8 +3,12 @@ import { Pencil, Trash2, Bell } from "lucide-react";
 import {Link} from "react-router";
 import { useAppDispatch,useAppSelector } from "@/hooks/useStoreHooks";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
-import { storeSchoolAcademicYears, toggleAcademicLoading } from "@/utils/Redux/Reducer/schoolYearReducer";
 import Swal from "sweetalert2";
+import { YearRoute } from "@/constants/routes.contants";
+import { 
+    storeSchoolAcademicYears, 
+    toggleAcademicLoading 
+} from "@/utils/Redux/Reducer/schoolYearReducer";
 
 
 
@@ -20,7 +24,7 @@ const AcademicYearsPage = () => {
             (async()=>{
                 const config:HandleApiOptions<null>={
                             method:"get",
-                            endPoint:"/school/academicYears",
+                            endPoint:YearRoute.get,
                             payload:null,
                             headers:{role:"school"}
                     }
@@ -60,7 +64,7 @@ const AcademicYearsPage = () => {
 
         const config:HandleApiOptions<null>={
                         method:"delete",
-                        endPoint:`/school/academicYears/${id}`,
+                        endPoint:`${YearRoute.get}/${id}`,
                         payload:null,
                         headers:{role:"school"}
                     }

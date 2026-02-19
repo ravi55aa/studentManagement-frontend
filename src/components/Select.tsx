@@ -1,6 +1,6 @@
 
 
-export function Select({
+export default function Select({
     label,
     options,
     ...props

@@ -11,6 +11,7 @@ import { handleValidationOF }
 import { emailVerificationSchema } 
     from "@/validation/otpReset";
 import { IOtp } from "./Otp.page";
+import { forgotPassword } from "@/constants/routes.contants";
 
 
 const ForgotPasswordEmailVerify = () => {
@@ -46,7 +47,7 @@ const ForgotPasswordEmailVerify = () => {
 
         const config:HandleApiOptions<object>={
             method:"post",
-            endPoint:"/auth/forgot-password/verifyEmail",
+            endPoint:forgotPassword.emailVerify,
             payload:{email:form.email,model:"admin"},
             headers:{role:"admin"}
         }

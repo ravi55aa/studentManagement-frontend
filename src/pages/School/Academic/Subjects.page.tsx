@@ -5,6 +5,7 @@ import { HandleApiOptions,handleApi } from "@/api/global.api";
 import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import {storeSchoolAcademicSubjects,toggleAcademicSubLoading } from "@/utils/Redux/Reducer/subjectReducer";
 import Swal from "sweetalert2";
+import { SubjectRoute } from "@/constants/routes.contants";
 
 
 
@@ -14,12 +15,7 @@ const SubjectsPage = () => {
     const dispatch=useAppDispatch();
     const subjectStore=useAppSelector((state)=>state.schoolSubject);
 
-    /* ---------- Filtering ---------- */
-    // const filteredSubjects = DUMMY_SUBJECTS.filter(
-    //     (subject) =>
-    //     subject.name.toLowerCase().includes(search.toLowerCase()) ||
-    //     subject.code.toLowerCase().includes(search.toLowerCase())
-    // );
+    
 
 
     
@@ -27,9 +23,9 @@ const SubjectsPage = () => {
         (async()=>{
             const config:HandleApiOptions<null>={
                         method:"get",
-                        endPoint:"/school/academic/subjects",
+                        endPoint:SubjectRoute.get,
                         payload:null,
-                        headers:{role:"school"}
+                        headers:{role:"School"}
                 }
 
             const fetchData= await handleApi<null,null>(config);
@@ -54,9 +50,9 @@ const SubjectsPage = () => {
         
         const config:HandleApiOptions<null>={
                     method:"delete",
-                    endPoint:`/school/academic/subjects/${id}`,
+                    endPoint:`${SubjectRoute.get}/${id}`,
                     payload:null,
-                    headers:{role:"school"}
+                    headers:{role:"School"}
                 }
 
         const deletedDoc = await handleApi<null,null>(config);

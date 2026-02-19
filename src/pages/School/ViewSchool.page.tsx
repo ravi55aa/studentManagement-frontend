@@ -1,17 +1,37 @@
-import React, { useEffect, useState } from "react";
-import { Pencil, X , Lock, } from "lucide-react";
-import { handleApi,HandleApiOptions } from "@/api/global.api";
-import InputField from "@/components/inputField";
-import { school_Register_SchemaFor_Address } from "@/constants/createSchool";
-import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
-import { toast } from "react-toastify";
-import { IDocument,IUploadedDoc } from "@/interfaces/IRegister";
 import Swal from "sweetalert2";
-import { handleValidationOF } from "@/validation/validateFormData";
-import { addressValidate, passwordSchema } from "@/validation/school.validator";
-import DocumentUploadModal from "@/components/Document/Document.upload.modal";
-import { ISubjectReducer, setSchool_MDA_Data,toggleMDALoading } from "@/utils/Redux/Reducer/school.reducer";
+import { toast } from "react-toastify";
+import {InputField} from "@/components";
+import { Pencil, X , Lock, } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { IResetPassword } from "@/interfaces/ISchool";
+import { handleApi,HandleApiOptions } from "@/api/global.api";
+import { IDocument,IUploadedDoc } from "@/interfaces/IRegister";
+import { handleValidationOF } from "@/validation/validateFormData";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
+
+import { 
+    addressValidate, 
+    passwordSchema 
+} from "@/validation/school.validator";
+
+import DocumentUploadModal 
+    from "@/components/Document/Document.upload.modal";
+
+
+import { school_Register_SchemaFor_Address } 
+    from "@/constants/createSchool";
+
+import { 
+    ISubjectReducer, 
+    setSchool_MDA_Data,
+    toggleMDALoading 
+} from "@/utils/Redux/Reducer/school.reducer";
+
+import { 
+    AddressRoute, 
+    DocumentRoute, 
+    schoolRoute 
+} from "@/constants/routes.contants";
 
 
 /* ------------------------------------------------ */
@@ -83,7 +103,7 @@ const SchoolSettingsPage = () => {
                 const config:HandleApiOptions<null>=
                     {
                         method:"get",
-                        endPoint:"/school/data/fetch",
+                        endPoint:schoolRoute.viewSchool,
                         payload:null,
                         headers:{role:"school"}
                     }
@@ -154,7 +174,7 @@ const SchoolSettingsPage = () => {
         //api call
         const config:HandleApiOptions<object>={
             method: "patch",
-            endPoint: `/school/update/meta/${id}`,
+            endPoint: `${schoolRoute.updateMeta}/${id}`,
             payload: formData,
             headers:{role:"school"},
         }
@@ -205,7 +225,7 @@ const SchoolSettingsPage = () => {
         {role:"School",password1:passwords.pass1,password2:passwords.pass2};
 
         const config:HandleApiOptions<object>={
-            endPoint:`/password/reset/${userId}`,
+            endPoint:`${schoolRoute.resetPassword}/${userId}`,
             method:"patch",
             payload:data,
             headers:{role:"School"}
@@ -244,7 +264,7 @@ const SchoolSettingsPage = () => {
 
             const config:HandleApiOptions<IAddress>={
                 method:"put",
-                endPoint:`/address/edit/${id}`,
+                endPoint:`${AddressRoute.edit}/${id}`,
                 payload:form,
                 headers:{role:"school"}
             }
@@ -270,7 +290,7 @@ const SchoolSettingsPage = () => {
             dispatch(toggleMDALoading());
             const config:HandleApiOptions<IAddress>={
                 method:"put",
-                endPoint:`/documents/edit/${id}`,
+                endPoint:`${DocumentRoute.edit}/${id}`,
                 payload:form,
                 headers:{role:"school"}
             }
@@ -306,7 +326,7 @@ const SchoolSettingsPage = () => {
         const delete_fileName=documents.docs[index].fileName;
 
         const config:HandleApiOptions<null>={
-            endPoint:`/documents/${userId}`,
+            endPoint:`${DocumentRoute.document}/${userId}`,
             payload:null,
             method:"delete",
             headers:{role:"School"},
@@ -364,7 +384,7 @@ const SchoolSettingsPage = () => {
             dispatch(toggleMDALoading());
             const config:HandleApiOptions<FormData>={
                 method:"put",
-                endPoint:`/documents/${userId}`,
+                endPoint:`${DocumentRoute.document}/${userId}`,
                 payload:formData,
                 headers:{role:"School"},
             }

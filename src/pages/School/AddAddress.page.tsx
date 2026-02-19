@@ -4,8 +4,8 @@ import { school_Register_SchemaFor_Address }
     from "@/constants/createSchool";
 import { useNavigate } 
     from "react-router-dom";
-import InputField 
-    from "@/components/inputField";
+import {InputField} 
+    from "@/components";
 import { addressValidate } 
     from "@/validation/school.validator";
 import { handleValidationOF } 

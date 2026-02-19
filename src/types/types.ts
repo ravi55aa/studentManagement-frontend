@@ -21,3 +21,13 @@ export type AssignTeacherModalProps = {
     onClose: () => void;
     onAssign: (teacherId: string) => Promise<void>;
 };
+
+export type INotification = {
+    _id: string;
+    type: string;
+    title: string;
+    message: string;
+    link?: string;
+    createdAt: string;
+    isRead?: boolean;
+};

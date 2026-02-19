@@ -15,11 +15,14 @@ import { useParams } from "react-router-dom";
 import { ActionBar,Grid } from "@/components/Teacher/ActionBar";
 import { Section } from "@/components/Teacher/Section";
 import { CheckBox, CheckList } from "@/components/Teacher";
-import { employmentStatusOptions, teacherDesignationOptions } from "@/constants/teacher";
-import { Select } from "@/components/Select";
+import { Select } from "@/components";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { department_obj } from "@/constants/deparment";
 import { Teachers } from "@/types/types";
+import { 
+    employmentStatusOptions, 
+    teacherDesignationOptions 
+        } from "@/constants/teacher";
 /* ------------------------------------------------ */
 
 

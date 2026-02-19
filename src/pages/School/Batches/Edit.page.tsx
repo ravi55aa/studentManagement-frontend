@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { IBatches } from "@/interfaces/ISchool";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { _useFormatDateForInput } from "@/hooks/useDateFormata";
-import InputField from "@/components/inputField";
+import {InputField} from "@/components";
 
 const EditBatch = () => {
     const [form, setForm] = useState({
@@ -26,9 +26,9 @@ const EditBatch = () => {
     useEffect(()=>{
         const fetchBatchById=async()=>{
             const config:HandleApiOptions<null>={
-            method:"get",
-            endPoint:`/school/batches/${id}`,
-            headers:{role:"school"}
+                method:"get",
+                endPoint:`/school/batches/${id}`,
+                headers:{role:"School"}
             }
 
             const res=await handleApi<null,Partial<IBatches>>(config);

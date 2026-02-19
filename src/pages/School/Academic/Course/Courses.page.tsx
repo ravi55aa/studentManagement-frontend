@@ -3,20 +3,18 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
 import {IAcademicCourse,IAcademicCourseMeta} from "@/interfaces/ISchool.ts"
-import { storeSchoolAcademicCourses, storeSchoolAcademicCoursesMeta, toggleAcademicCourseLoading } from "@/utils/Redux/Reducer/courses.reducer";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import Swal from "sweetalert2";
+import { CourseRoute } from "@/constants/routes.contants";
+import { 
+    storeSchoolAcademicCourses, 
+    storeSchoolAcademicCoursesMeta, 
+    toggleAcademicCourseLoading 
+} from "@/utils/Redux/Reducer/courses.reducer";
 
 
 
 const CourseListPage = () => {
-
-    // const [form, setForm] = useState({
-    //     name: "",
-    //         program: "",
-    //             code: "",
-    //                 duration: "",
-    // });
 
     const dispatch=useAppDispatch();
     const {courses,courses_meta}=useAppSelector((state)=>state.courses);
@@ -37,7 +35,7 @@ const CourseListPage = () => {
 
         const config:HandleApiOptions<null> = {
             method: "get",
-            endPoint: "/school/academic/courses",
+            endPoint: CourseRoute.get,
             payload:null,
             headers: { role: "school" },
         };
@@ -163,7 +161,7 @@ const CourseListPage = () => {
             
             const config:HandleApiOptions<null>={
                         method:"delete",
-                        endPoint:`/school/academic/courses/${id}`,
+                        endPoint:`${CourseRoute.get}/${id}`,
                         payload:null,
                         headers:{role:"school"}
                     }

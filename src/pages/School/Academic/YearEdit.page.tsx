@@ -5,11 +5,13 @@ import { useParams } from "react-router-dom";
 import { useAppNavigate } from "@/hooks/useNavigate.hook"; 
 import { toast } from "react-toastify";
 import { _useFormatDateForInput } from "@/hooks/useDateFormata";
-import InputField from "@/components/inputField";
+import {InputField} from "@/components";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { schoolAcademicYearSchema } from "@/validation/school.validator";
+import { YearRoute } from "@/constants/routes.contants";
 
-//validation and handleApi
+
+
 const EditAcademicYear = () => {
 
     const {id}=useParams();
@@ -20,9 +22,9 @@ const EditAcademicYear = () => {
     useEffect(()=>{
         const fetchYear=async()=>{
             const config:HandleApiOptions<null>={
-                endPoint:`/school/academicYears/${id}`,
+                endPoint:`${YearRoute.get}/${id}`,
                 method:"get",
-                headers:{role:"school"},
+                headers:{role:"School"},
             }
             const res=await handleApi<null,IAcademicYear>(config);
             setForm(res.data?.data);
@@ -62,7 +64,7 @@ const EditAcademicYear = () => {
         }
 
         const config:HandleApiOptions<object>={
-                endPoint:`/school/academicYears/edit/${id}`,
+                endPoint:`${YearRoute.edit}/${id}`,
                 method:"put",
                 payload:form,
                 headers:{role:"school"},

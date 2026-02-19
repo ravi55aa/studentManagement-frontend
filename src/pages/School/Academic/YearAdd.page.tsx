@@ -4,7 +4,8 @@ import { handleValidationOF } from "@/validation/validateFormData";
 import { useState } from "react";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { toast } from "react-toastify";
-import InputField from "@/components/inputField"; 
+import {InputField} from "@/components"; 
+import { YearRoute } from "@/constants/routes.contants";
 
 const AddAcademicYear = () => {
     const [form, setForm] = useState({
@@ -58,7 +59,7 @@ const AddAcademicYear = () => {
 
         const config:HandleApiOptions<object>={
             method:"post",
-            endPoint:"/school/academicYears/add",
+            endPoint:YearRoute.add,
             headers:{"Content-type":"application/json"},
             payload:form
         };

@@ -7,13 +7,13 @@ export default function TopBar({to}:{to:string}){
     return (
         <>
         <div className="flex justify-between items-center mb-6">
-            <button onClick={()=>navigate(to)} className="bg-green-600 text-white px-4 py-2 rounded-md text-sm">
+            <button onClick={()=>navigate(to)} className="bg-green-600 mr-5 text-white px-4 py-2 rounded-md text-sm">
             Add New
             </button>
         </div>
 
             
-        <div className="flex gap-4 mb-6">
+        <div className="flex gap-4 ml-3 mb-6">
             <button className="px-4 py-2 border rounded-md text-sm bg-white">
             Add Filter
             </button>

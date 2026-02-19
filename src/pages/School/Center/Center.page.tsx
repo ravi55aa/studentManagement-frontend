@@ -12,6 +12,7 @@ import { setCenters,toggleCenterLoading } from "@/utils/Redux/Reducer/centerRedu
 import { storeAddress } from "@/utils/Redux/Reducer/address.reducer";
 import { IAddress } from "@/interfaces/IRegister";
 import Swal from "sweetalert2";
+import { deleteSwal } from "@/utils/swal";
 //import { useAppNavigate } from "@/hooks/navigate.hook";
 
 
@@ -74,14 +75,7 @@ const CentersPage = () => {
 
     const handleDelete = async(id: string) => {
 
-        const result = await Swal.fire({
-            title: "Are you sure?",
-            text: "This action cannot be undone!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes, delete it",
-            cancelButtonText: "Cancel",
-        });
+        const result = await deleteSwal();
 
         if (!result.isConfirmed) return;
 

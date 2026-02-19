@@ -8,6 +8,7 @@ import { courseValSchema,courseFormSchema } from "@/validation/school.validator"
 import { _useFormatDateForInput } from "@/hooks/useDateFormata";
 import {  IBatches } from "@/interfaces/ISchool";
 import { ICourseForm } from "./Course.add.page";
+import { CourseRoute } from "@/constants/routes.contants";
 
 /* ===================== TYPES ===================== */
 
@@ -61,7 +62,7 @@ const CourseEditPage = () => {
     useEffect(()=>{
         const fetchCourse=async()=>{
             const config:HandleApiOptions<null>={
-                endPoint:`/school/academic/courses/${id}`,
+                endPoint:`${CourseRoute.get}/${id}`,
                 method:"get",
                 headers:{role:"school"},
             }
@@ -244,7 +245,7 @@ const CourseEditPage = () => {
 
         const config: HandleApiOptions<FormData> = {
             method: "put",
-            endPoint: `/school/academic/courses/edit/${id}`,
+            endPoint: `${CourseRoute.edit}/${id}`,
             payload: formData,
             headers: { role: "school" },
         };

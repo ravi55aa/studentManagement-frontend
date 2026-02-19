@@ -3,8 +3,7 @@ import { SquareChevronRight } from "lucide-react";
 import { generateFeeCode } from "@/hooks/useGeneratecode";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 
-import InputField from "@/components/inputField"; 
-import { Select } from "@/components/Select"; 
+import {InputField,Select} from "@/components"; 
 import { Section } from "@/components/Teacher/Section"; 
 import { ActionBar } from "@/components/Teacher/ActionBar";
 import { useAppSelector } from "@/hooks/useStoreHooks";
@@ -14,18 +13,24 @@ import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { toast } from "react-toastify";
 import { feeSchema } from "@/validation/school.validator";
 
+
+
+
 export default function AddFeePage() {
 
     const { goBack } = useAppNavigate();
     const courses=useAppSelector((state)=>state.courses.courses);
     const center=useAppSelector((state)=>state.center.centers);
+    const subjects=useAppSelector((state)=>state.schoolSubject.subjects);
+    const annuals=useAppSelector((state)=>state.schoolYear.years);
 
     const [appliesToObj,setApplies2Obj]=useState({
-        "Course":courses,
-        "School":courses,
-        "Exam"  :courses,
-        "Center":center
+        "Course":courses, 
+        "Exam"  :subjects,
+        "Center":center,
+        "Annual":annuals
     });
+    
 
     const [form, setForm] = useState({
         name: "",
@@ -142,6 +147,7 @@ export default function AddFeePage() {
         const res=await handleApi(config);
         
         if(!res.success){
+            setApplies2Obj((prev)=>({...prev,School:courses}));
             return res.success;
         }
 

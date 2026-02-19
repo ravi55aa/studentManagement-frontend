@@ -467,9 +467,8 @@ export const passwordSchema = z
     });
     
 
+
 //************ FEES ************//
-
-
 /* -------------AUTO REMINDER-------------------- */
 
 export const autoReminderSchema = z
@@ -522,6 +521,7 @@ export const feeSchema = z
 
         totalAmount: z.coerce
         .number({message:"Total capacity value is required"})
+        .max(1000000,"Total amount cannot exceed 1L")
         .positive("Amount must be greater than 0"),
         
         dueDate: z.preprocess(

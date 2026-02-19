@@ -10,8 +10,8 @@ import { useEffect, useState }
     from "react";
 import { HandleApiOptions,handleApi }
 from "@/api/global.api";
-import InputField 
-    from "@/components/inputField";
+import {InputField} 
+    from "@/components";
 import { addCenter_Form_Fields, 
     inputStyleRegisterSchoolAddress, 
     school_Register_SchemaFor_Address 
@@ -65,7 +65,7 @@ const EditCenter = () => {
             const res=await handleApi<null,ICenterForm>(config);
 
             if(!res.success){
-                setUtils({error:res.data?.message || res.data?.error,openAddress:false});
+                setUtils({error:"Center Edit error" ,openAddress:false});
             }
 
             const subjectDoc=res?.data?.data;
@@ -145,8 +145,8 @@ const EditCenter = () => {
         e.preventDefault();
 
         //validation
-        const isValid=handleValidationOF(centerSchema,form);
-        if(!isValid.success) return isValid.success;
+        //const isValid=handleValidationOF(centerSchema,form);
+        //if(!isValid.success) return isValid.success;
 
         //api call
         const config:HandleApiOptions<ICenterForm>={

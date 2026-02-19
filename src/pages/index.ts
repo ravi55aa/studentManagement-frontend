@@ -41,7 +41,9 @@ export {default as "AcademicSubjectsEdit"} from "./School/Academic/Subject.edit.
 export {default as "AcademicCourses"} from "./School/Academic/Course/Courses.page";
 export {default as "AcademicCoursesAdd"} from "./School/Academic/Course/Course.add.page";
 export {default as "AcademicCoursesEdit"} from "./School/Academic/Course/Course.edit";
-export {default as "Notifications"} from "@/components/Notification/writeNotification.page";
+
+export {default as "AddNotifications"} from "@/components/Notification/writeNotification.page";
+export {default as "Notifications"} from "@/components/Notification/Notification";
 
 export {default as "Teachers"} from "./Teacher/Teacher.main.page";
 export {default as "AddTeachers"} from "./Teacher/Add.Teacher.page";
@@ -49,6 +51,8 @@ export {default as "AddTeachers"} from "./Teacher/Add.Teacher.page";
 
 export {default as "Fees"} from "./School/Fees/Fees";
 export {default as "AddFees"} from "./School/Fees/Fees.Add";
+export {default as "EditFees"} from "./School/Fees/Fees.Edit";
+export {default as "FeesStudentsList"} from "./School/Fees/fee.students";
 
 
 

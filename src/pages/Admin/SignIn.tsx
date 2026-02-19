@@ -1,11 +1,3 @@
-/**
- * If(User not found) show label 
- * show error message in <span>
- * store user password as bcrypt
- * while login check user with both email+password
- */
-
-
 import React, { useState } 
     from "react";
 import { handleAdminSignIn } 

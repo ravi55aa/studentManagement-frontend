@@ -3,6 +3,9 @@ import { toast } from "react-toastify";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useSocket } from "@/hooks/useAppContext";
+import { Section } from "../Teacher/Section";
+import { ActionBar } from "../Teacher/ActionBar";
+import {InputField,Select} from "@/components";
 
 export default function AddNotificationPage() {
 
@@ -112,93 +115,75 @@ export default function AddNotificationPage() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md space-y-6">
+        <div className="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-md">
 
-        <h2 className="text-xl font-semibold">
-            Send Notification
-        </h2>
+        <Section title="Send Notification">
 
-        {/* Type */}
-        <div>
-            <label className="block text-sm mb-1">
-            Type
-            </label>
-            <select
-            name="type"
-            value={form.type}
-            onChange={handleChange}
-            className="w-full border rounded-md p-2"
-            >
-            <option value="GENERAL">General</option>
-            <option value="ALERT">Alert</option>
-            <option value="REMINDER">Reminder</option>
-            <option value="ANNOUNCEMENT">Announcement</option>
-            <option value="SYSTEM">System</option>
-            </select>
-        </div>
+            <div className="grid md:grid-cols-2 gap-6">
 
-        {/* Title */}
-        <div>
-            <label className="block text-sm mb-1">
-            Title
-            </label>
-            <input
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            className="w-full border rounded-md p-2"
+            <Select
+                label="Type"
+                name="type"
+                value={form.type}
+                onChange={handleChange}
+                options={[
+                { label: "General", value: "GENERAL" },
+                { label: "Alert", value: "ALERT" },
+                { label: "Reminder", value: "REMINDER" },
+                { label: "Announcement", value: "ANNOUNCEMENT" },
+                { label: "System", value: "SYSTEM" },
+                ]}
             />
-        </div>
 
-        {/* Message */}
-        <div>
-            <label className="block text-sm mb-1">
-            Message
-            </label>
-            <textarea
-            name="message"
-            value={form.message}
-            onChange={handleChange}
-            rows={4}
-            className="w-full border rounded-md p-2"
+            <InputField
+                label="Title"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                placeholder="Enter notification title"
             />
-        </div>
 
-        {/* Optional Link */}
-        <div>
-            <label className="block text-sm mb-1">
-            Link (optional)
-            </label>
-            <input
-            name="link"
-            value={form.link}
-            onChange={handleChange}
-            className="w-full border rounded-md p-2"
+            <div className="md:col-span-2">
+                <label className="block text-sm mb-1">Message</label>
+                <textarea
+                name="message"
+                value={form.message}
+                onChange={handleChange}
+                rows={4}
+                className="w-full border rounded-md p-2 focus:ring-2 focus:ring-green-600 outline-none"
+                placeholder="Enter message"
+                />
+            </div>
+
+            <InputField
+                label="Link (Optional)"
+                name="link"
+                value={form.link}
+                onChange={handleChange}
+                placeholder="https://example.com"
             />
-        </div>
 
-        {/* Optional Attachment */}
-        <div>
-            <label className="block text-sm mb-1">
-            Attachment URL (optional)
-            </label>
-            <input
-            name="attachmentUrl"
-            value={form.attachmentUrl}
-            onChange={handleChange}
-            className="w-full border rounded-md p-2"
+            <InputField
+                label="Attachment URL (Optional)"
+                name="attachmentUrl"
+                value={form.attachmentUrl}
+                onChange={handleChange}
+                placeholder="Attachment link"
             />
-        </div>
 
-        <div className="flex justify-end">
+            </div>
+
+        </Section>
+
+        <ActionBar>
             <button
             disabled={loading}
             onClick={handleSubmit}
             className="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 disabled:opacity-50"
             >
-            {loading ? "Sending..." : "Send"}
+            {loading ? "Sending..." : "Send Notification"}
             </button>
-        </div>
+        </ActionBar>
 
         </div>
     );

@@ -1,7 +1,4 @@
-// list the Batches and Year
 
-import InputField from 
-    "@/components/inputField";
 import { schoolSubjectSchema } 
     from "@/validation/school.validator";
 import { handleValidationOF } 
@@ -13,9 +10,10 @@ import { HandleApiOptions,handleApi }
 import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import { toast } from "react-toastify";
 import {useAppNavigate} from "@/hooks/useNavigate.hook";
-//import { toggleBatchLoading } from "@/utils/Redux/Reducer/batchReducer";
+
 import { toggleAcademicLoading } from "@/utils/Redux/Reducer/schoolYearReducer";
-import { Select } from "@/components/Select";
+import { Select,InputField } from "@/components";
+import { SubjectRoute } from "@/constants/routes.contants";
 
 
 enum subjectType {
@@ -23,12 +21,7 @@ enum subjectType {
     secondary="practical",
     both="both"
 }
-// enum subjectLevel {
-//     primary="primary", 
-//     secondary="secondary", 
-//     higher_secondary="higher-secondary", 
-//     degree="degree"
-// }
+
 
 
 const AddSubject = () => {
@@ -154,7 +147,7 @@ const AddSubject = () => {
         //api.call()
         const config:HandleApiOptions<object>={
             method:"post",
-            endPoint:"/school/academic/subjects/add",
+            endPoint:SubjectRoute.add,
             payload:formData
         }
         
