@@ -13,7 +13,7 @@ export const teacherDesignationOptions = [
     { label: "Teacher", value: "teacher" },
     { label: "Assistant Teacher", value: "assistant_teacher" },
     { label: "Head of Department", value: "head_of_department" },
-    { label: "Head Master", value: "head_master" },
+    { label: "Head Master", value: "head_Master" },
 ];
 
 export const department = [

@@ -1,8 +1,8 @@
-//!validation is pending
+//validation is pending
 
 
 
-import { addressValidate, centerSchema } 
+import { addressValidate } 
     from "@/validation/school.validator";
 import { handleValidationOF } 
     from "@/validation/validateFormData";
@@ -23,6 +23,7 @@ import { ICenterForm } from "@/interfaces/ISchool";
 import { IAddress } from "@/interfaces/IRegister";
 import { useAppHandleInputChange as _useAppHandleInputChange } 
     from "@/hooks/useHandleInputChange"; 
+import { useAppSelector } from "@/hooks/useStoreHooks";
 
 
 
@@ -48,6 +49,8 @@ const EditCenter = () => {
                             zip: "",
                                 country: 'india',
     });
+    const teachersStore=useAppSelector((state)=>state.teacher.bio);
+    const adminReduxStore=useAppSelector((state)=>state.currentUser.user);
 
     const {id}=useParams();
     const {goBack,goToCenter}=useAppNavigate();
@@ -258,9 +261,12 @@ const EditCenter = () => {
                 className={inputStyleRegisterSchoolAddress}
                 >
                 <option value="">Select admin</option>
-                <option value="1">Admin One</option>
-                <option value="2">Admin Two</option>
-                <option value="692ea85eafeeac6f247ad278">Head</option>
+                <option value={adminReduxStore.id}>Admin</option>
+                {
+                    teachersStore.map((teacher,id)=>{
+                        return (<option key={id} value={teacher._id}>{teacher.firstName} {teacher.lastName}</option>)
+                    })
+                }
                 </select>
                 <span className="ps-2 text-red-500" id="headInCharge"></span>
             </div>

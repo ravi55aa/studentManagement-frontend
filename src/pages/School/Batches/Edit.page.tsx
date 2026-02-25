@@ -8,20 +8,43 @@ import { IBatches } from "@/interfaces/ISchool";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { _useFormatDateForInput } from "@/hooks/useDateFormata";
 import {InputField} from "@/components";
+import { toast } from "react-toastify";
+import { ITeacherBio } from "@/interfaces/ITeacher";
 
 const EditBatch = () => {
     const [form, setForm] = useState({
         name: "",
         code: "",
         center: "",
-        counselor: "Murali Manohar",
+        counselor: "",
         startDate: "",
         endDate: "",
+        modelType:"School",
         isActive: true,
     });
 
+    const [unAssignedTeachers,setUnAssignedTeachers]=useState<ITeacherBio[]|[]>([]);
+
+
+
     const {id}=useParams();
     const {goBack}=useAppNavigate();
+
+    useEffect(()=>{
+        (async()=>{
+            const config:HandleApiOptions<null>={
+                        method:"get",
+                        endPoint:"/teacher/all/unAssigned",
+                        payload:null,
+                        headers:{role:"School"}
+                }
+
+            const res = await handleApi<null,ITeacherBio[]>(config);
+            const teachers=res.data.data
+            setUnAssignedTeachers(teachers);
+            return true;
+        })();
+    },[]);
 
     useEffect(()=>{
         const fetchBatchById=async()=>{
@@ -31,23 +54,23 @@ const EditBatch = () => {
                 headers:{role:"School"}
             }
 
-            const res=await handleApi<null,Partial<IBatches>>(config);
+            const res=await handleApi<null,IBatches>(config);
             
             const batchData=res?.data?.data;
-            console.log(batchData);
 
             setForm({
                 name:batchData?.name ||"",
+                modelType:batchData?.modelType ||"School",
                 code:batchData?.code || "",
                 center:batchData?.center|| "" ,
-                counselor: "Murali Manohar",
+                counselor: batchData?.batchCounselor,
                 startDate:_useFormatDateForInput(batchData?.schedule.startTime) || "",
                 endDate:_useFormatDateForInput(batchData?.schedule.endTime) || "",
                 isActive:batchData?.status=="active" ?true:false,
             });
         }
         fetchBatchById();
-    },[]);
+    },[id]);
 
     const [error, setError] = useState<string | null>(null);
     //const batchReduxStore=useAppSelector((state)=>state.batch);
@@ -75,6 +98,10 @@ const EditBatch = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if(form.center!=='School'){
+            setForm((prev)=>({...prev,modelType:'Centers'}));
+        }
+
         const isValid=handleValidationOF(batchSchema,form);
         if(!isValid.success){
             console.log("error",isValid.error);
@@ -89,10 +116,14 @@ const EditBatch = () => {
             headers:{role:"school"}
         }
 
-        await handleApi(config);
+        const res=await handleApi(config);
+        if(!res.success){
+            toast.error(res.error.message);
+            return res.success;
+        }
 
-        setError(null);
-        goBack();
+        toast.success(res.data.message);
+        setError(null); goBack();
         return true;
     };
 
@@ -122,19 +153,21 @@ const EditBatch = () => {
             {/* Batch Name */}
             <InputField 
                 type="string" 
-                value={form.name} 
+                name='name' 
                 onChange={handleChange} 
                 label='Batch Name *'
                 placeholder='e.g. 6 A'
+                value={form.name} 
             />
             
             {/* Batch Code */}
             <InputField 
                 type="string" 
-                value={form.code} 
+                name="code"
                 onChange={handleChange} 
                 label='Batch Code *'
                 placeholder='e.g. CODE12'
+                value={form.code} 
             />
 
 
@@ -150,6 +183,7 @@ const EditBatch = () => {
                 className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
                 >
                 <option value="">Select center</option>
+                <option value='School'>Main-School</option>
                 {centerReduxStore.centers?.map((batch)=>{
                     return (<option value={batch?._id}>{batch?.name}</option>)
 
@@ -159,9 +193,10 @@ const EditBatch = () => {
             </div>
 
             {/* Batch Counselor */}
+
             <div>
                 <label className="block text-sm font-medium mb-1">
-                Batch Counselor
+                Batch Counselor - (List of all available teachers from chosen 'center')
                 </label>
                 <select
                 name="counselor"
@@ -170,15 +205,21 @@ const EditBatch = () => {
                 className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
                 >
                 <option value="">Select counselor</option>
-                <option value="1">Kristin Watson</option>
-                <option value="2">Jane Cooper</option>
+                {unAssignedTeachers?.map((counselor:ITeacherBio)=>{
+                    return (
+                        <option value={counselor?._id}>
+                            {counselor?.firstName} {counselor?.lastName}
+                        </option>
+                    )
+                })}
                 </select>
-                <span id="counselor" className="errorDisplay text-sm text-red-500"> </span>
+                <span id="counselor" className="text-red-500 errorDisplay"></span>
             </div>
 
             {/* Start Date */}
             <InputField 
-                type="date" 
+                type="date"
+                name='startDate' 
                 value={form.startDate} 
                 onChange={handleChange} 
                 label='Start Date *'
@@ -188,6 +229,7 @@ const EditBatch = () => {
             {/* End Date */}
             <InputField 
                 type="date" 
+                name='endDate'
                 value={form.endDate} 
                 onChange={handleChange} 
                 label='End Date *'

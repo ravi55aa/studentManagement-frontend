@@ -21,8 +21,8 @@ const yearSlice=createSlice({
         storeSchoolAcademicYears(state,action:PayloadAction<IAcademicYear[]>){
             state.years=action.payload;
         },
-        toggleAcademicLoading(state){
-            state.loading=state.loading?false:true;
+        toggleAcademicLoading(state,action){
+            state.loading=action.payload;
         },
     }
 });

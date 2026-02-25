@@ -14,6 +14,8 @@ import {useAppNavigate} from "@/hooks/useNavigate.hook";
 import { toggleAcademicLoading } from "@/utils/Redux/Reducer/schoolYearReducer";
 import { Select,InputField } from "@/components";
 import { SubjectRoute } from "@/constants/routes.contants";
+import { department_Array } from "@/constants/deparment";
+import { RadioGroup } from "@/components/Teacher";
 
 
 enum subjectType {
@@ -36,7 +38,7 @@ const AddSubject = () => {
         department: "",
         //level: "" as subjectLevel,
         academicYear: "",
-        batchesToFollow: [] as string[],
+        //batchesToFollow: [] as string[],
         description: "",
         referenceBooks: [] as File[],
         status: "active",
@@ -45,7 +47,7 @@ const AddSubject = () => {
     const dispatch=useAppDispatch();
 
     const [error, setError] = useState<string | null>(null);
-    const batches=useAppSelector((state)=>state.batch);
+    //const batches=useAppSelector((state)=>state.batch);
     const year=useAppSelector((state)=>state.schoolYear);
 
 
@@ -66,18 +68,18 @@ const AddSubject = () => {
 
     };
 
-    const handleBatchToggle = (batchId: string) => {
-    setForm((prev) => {
-        const exists = prev.batchesToFollow.includes(batchId);
+    // const handleBatchToggle = (batchId: string) => {
+    // setForm((prev) => {
+    //     const exists = prev.batchesToFollow.includes(batchId);
 
-        return {
-        ...prev,
-        batchesToFollow: exists
-            ? prev.batchesToFollow.filter((id) => id !== batchId)
-            : [...prev.batchesToFollow, batchId],
-        };
-    });
-    };
+    //     return {
+    //     ...prev,
+    //     batchesToFollow: exists
+    //         ? prev.batchesToFollow.filter((id) => id !== batchId)
+    //         : [...prev.batchesToFollow, batchId],
+    //     };
+    // });
+    // };
 
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,9 +112,10 @@ const AddSubject = () => {
     };
 
 
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(toggleAcademicLoading());
+        dispatch(toggleAcademicLoading(true));
         
         //validate
         const payload={
@@ -126,10 +129,9 @@ const AddSubject = () => {
         
         if(!validation.success){
             console.log("The validation. Error",validation.error);
-            dispatch(toggleAcademicLoading());
+            dispatch(toggleAcademicLoading(false));
             return false;
         }
-        console.log("@subject.add.page",payload)
 
         setError(null);
 
@@ -155,7 +157,7 @@ const AddSubject = () => {
         
         if(!response.success) return response.success;
         
-        dispatch(toggleAcademicLoading());
+        dispatch(toggleAcademicLoading(false));
         toast.success('New Subject Added',{draggable:true,});
         goBack();
 
@@ -253,14 +255,6 @@ const AddSubject = () => {
                 onChange={handleChange}
             />
 
-            {/* Department */}
-            <InputField
-                label="Department"
-                name="department"
-                value={form.department}
-                onChange={handleChange}
-            />
-
             {/* Level */}
             {/* <Select
                 label="Level"
@@ -293,6 +287,14 @@ const AddSubject = () => {
             </select>)}
             </div>
 
+            {/* Department */}
+            <RadioGroup
+            label="Department"
+            options={department_Array}
+            name="department"
+            onChange={handleChange}
+            />
+
 
             </div>
 
@@ -315,7 +317,7 @@ const AddSubject = () => {
             {/* ------------------- combined ------------------- */}
             <div className="flex justify-around max-h-64 overflow-y-scroll">
             {/* ---------- Choose Batches ---------- */}
-                <div className="mt-6">
+                {/* <div className="mt-6">
                 <label className="block text-sm font-medium mb-2">
                     Choose Batches
                 </label>
@@ -351,7 +353,7 @@ const AddSubject = () => {
                     No batches selected
                     </p>
                 )}
-                </div>
+                </div> */}
 
 
             {/* Reference Books */}
@@ -413,7 +415,7 @@ const AddSubject = () => {
                 type="submit"
                 className="px-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
             >
-                {year.loading? "Adding....": "Save Subject"}
+                {"Save Subject"}
             </button>
             </div>
         </form>

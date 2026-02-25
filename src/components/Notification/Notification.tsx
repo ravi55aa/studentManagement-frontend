@@ -6,7 +6,8 @@ import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { toast } from "react-toastify";
 import { INotification } from "@/types/types";
 import { storeNotification } from "@/utils/Redux/Reducer/notifications";
-
+import { Link } from "react-router-dom";
+import { NotificationRoutes } from "@/constants/routes.contants";
 
 export default function NotificationListPage() {
 
@@ -15,17 +16,16 @@ export default function NotificationListPage() {
     const notifications: INotification[] = useAppSelector(
         (state) => state.notifications.notifications
     ) || [];
-
     
     /**
-         * Fetch all notifications
+     * Fetch all notifications
     */
         useEffect(()=>{
                 (async()=>{
                     const config:HandleApiOptions<null>=
                         {
                             method:"get",
-                            endPoint:"/notifications/get-all",
+                            endPoint:NotificationRoutes.get_All,
                             payload:null,
                             headers:{role:"School"}
                         }
@@ -33,7 +33,7 @@ export default function NotificationListPage() {
                     const res=await handleApi<null,INotification[]>(config);
                     
                     if(!res.success){
-                        toast.warn(res.data.error);
+                        toast.warn(res.error.message);
                         return;
                     }
     
@@ -48,6 +48,12 @@ export default function NotificationListPage() {
 
     return (
         <div className="max-w-5xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-md">
+
+        <button className="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 disabled:opacity-50 mb-2">
+        <Link to='add'>
+        Add New
+        </Link>
+        </button>
 
         <Section title="Notifications">
 
@@ -86,7 +92,7 @@ function NotificationCard({
         message,
         link,
         createdAt,
-        isRead,
+        isRead=true,
     } = notification;
 
     return (

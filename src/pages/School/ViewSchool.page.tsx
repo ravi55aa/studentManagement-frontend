@@ -105,7 +105,7 @@ const SchoolSettingsPage = () => {
                         method:"get",
                         endPoint:schoolRoute.viewSchool,
                         payload:null,
-                        headers:{role:"school"}
+                        headers:{role:"School"}
                     }
 
                 const res= await handleApi<null,ISubjectReducer>(config);
@@ -151,7 +151,6 @@ const SchoolSettingsPage = () => {
     },[dispatch,loading])
 
 
-
     /**
      * School_Meta  
     */
@@ -176,7 +175,7 @@ const SchoolSettingsPage = () => {
             method: "patch",
             endPoint: `${schoolRoute.updateMeta}/${id}`,
             payload: formData,
-            headers:{role:"school"},
+            headers:{role:"School"},
         }
 
         const res=await handleApi<object,null>(config);
@@ -266,7 +265,7 @@ const SchoolSettingsPage = () => {
                 method:"put",
                 endPoint:`${AddressRoute.edit}/${id}`,
                 payload:form,
-                headers:{role:"school"}
+                headers:{role:"School"}
             }
             const res=await handleApi<IAddress,null>(config);
             
@@ -292,13 +291,16 @@ const SchoolSettingsPage = () => {
                 method:"put",
                 endPoint:`${DocumentRoute.edit}/${id}`,
                 payload:form,
-                headers:{role:"school"}
+                headers:{role:"School"}
             }
             const res=await handleApi<IAddress,null>(config);
             
-            if(!res.success){return res.success};
+            if(!res.success){
+                toast.error(res.error.message);
+                return res.success
+            };
             
-            toast.success("Edited the address successfully");
+            toast.success(res.data.message);
             setUtils((prev)=>({...prev, isOpen:false}));
             //need to refreshThePage
             return res.success;

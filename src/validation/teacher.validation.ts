@@ -66,15 +66,13 @@ export const teacherAssignmentSchema = z.object({
         .optional(),
 
     assignedSubjects: z
-        .array(z.string())
-        .min(1, "At least one subject must be assigned").optional(),
+        .array(z.string()).optional(),
 
     designation: z
         .nativeEnum(TeacherDesignation).optional(),
 
     department: z
-        .array(z.nativeEnum(EDepartment))
-        .min(1, "At least one department is required").optional(),
+        .array(z.nativeEnum(EDepartment)).optional(),
 
     dateOfJoining: z
         .coerce
@@ -85,4 +83,25 @@ export const teacherAssignmentSchema = z.object({
     .coerce
     .date()
     .nullable(),
+}).superRefine((data, ctx) => {
+
+    if (data.designation !==  TeacherDesignation.Head_Master) {
+        
+        if (!data.department) {
+        ctx.addIssue({
+            path: ["department"],
+            code: z.ZodIssueCode.custom,
+            message: "Department is required",
+        });
+        }
+
+        if (!data.assignedSubjects || data.assignedSubjects.length === 0) {
+        ctx.addIssue({
+            path: ["assignedSubjects"],
+            code: z.ZodIssueCode.custom,
+            message: "Subjects to handover is required",
+        });
+        }
+    }
+
 });

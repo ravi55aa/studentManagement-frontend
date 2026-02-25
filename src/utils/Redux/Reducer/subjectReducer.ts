@@ -21,8 +21,8 @@ const subjectSlice=createSlice({
         storeSchoolAcademicSubjects(state,action:PayloadAction<IAcademicSubject[]>){
             state.subjects=action.payload;
         },
-        toggleAcademicSubLoading(state){
-            state.loading=state.loading?false:true;
+        toggleAcademicSubLoading(state,action){
+            state.loading=action.payload;
         },
     }
 });

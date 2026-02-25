@@ -33,7 +33,7 @@ const AcademicYearsPage = () => {
                 dispatch(storeSchoolAcademicYears(fetchData.data.data));
                 setError("");
             })()
-        },[loading])
+        },[])
 
 
     /* ---------- Filtering ---------- */
@@ -47,7 +47,7 @@ const AcademicYearsPage = () => {
     /* ---------- Handlers ---------- */
     const handleDelete = async(id: string) => {
 
-        dispatch(toggleAcademicLoading());
+        dispatch(toggleAcademicLoading(true));
 
         const result = await Swal.fire({
                     title: "Are you sure?",
@@ -58,7 +58,7 @@ const AcademicYearsPage = () => {
                 });
         
         if(!result.isConfirmed){
-            dispatch(toggleAcademicLoading());
+            dispatch(toggleAcademicLoading(false));
             return;
         }
 
@@ -76,7 +76,7 @@ const AcademicYearsPage = () => {
         }
         
         setError("");
-        dispatch(toggleAcademicLoading());
+        dispatch(toggleAcademicLoading(false));
         return true;
     };
 

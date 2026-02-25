@@ -175,9 +175,9 @@ const CentersPage = () => {
                 <td className="px-4 py-3">{center.code}</td>
                 <td className="px-4 py-3">
                 {
-                    getAddressById(center._id)[0]?.city 
+                    getAddressById(center._id)?.[0]?.city 
                     +", "+ 
-                    getAddressById(center._id)[0]?.country
+                    getAddressById(center._id)?.[0]?.country
                 }
                 </td>
                 <td className="px-4 py-3">{center?.currentStrength}</td>

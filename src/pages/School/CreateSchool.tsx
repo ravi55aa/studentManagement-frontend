@@ -10,8 +10,10 @@ import { schoolMetaDataValidate }
     from "@/validation/school.validator";
 import { handleValidationOF } 
     from "@/validation/validateFormData";
-import { handleMetaDataCreateSchoolApi } 
-    from "@/api/school.api";
+// import { handleMetaDataCreateSchoolApi } 
+//     from "@/api/school.api";
+import { toast } from "react-toastify";
+import { HandleApiOptions,handleApi } from "@/api/global.api";
 
 
 
@@ -47,9 +49,7 @@ function CreateSchool() {
         spanTag.textContent = "";
 
         if(name=="profile"){
-            return setFormData(
-                (prev)=>
-                    ({...prev,[name]:e.target.files[0]}));
+            return setFormData((prev)=> ({...prev,[name]:e.target.files[0]}));
         }
 
         return setFormData((prev)=>({...prev,[name]:value}));
@@ -67,16 +67,25 @@ function CreateSchool() {
             if(!isValidated.success)
                 {return isValidated.success;}
 
-            
-            const res= 
-                await handleMetaDataCreateSchoolApi(formData);
-            
-            if(!res.success) return res.success;
+            const config:HandleApiOptions<object>={
+                endPoint:"/school/register",
+                method:'post',
+                payload:formData,
+                headers:{role:"Admin"}
+            }
 
+            const res=await handleApi(config);
+            
+            if(!res.success) 
+            {
+                toast.error(res.error.message)
+                return res.success;
+            }
+            
+            toast.success(res.data.message);
             navigate("/school/register/address");
             return res.success;
     }
-
 
 
     return (
@@ -146,7 +155,7 @@ function CreateSchool() {
             
             <p className="text-sm text-gray-600 mt-4">
             Already have an account?{" "}
-            <a href="/login" className="text-green-700 font-medium cursor-pointer">
+            <a href="/school/login" className="text-green-700 font-medium cursor-pointer">
                 Sign up
             </a>
             </p>

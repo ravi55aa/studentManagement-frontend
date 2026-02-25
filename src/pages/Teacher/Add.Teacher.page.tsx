@@ -61,7 +61,8 @@ const AddTeacherPage = () => {
         department: [] as EDepartment[],
         dateOfJoining: null,
         dateOfLeaving: null,
-        centerId: null,
+        center: null,
+        modelType: 'School',
     });
 
 
@@ -72,8 +73,6 @@ const AddTeacherPage = () => {
     const subjectStore=useAppSelector((state)=>state.schoolSubject);
     const centersReduxStore=useAppSelector((state)=>state.center);
     const yearStore=useAppSelector((state)=>state.schoolYear);
-
-
 
 
   /* ---------- handlers ---------- */
@@ -136,7 +135,10 @@ const AddTeacherPage = () => {
       });
     };
 
-    
+    /**
+     * 
+     *  HandleCreate Teacher Bio
+     */
     const handleCreateTeacherBio = async():Promise<boolean> => {
       const isValid=handleValidationOF(teacherBioFormSchema,basicForm);
       
@@ -209,12 +211,20 @@ const AddTeacherPage = () => {
     };
 
 
+
+    /**
+     * 
+     * Create Teacher Professional data
+     */
     const handleCreateTeacher= async() => {
 
         const teacherId=JSON.parse(localStorage.getItem("teacherId"));
         
-        const isValid=handleValidationOF(
-          teacherAssignmentSchema,professionalForm);
+        if(professionalForm.center!=='School'){
+            setProfessionalForm((prev)=>({...prev,modelType:'Centers'}));
+        }
+
+        const isValid=handleValidationOF(teacherAssignmentSchema,professionalForm);
 
         if(!isValid.success){
           return isValid.success;
@@ -231,11 +241,10 @@ const AddTeacherPage = () => {
         await handleApi<Partial<ITeacher>,Partial<ITeacher>>(config);
 
         if(!res.success){
-          toast.error("Error, updating professional data  Err:500");
-          console.log("@AddTeacher.page res",res);
-          return false;
+          toast.error(res.error.message);
+          return res.success;
         }
-
+        
         toast.success("Teacher Created successfully");
         
         //Remove stored local-storage data
@@ -353,12 +362,13 @@ const AddTeacherPage = () => {
                 Center *
                 </label>
                 <select
-                name="centerId"
-                value={professionalForm.centerId}
+                name="center"
+                value={professionalForm.center}
                 onChange={handleBasicChange}
                 className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
                 >
                 <option value="">Select center</option>
+                <option value='School'>School</option>
                 {centersReduxStore.centers?.map((batch)=>{
                     return   (
                     <option value={batch?._id}>{batch?.name}</option>
@@ -387,10 +397,9 @@ const AddTeacherPage = () => {
           }
         />
 
-
           {/* Subjects */}
           <CheckList
-            label="Assigned Subjects"
+            label="Available Subjects"
             items={subjectStore.subjects}
             type="checkbox"
             selected={professionalForm.assignedSubjects}

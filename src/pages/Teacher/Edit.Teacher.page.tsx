@@ -191,13 +191,13 @@ const EditTeacherProfessional = ({
         department: teacher.department || [],
         dateOfJoining: teacher.dateOfJoining?.split("T")[0],
         dateOfLeaving: teacher.dateOfLeaving?.split("T")[0],
-        centerId: teacher.centerId?._id,
+        center: teacher.center?._id,
+        modelType: teacher.modelType,
     });
 
     const subjectStore=useAppSelector((state)=>state.schoolSubject);
     const centersReduxStore=useAppSelector((state)=>state.center);
     const yearStore=useAppSelector((state)=>state.schoolYear);
-
 
     const handleBasicChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -232,6 +232,11 @@ const EditTeacherProfessional = ({
 
 
     const handleUpdateProfessional = async () => {
+
+        if(professionalForm.center!=='School'){
+            setForm((prev)=>({...prev,modelType:'Centers'}));
+        }
+
         const isValid = handleValidationOF(
         teacherAssignmentSchema,
         professionalForm
@@ -291,12 +296,13 @@ const EditTeacherProfessional = ({
                 Center *
                 </label>
                 <select
-                name="centerId"
-                value={professionalForm.centerId}
+                name="center"
+                value={professionalForm.center}
                 onChange={handleBasicChange}
                 className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
                 >
                 <option value="">Select center</option>
+                <option value='School'>School</option>
                 {centersReduxStore.centers?.map((batch)=>{
                     return   (
                     <option value={batch?._id}>{batch?.name}</option>

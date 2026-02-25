@@ -32,9 +32,7 @@ import { EmailVerify,OTP,PasswordReset } from "@/pages/Auth"
 import EditTeacherPage from "./pages/Teacher/Edit.Teacher.page";
 import CheckoutPage from "./components/Stripe.Checkout.page";
 import PaymentSuccess from "./components/Success.compo";
-
-
-
+import { ProtectedRoute, PublicRoute } from "./utils/protectedRoutes";
 
 
 
@@ -43,29 +41,29 @@ const App = () => {
   return (
     <div>
 
-      
 
     <ToastContainer position="top-right" autoClose={3000}/>
       <Routes>
-        <Route path="/" element={<HomePage/>} />
         <Route path="*" element={<NotFound/>} />
+
+        <Route element={<PublicRoute />}>
+        //*admin login
+          <Route path="/" element={<HomePage/>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        
+        </Route>
         
 
-        //*admin login
-        <Route path="/login" element={<Login/>}  />
-        <Route path="/register" element={<Register/>}  />
 
         //*password Reset
+        <Route path="/passwordReset" element={<PasswordReset/>}/>
         <Route path="/passwordReset/emailVerify" element={<EmailVerify/>}/>
         <Route path="/passwordReset/otp" element={<OTP/>}/>
-        <Route path="/passwordReset" element={<PasswordReset/>}/>
-
-        //*strip
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
 
 
-        //*school
+
+        //*school - login - register
         <Route path="/school/login" element={<SignInSchool/>}  />
 
         <Route path="/school/register" element={<CreateSchool/>}  />
@@ -73,8 +71,12 @@ const App = () => {
         <Route path="/school/register/uploadDocuments" element={<DocumentUpload/>}  />
         
 
+        //*strip
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
 
-
+        //*school - Dashboard
+        <Route element={<ProtectedRoute />}>
         <Route path="/school/dashboard" element={<Dashboard/>}  >
           <Route index element={<DashboardHome/>}  />
           <Route path="centers" element={<Centers/>}  />
@@ -117,6 +119,7 @@ const App = () => {
             <Route path="add" element={<AddNotifications/>}  />
           </Route>
 
+        </Route>
         </Route>
 
 

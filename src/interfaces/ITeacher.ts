@@ -31,7 +31,8 @@ export interface ITeacher {
     department: EDepartment[] | null;
     dateOfLeaving: Date | null;
     dateOfJoining: Date | null;
-    centerId: string | null;
+    center: string | null;
+    modelType:string|null;
 }
 
 

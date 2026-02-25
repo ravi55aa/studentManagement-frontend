@@ -55,5 +55,5 @@ export interface ISchoolFormData{
     password: string | null;
     reEnter: string | null;
     phone: string | null;
-    profile: string | null;
+    profile: File | null;
 }

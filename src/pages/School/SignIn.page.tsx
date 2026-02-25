@@ -66,7 +66,7 @@ const SignInSchool = () => {
             setError(res.error.message);
         }
 
-        const user={id:res.data._id,role:"Admin"};
+        const user={id:res.data.data.userId,role:"Admin"};
         dispatch(storeCurrentUser(user));
 
         navigate("/school/dashboard");

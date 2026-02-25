@@ -1,3 +1,7 @@
+// While selecting the counselor, 
+// They should be done from the according 'center '
+
+
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
@@ -6,6 +10,7 @@ import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import {InputField} from "@/components";
 import { ITeacherBio } from "@/interfaces/ITeacher";
+import { toast } from "react-toastify";
 
 
 const AddBatch = () => {
@@ -16,6 +21,7 @@ const AddBatch = () => {
         counselor: "Murali Manohar",
         startDate: "",
         endDate: "",
+        modelType:'School',
         isActive: true,
     });
     const [unAssignedTeachers,setUnAssignedTeachers]=useState<ITeacherBio[]|[]>([]);
@@ -31,7 +37,7 @@ const AddBatch = () => {
                             headers:{role:"School"}
                     }
     
-                const res= await handleApi<null,ITeacherBio[]>(config);
+                const res = await handleApi<null,ITeacherBio[]>(config);
                 const teachers=res.data.data
                 setUnAssignedTeachers(teachers);
                 return true;
@@ -65,6 +71,10 @@ const AddBatch = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if(form.center!=='School'){
+            setForm((prev)=>({...prev,modelType:'Centers'}));
+        }
+
         const isValid=handleValidationOF(batchSchema,form);
         if(!isValid.success) return isValid.success;
 
@@ -73,12 +83,19 @@ const AddBatch = () => {
             method:"post",
             endPoint:"/school/batches/add",
             payload:form,
-            headers:{role:"school"}
+            headers:{role:"School"}
         }
 
-        await handleApi(config);
-        goBack();
+        const res=await handleApi(config);
+        if(!res.success){
+            toast.error(res.data.error);
+            return res.success;
+        }
+
+        toast.success(res.data.message);
         setError("");
+        goBack();
+        return true;
     };
 
     return (
@@ -110,7 +127,7 @@ const AddBatch = () => {
                 type="string" 
                 value={form.name} 
                 onChange={handleChange} 
-                label='Batch Name *'
+                label='Batch *'
                 placeholder='e.g. 6 A'
                 name="name"
             />
@@ -120,7 +137,7 @@ const AddBatch = () => {
                 type="string" 
                 value={form.code} 
                 onChange={handleChange} 
-                label='Batch Code *'
+                label='Batch Code'
                 name="code"
                 placeholder='e.g. CODE12'
             />
@@ -138,8 +155,9 @@ const AddBatch = () => {
                 className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
                 >
                 <option value="">Select center</option>
-                {centersReduxStore.centers?.map((batch)=>{
-                    return (<option value={batch?._id}>{batch?.name}</option>)
+                <option value='School'>Main-School</option>
+                {centersReduxStore.centers?.map((center)=>{
+                    return (<option value={center?._id}>{center?.name}</option>)
 
                 })}
                 </select>
@@ -150,7 +168,7 @@ const AddBatch = () => {
             {/* Batch Counselor */}
             <div>
                 <label className="block text-sm font-medium mb-1">
-                Batch Counselor
+                Batch Counselor - (List of all available teachers from chosen 'center')
                 </label>
                 <select
                 name="counselor"
@@ -209,6 +227,7 @@ const AddBatch = () => {
             {/* Actions */}
             <div className="flex justify-end gap-4 mt-8">
             <button
+                onClick={goBack}
                 type="button"
                 className="px-6 py-2 border rounded-md text-sm text-gray-600 hover:bg-gray-100"
             >

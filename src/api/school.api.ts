@@ -1,4 +1,4 @@
-import { IAddress, ISchoolFormData } 
+import { IAddress } 
     from "@/interfaces/IRegister"
 import { axiosBaseURL } 
     from "@/config/axios.config"
@@ -20,21 +20,21 @@ export const returnErrorObj=(err)=>{
 
 
 
-export const handleMetaDataCreateSchoolApi = 
-    async (formData:ISchoolFormData):Promise<IResponse<null>>=>
-        {
-        try {
-            const res:IResponse<null> = 
-                await axiosBaseURL.post("/school/register",formData,
-                    { headers: { "role": "admin"}});
+// export const handleMetaDataCreateSchoolApi = 
+//     async (formData:ISchoolFormData):Promise<IResponse<null>>=>
+//         {
+//         try {
+//             const res:IResponse<null> = 
+               
                 
-            return res.data;
-        } catch(err){
-            console.error(err,{cause:err.message});
+//             return res.data;
+//         } catch(err){
+//             console.log("@school.api CatchBlock",'Somethig went error')
+//             console.error(err,{cause:err.message});
 
-            return returnErrorObj(err);
-        }
-    }
+//             return returnErrorObj(err);
+//         }
+//     }
 
 
 
@@ -79,7 +79,7 @@ export const handleDocsUploadCreateSchoolApi =
     export const handleSchoolSignIn=async(payload:object)=>{
         try{
 
-            const response=await axiosBaseURL.get("/school/register",{
+            const response=await axiosBaseURL.get("/school/login",{
                 params:payload,
                 headers:{role:"Admin"}
             });

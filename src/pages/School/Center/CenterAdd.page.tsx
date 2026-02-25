@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { useAppHandleInputChange as _useAppHandleInputChange } from "@/hooks/useHandleInputChange";
 import { IAddress } from "@/interfaces/IRegister";
+import { useAppSelector } from "@/hooks/useStoreHooks";
 
 
 export interface ICenterForm {
@@ -25,8 +26,9 @@ export interface ICenterForm {
     phone: string;
     email: string;
     headInCharge: string;
+    userModel: string;
     currentStrength?: string;
-    totalCapacity: string;
+    totalCapacity: number;
     type?: string;
     isMain: boolean;
     isActive: boolean;
@@ -39,23 +41,27 @@ const AddCenter = () => {
 
     const [form, setForm] = useState<ICenterForm>({
         name: "",
-            code: "",
-                phone: "",
-                    email: "",
-                        headInCharge: "",
-                        currentStrength: "",
-                    totalCapacity: "",
-            isMain: false,
+        code: "",
+        phone: "",
+        email: "",
+        headInCharge: "",
+        userModel: "Admin",
+        currentStrength: "",
+        totalCapacity: 0,
+        isMain: false,
         isActive: true,
     });
 
     const [formData,setFormData]=useState({
-                    street:"",
-                        city: "",
-                            state: "",
-                                zip: "",
-                                    country: null,
+        street:"",
+        city: "",
+        state: "",
+        zip: "",
+        country: null,
     });
+
+    const teachersStore=useAppSelector((state)=>state.teacher.bio);
+    const adminReduxStore=useAppSelector((state)=>state.currentUser.user);
 
     const [util, setUtils] = useState({error:"",openAddress:false});
     const {goToCenter,goBack}=useAppNavigate();
@@ -79,10 +85,21 @@ const AddCenter = () => {
     const handleSubmit = async (e: React.FormEvent):Promise<boolean>=> {
         e.preventDefault();
 
-        //validation
+        setForm((prev) => ({
+            ...prev,
+            totalCapacity: Number(prev.totalCapacity),
+        }));   
+
+        console.log("@centerAdd form",form)
+
         const isValid=handleValidationOF(centerSchema,form);
         
         if(!isValid.success) return isValid.success;
+
+        setForm((prev)=>({
+            ...prev,
+            userModel:prev.headInCharge==adminReduxStore.id?'Admin':'Teacher'
+        }))
 
         //api call
         const config:HandleApiOptions<ICenterForm>={
@@ -97,7 +114,6 @@ const AddCenter = () => {
 
         if(!res.success){
             setUtils({error:res.data?.message || res.data?.error,openAddress:false});
-            console.log("res success if faule");
             return res.success;
         }
 
@@ -111,7 +127,6 @@ const AddCenter = () => {
 
 
     /***** Center Address****/
-
     /**
      * 
      */
@@ -147,14 +162,6 @@ const AddCenter = () => {
             headers:{role:"school"},
         }
 
-        /**
-         * This config will go backend
-         * will start creating
-         * and "res" is how backend work with given data
-         * The res may fail, or may win 
-         * if win serve it, else 
-         * check the user_config or else backend work
-         */
         const res = await handleApi(config);
 
         if(!res.success){
@@ -174,7 +181,7 @@ const AddCenter = () => {
         <div className="p-6 bg-white min-h-screen">
 
         {/* Header */}
-        {!util.openAddress && <><h1 className="text-2xl font-semibold text-gray-800 mb-1 underline">
+        {!util?.openAddress && <><h1 className="text-2xl font-semibold text-gray-800 mb-1 underline">
             Add New Center
         </h1>
         <p className="text-sm text-gray-500 mb-6 underline">
@@ -217,8 +224,12 @@ const AddCenter = () => {
                 className={inputStyleRegisterSchoolAddress}
                 >
                 <option value="">Select admin</option>
-                <option value="1">Admin One</option>
-                <option value="2">Admin Two</option>
+                <option value={adminReduxStore.id}>{adminReduxStore.role}</option>
+                {
+                    teachersStore.map((teacher,id)=>{
+                        return (<option key={id} value={teacher._id}>{teacher.firstName} {teacher.lastName}</option>)
+                    })
+                }
                 </select>
                 <span className="ps-2 text-red-500" id="headInCharge"></span>
             </div>

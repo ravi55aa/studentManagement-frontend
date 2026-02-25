@@ -4,7 +4,7 @@ import { generateFeeCode } from "@/hooks/useGeneratecode";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 
 import InputField from "@/components/inputField"; 
-import { Select } from "@/components/Select"; 
+import { Select } from "@/components";
 import { Section } from "@/components/Teacher/Section"; 
 import { ActionBar } from "@/components/Teacher/ActionBar";
 import { useAppSelector } from "@/hooks/useStoreHooks";

@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { storeTeachers } from "@/utils/Redux/Reducer/teacher.reducer";
 import TeacherDetailsModal from "./ViewTeacher.page";
-
+import profileImg from "@/assets/profile_image.jpg";
 
 const TeachersListPage = () => {
 
@@ -20,7 +20,6 @@ const TeachersListPage = () => {
         setSelectedTeacher(teacher);
         setIsOpen(true);
     };
-
 
 
     /**
@@ -118,7 +117,9 @@ const TeachersListPage = () => {
                 >
                     <td className="px-4 py-3 flex items-center gap-3">
                     <img
-                        src={typeof teacher?.profilePhoto=="string" && teacher?.profilePhoto}
+                        src={typeof teacher?.profilePhoto=="string" 
+                            && 
+                            (teacher?.profilePhoto ?? profileImg) }
                         alt={teacher?.firstName}
                         className="w-8 h-8 rounded-full object-cover"
                     />

@@ -1,3 +1,4 @@
+
 import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { schoolAcademicYearSchema } from "@/validation/school.validator";
 import { handleValidationOF } from "@/validation/validateFormData";
@@ -43,6 +44,7 @@ const AddAcademicYear = () => {
         e.preventDefault();
 
         const isValid = handleValidationOF(schoolAcademicYearSchema,form);
+        console.log("@yearAdd.page form",form);
 
         if(!isValid.success){
             setError("Validation Error...");

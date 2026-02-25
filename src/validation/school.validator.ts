@@ -185,6 +185,8 @@ export const batchSchema = z.object({
         "Invalid end date"
         ),
 
+    modelType:z.string().default('School'),
+
     isActive: z.boolean(),
     })
     .refine(
@@ -224,10 +226,7 @@ export const schoolAcademicYearSchema = z
         .string()
         .min(2, "Code is required")
         .max(10, "Code is too long")
-        .regex(
-            /^[A-Z0-9]+$/,
-            "Code must be uppercase letters or numbers"
-        ),
+        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase (A-Z, 0-9, -, _)"),
 
         startDate: z
         .string()
@@ -261,7 +260,7 @@ export const schoolSubjectSchema = z
         code: z
         .string()
         .min(2, "Code is required")
-        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase"),
+        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase (A-Z, 0-9, -, _)"),
 
         className: z
         .string()
@@ -309,9 +308,9 @@ export const schoolSubjectSchema = z
         .string()
         .min(1, "Academic year is required"),
 
-        batchesToFollow: z
-        .array(z.string())
-        .min(1, "Select at least one batch"),
+        // batchesToFollow: z
+        // .array(z.string())
+        // .min(1, "Select at least one batch"),
 
         description: z
         .string()
@@ -352,8 +351,7 @@ export const courseValSchema = z.object({
     code: z
         .string()
         .min(2, "Course code is required")
-        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase"),
-
+        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase (A-Z, 0-9, -, _)"),
     academicYear: z
         .string("Academic Year is required else Default will be taken"),
 
@@ -406,7 +404,7 @@ export const courseValSchema = z.object({
         .array(z.string())
         .min(1, "Select at least one subject"),
 
-    batches: z
+    classes: z
         .array(z.string())
         .min(1, "Select at least one batch"),
 
@@ -425,6 +423,9 @@ export const courseValSchema = z.object({
         .url("Invalid syllabus URL")
         .optional()
         .or(z.literal("")),
+
+    modelType:z.string().default("School"),
+    center:z.string('Center is required'),
 
     attachments: z
     .array(

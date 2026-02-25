@@ -9,12 +9,12 @@ function RadioGroup(
         )=>void}
     ) {
     return (
-        <div>
-        <p className="text-sm font-medium mb-2">{label}</p>
-        <div className="flex gap-6">
+        <div className="border p-2 border-gray-300">
+        <p className="text-sm font-medium mb-2 underline">{label}</p>
+        <div className="grid grid-cols-3 gap-6">
             {options.map((o: string) => (
-            <label key={o} className="flex gap-2 text-sm">
-                <input type="radio" name={name} value={o} onChange={onChange} />
+            <label key={o} className="capitalize flex gap-2 text-sm">
+                <input type="radio"  name={name} value={o} onChange={onChange} />
                 {o}
             </label>
             ))}

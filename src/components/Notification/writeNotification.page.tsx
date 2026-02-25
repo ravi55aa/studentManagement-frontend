@@ -6,13 +6,17 @@ import { useSocket } from "@/hooks/useAppContext";
 import { Section } from "../Teacher/Section";
 import { ActionBar } from "../Teacher/ActionBar";
 import {InputField,Select} from "@/components";
+import { useAppNavigate } from "@/hooks/useNavigate.hook";
+import { NotificationRoutes } from "@/constants/routes.contants";
+
+
 
 export default function AddNotificationPage() {
 
     const socket=useSocket();
+    const {goBack}=useAppNavigate();
     
     console.log("Socket value:", socket);
-
     
     useEffect(()=>{
         if(!socket) {
@@ -83,7 +87,7 @@ export default function AddNotificationPage() {
         };
 
         const config:HandleApiOptions<object>={
-            endPoint: "/notification/new",
+            endPoint: NotificationRoutes.newAdd,
             method: "post",
             payload,
             headers:{role:"Admin"}
@@ -92,11 +96,11 @@ export default function AddNotificationPage() {
         const res = await handleApi(config);
 
         if (!res.success) {
-            toast.error("Failed to send notification");
+            toast.error(res.error.message);
             return;
         }
 
-        toast.success("Notification sent successfully");
+        toast.success(res.data.message);
 
         // Reset form
         setForm({
@@ -108,7 +112,7 @@ export default function AddNotificationPage() {
         });
 
         } catch (error) {
-            toast.error(`Something went wrong ${error}`);
+            toast.error(`NotificationWrong: ${error}`);
         } finally {
             setLoading(false);
         }
@@ -175,6 +179,17 @@ export default function AddNotificationPage() {
 
         </Section>
 
+        <div className="flex  gap-2 justify-end">
+        <ActionBar>
+            <button
+            disabled={loading}
+            onClick={goBack}
+            className=" px-6 py-2 rounded-md border disabled:opacity-50"
+            >
+            Back
+            </button>
+        </ActionBar>
+
         <ActionBar>
             <button
             disabled={loading}
@@ -184,6 +199,7 @@ export default function AddNotificationPage() {
             {loading ? "Sending..." : "Send Notification"}
             </button>
         </ActionBar>
+        </div>
 
         </div>
     );

@@ -5,24 +5,20 @@ export const forgotPassword={
     updatePassword:"/auth/forgot-password/updatePassword"
 }
 
-
 export const schoolRoute={
     viewSchool:"/school/data/fetch",
     updateMeta:"/school/update/meta",
     resetPassword:"/password/reset",
 }
 
-
 export const AddressRoute={
-    edit:"/address/edit/"
+    edit:"/address/edit"
 }
-
 
 export const DocumentRoute={
     document:"/documents",
     edit:"/documents/edit/",
 }
-
 
 export const CourseRoute={
     get:"/school/academic/courses",
@@ -30,13 +26,11 @@ export const CourseRoute={
     edit:"/school/academic/courses/edit",
 }
 
-
 export const SubjectRoute={
     get:"/school/academic/subjects",
     add:"/school/academic/subjects/add",
     edit:"/school/academic/subjects/edit",
 }
-
 
 export const YearRoute={
     get:"/school/academicYears",
@@ -44,3 +38,7 @@ export const YearRoute={
     edit:"/school/academicYears/edit",
 }
 
+export const NotificationRoutes={
+    get_All:'/notifications/get-all',
+    newAdd:'/notification/new',
+}

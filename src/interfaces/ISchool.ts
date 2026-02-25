@@ -34,6 +34,7 @@ export interface IBatches {
     status: string | null;
     course: string | null;
     center: string | null;
+    modelType:string,
     batchCounselor: string | ITeacherBio|null;
     schedule: {
         endTime: string | null;

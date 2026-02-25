@@ -18,6 +18,8 @@ import { toggleAcademicLoading } from "@/utils/Redux/Reducer/schoolYearReducer";
 import { toggleAcademicSubLoading } from "@/utils/Redux/Reducer/subjectReducer";
 import { IAcademicSubject } from "@/interfaces/ISchool";
 import { SubjectRoute } from "@/constants/routes.contants";
+import { RadioGroup } from "@/components/Teacher";
+import { department_Array } from "@/constants/deparment";
 
 enum subjectType {
     theory="theory",
@@ -40,7 +42,7 @@ const EditSubject = () => {
         type: "" as subjectType,
         //level: "" as subjectLevel ,
         academicYear: "",
-        batchesToFollow:  [] as string[],
+        // batchesToFollow:  [] as string[],
         description: "",
         referenceBooks: [] as File[],
         status: "active",
@@ -50,7 +52,6 @@ const EditSubject = () => {
     const dispatch=useAppDispatch();
 
     const [error, setError] = useState<string | null>(null);
-    const batches=useAppSelector((state)=>state.batch);
     const year=useAppSelector((state)=>state.schoolYear);
     const subjectStore=useAppSelector((state)=>state.schoolSubject);
 
@@ -58,7 +59,7 @@ const EditSubject = () => {
     useEffect(()=>{
         (async()=>{
 
-            dispatch(toggleAcademicSubLoading())
+            dispatch(toggleAcademicSubLoading(true))
             const config:HandleApiOptions<null>={
                         method:"get",
                         endPoint:`${SubjectRoute.get}/${id}`,
@@ -66,11 +67,11 @@ const EditSubject = () => {
                         headers:{role:"school"}
                 }
 
-            const res= await handleApi<null,null>(config);
+            const res= await handleApi<null>(config);
             const subject:Partial<IAcademicSubject>= res.data?.data;
             
             if(!res.success && !subject){
-                dispatch(toggleAcademicSubLoading());
+                dispatch(toggleAcademicSubLoading(false));
                 return res.success;
             };
 
@@ -83,7 +84,7 @@ const EditSubject = () => {
                 credits: subject?.credits ?? 0,
                 department: subject?.department ?? "",
                 academicYear: subject?.academicYear ?? "",
-                batchesToFollow: subject?.batchesToFollow ?? [],
+                // batchesToFollow: subject?.batchesToFollow ?? [],
                 description: subject?.description ?? "",
                 referenceBooks: [], //(files cannot be prefilled)
                 status: subject?.status ?? "active",
@@ -91,18 +92,18 @@ const EditSubject = () => {
                 type: subjectType?.[subject?.type] ,
             });
 
-            const batches_updated=subject.batchesToFollow.map((id:string)=>{
-                const followed=batches.batches.find((batch)=>batch._id==id);
+            // const batches_updated=subject.batchesToFollow.map((id:string)=>{
+            //     const followed=batches.batches.find((batch)=>batch._id==id);
 
-                if(followed){
-                    return followed.code;
-                }
-            })
-            setForm((prev)=>({...prev,batchesToFollow:batches_updated}));
+            //     if(followed){
+            //         return followed.code;
+            //     }
+            // })
+            // setForm((prev)=>({...prev,batchesToFollow:batches_updated}));
             
-            dispatch(toggleAcademicSubLoading()) 
+            dispatch(toggleAcademicSubLoading(false)) 
         })()
-    },[]);
+    },[id,dispatch]);
 
 
     /* ---------- Handlers ---------- */
@@ -122,18 +123,18 @@ const EditSubject = () => {
 
     };
 
-    const handleBatchToggle = (batchId: string) => {
-    setForm((prev) => {
-        const exists = prev.batchesToFollow.includes(batchId);
+    // const handleBatchToggle = (batchId: string) => {
+    // setForm((prev) => {
+    //     const exists = prev.batchesToFollow.includes(batchId);
 
-        return {
-        ...prev,
-        batchesToFollow: exists
-            ? prev.batchesToFollow.filter((id) => id !== batchId)
-            : [...prev.batchesToFollow, batchId],
-        };
-    });
-    };
+    //     return {
+    //     ...prev,
+    //     batchesToFollow: exists
+    //         ? prev.batchesToFollow.filter((id) => id !== batchId)
+    //         : [...prev.batchesToFollow, batchId],
+    //     };
+    // });
+    // };
 
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,7 +167,7 @@ const EditSubject = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(toggleAcademicLoading());
+        dispatch(toggleAcademicLoading(true));
         
         //validate
         const payload={
@@ -179,7 +180,7 @@ const EditSubject = () => {
         const validation=handleValidationOF(schoolSubjectSchema,payload);
         
         if(!validation.success){
-            dispatch(toggleAcademicLoading());
+            dispatch(toggleAcademicLoading(false));
             return false;
         }
 
@@ -207,7 +208,7 @@ const EditSubject = () => {
         
         if(!response.success) return response.success;
         
-        dispatch(toggleAcademicLoading());
+        dispatch(toggleAcademicLoading(false));
         toast.success('Subject Updated Successfully',{draggable:true,});
         goBack();
 
@@ -312,14 +313,6 @@ const EditSubject = () => {
                 onChange={handleChange}
             />
 
-            {/* Department */}
-            <InputField
-                label="Department"
-                name="department"
-                value={form?.department}
-                onChange={handleChange}
-            />
-
             {/* Level */}
             {/* <Select
                 label="Level"
@@ -352,6 +345,13 @@ const EditSubject = () => {
             </select>)}
             </div>
 
+            {/* Department */}
+            <RadioGroup
+            label="Department"
+            options={department_Array}
+            name="department"
+            onChange={handleChange}
+            />
 
             </div>
 
@@ -373,7 +373,7 @@ const EditSubject = () => {
             {/* ------------------- combined ------------------- */}
             <div className="flex justify-around max-h-64 overflow-y-scroll">
             {/* ---------- Choose Batches ---------- */}
-                <div className="mt-6">
+                {/* <div className="mt-6">
                 <label className="block text-sm font-medium mb-2">
                     Choose Batches
                 </label>
@@ -409,7 +409,7 @@ const EditSubject = () => {
                     No batches selected
                     </p>
                 )}
-                </div>
+                </div> */}
 
 
             {/* Reference Books */}
@@ -471,7 +471,7 @@ const EditSubject = () => {
                 type="submit"
                 className="px-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
             >
-                {year.loading? "Editing....": "Edit Subject"}
+                {"Edit Subject"}
             </button>
             </div>
         </form>)

@@ -7,6 +7,7 @@ import { handleValidationOF } from "@/validation/validateFormData";
 import { courseValSchema,courseFormSchema } from "@/validation/school.validator";
 import {InputField} from "@/components";
 import { CourseRoute } from "@/constants/routes.contants";
+import { classes_Obj } from "@/constants/classes.constant";
 
 /* ===================== TYPES ===================== */
 
@@ -35,12 +36,14 @@ export interface ICourseForm {
     enrollmentOpen: boolean;
 
     subjects: string[];
-    batches: string[];
+    classes: string[];
     coordinators: string[];
 
     eligibilityCriteria: string;
     syllabusUrl: string;
     attachments: File[];
+    modelType:string,
+    center:string,
     }
 
     /* ===================== INITIAL STATE ===================== */
@@ -63,11 +66,14 @@ export interface ICourseForm {
         endDate: "",
     },
 
+    modelType:'School',
+    center:'',
+
     maxStudents: 0,
     enrollmentOpen: true,
 
     subjects: [],
-    batches: [],
+    classes: [],
     coordinators: [],
 
     eligibilityCriteria: "",
@@ -85,9 +91,10 @@ const CourseAddPage = () => {
     const [error, setError] = useState<string | null>(null);
 
     /****************** Redux-store ******************/
-    const batchesReduxStore=useAppSelector((state)=>state.batch);
+    //const batchesReduxStore=useAppSelector((state)=>state.batch);
     const subjectReduxStore=useAppSelector((state)=>state.schoolSubject);
     const academicYearReduxStore=useAppSelector((state)=>state.schoolYear);
+    const centersReduxStore=useAppSelector((state)=>state.center);
 
     /* ===================== HANDLERS ===================== */
 
@@ -152,6 +159,11 @@ const CourseAddPage = () => {
         e.preventDefault();
         setError(null);
         
+        if(form.center!=='School'){
+            setForm((prev)=>({...prev,modelType:'Centers'}));
+        }
+
+
         const isValidated = 
             handleValidationOF<courseFormSchema>
             (courseValSchema,form);
@@ -168,6 +180,8 @@ const CourseAddPage = () => {
 
         // core
         formData.append("name", form.name);
+        formData.append("modelType", form.modelType);
+        formData.append("center", form.center);
         formData.append("code", form.code);
         formData.append("academicYear", form.academicYear);
         //formData.append("level", form.level);
@@ -186,7 +200,7 @@ const CourseAddPage = () => {
 
         // relations
         form.subjects.forEach((id) => formData.append("subjects[]", id));
-        form.batches.forEach((id) => formData.append("batches[]", id));
+        form.classes.forEach((id) => formData.append("classes[]", id));
         form.coordinators.forEach((id) =>
             formData.append("coordinators[]", id)
         );
@@ -206,7 +220,10 @@ const CourseAddPage = () => {
         };
 
         const res = await handleApi(config);
-        if (!res.success) throw new Error(res.error.message);
+        if (!res.success) {
+            toast.error(res.error.message);
+            return false
+        }
 
         toast.success("Course created successfully");
         navigate(-1);
@@ -312,6 +329,27 @@ const CourseAddPage = () => {
             />
             </div>
 
+             {/* Center */}
+            <div>
+                <label className="block text-sm font-medium mb-1">
+                Center *
+                </label>
+                <select
+                name="center"
+                value={form.center}
+                onChange={handleChange}
+                className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
+                >
+                <option value="">Select center</option>
+                <option value='School'>Main-School</option>
+                {centersReduxStore.centers?.map((center)=>{
+                    return (<option value={center?._id}>{center?.name}</option>)
+
+                })}
+                </select>
+                <span id="center" className="text-red-500 errorDisplay"></span>
+            </div>
+
             {/* SCHEDULE */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InputField
@@ -343,42 +381,38 @@ const CourseAddPage = () => {
             </div>
 
 
-            {/* SUB+BATCHES+COORDINATORS */}
+            {/* SUB+CLASSES+COORDINATORS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            {/* Batches */}
+            {/* Classes */}
             <div className="mt-6">
                 <label className="block text-sm font-medium mb-2">
-                    Choose Batches
+                    Choose Classes
                 </label>
 
                 <div className="border rounded-md p-4 max-h-56 overflow-y-auto space-y-2 bg-gray-50">
-                    {batchesReduxStore.batches.length<=0 ?
-                    <input readOnly type="text" placeholder="No Batch Data: could be fetch_err()"/>
-                    :
-                    batchesReduxStore.batches?.map((batch) => (
+                    
+                    {Object.keys(classes_Obj).map((batch) => (
                     <label
-                        key={batch?.code}
+                        key={batch}
                         className="flex items-center gap-3 text-sm cursor-pointer"
                     >
                         <input
                         type="checkbox"
-                        checked={form.batches.includes(batch.code)}
-                        onChange={() => handleBatchToggle(batch.code,"batches")}
+                        checked={form.classes.includes(classes_Obj[batch])}
+                        onChange={() => handleBatchToggle(classes_Obj[batch],"classes")}
                         className="accent-green-700"
                         />
-                        <span>
-                        {batch?.name}
-                        <span className="text-gray-500 ml-1">
-                            ({batch?.code})
-                        </span>
+
+                        <span className="capitalize text-gray-800 ml-1">
+                            {batch}
                         </span>
                         
                     </label>
                     ))}
                 </div>
 
-                {form.batches.length === 0 && (
+                {form.classes.length === 0 && (
                     <p className="text-xs text-gray-500 mt-1">
                     No batches selected
                     </p>
@@ -434,7 +468,7 @@ const CourseAddPage = () => {
                         } 
                     </div>
 
-                    {form.batches.length === 0 && (
+                    {form.subjects.length === 0 && (
                         <p className="text-xs text-gray-500 mt-1">
                         No Subjects selected
                         </p>
@@ -472,7 +506,7 @@ const CourseAddPage = () => {
                         ))}
                     </div>
 
-                    {form.batches.length === 0 && (
+                    {form.academicYear.length === 0 && (
                         <p className="text-xs text-gray-500 mt-1">
                         No batches selected
                         </p>

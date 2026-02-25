@@ -31,11 +31,12 @@ const SubjectsPage = () => {
             const fetchData= await handleApi<null,null>(config);
             dispatch(storeSchoolAcademicSubjects(fetchData.data?.data||[]));
         })()
-    },[]);
+    },[dispatch]);
 
 
     const handleDelete = async(id: string) => {
 
+        dispatch(toggleAcademicSubLoading(true));
         const result = await Swal.fire({
             title: "Are you sure?",
             text: "This action cannot be undone!",
@@ -61,7 +62,7 @@ const SubjectsPage = () => {
             Swal.fire("Deleted!", "Item deleted successfully", "success");
         }
         
-        dispatch(toggleAcademicSubLoading());
+        dispatch(toggleAcademicSubLoading(false));
         return true;
     };
 
