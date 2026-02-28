@@ -5,10 +5,9 @@ import { Outlet } from "react-router-dom";
 
 export default function Dashboard() {
     return (
-        <div className="flex min-h-screen bg-gray-50">
+        <div className="flex h-screen overflow-hidden bg-gray-50">
 
-        <aside>
-        {/* SIDEBAR */}
+        <aside  className="w-64 bg-white border-r h-full overflow-x-hidden scroll-m-0 overflow-y-clip sticky top-0">
         <Sidebar/>
         </aside>
 

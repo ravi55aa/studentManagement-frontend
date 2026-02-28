@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Pencil, Trash2, Bell } from "lucide-react";
 import {Link} from "react-router";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
@@ -6,17 +6,15 @@ import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import {storeSchoolAcademicSubjects,toggleAcademicSubLoading } from "@/utils/Redux/Reducer/subjectReducer";
 import Swal from "sweetalert2";
 import { SubjectRoute } from "@/constants/routes.contants";
-
-
+import { Pagination } from "@/components";
+import SearchAndFilter from "@/components/SearchAndFilter";
+import { TableComponent } from "@/components/Table.compo";
 
 
 const SubjectsPage = () => {
-    const [search, setSearch] = useState("");
+    //const [search, setSearch] = useState("");
     const dispatch=useAppDispatch();
     const subjectStore=useAppSelector((state)=>state.schoolSubject);
-
-    
-
 
     
     useEffect(()=>{
@@ -35,7 +33,6 @@ const SubjectsPage = () => {
 
 
     const handleDelete = async(id: string) => {
-
         dispatch(toggleAcademicSubLoading(true));
         const result = await Swal.fire({
             title: "Are you sure?",
@@ -82,111 +79,40 @@ const SubjectsPage = () => {
             <Bell className="text-green-700 w-5 h-5" />
         </div>
 
-        {/* Filter + Search */}
-        <div className="flex gap-3 mb-6">
-            <button className="border px-3 py-2 rounded-md text-sm bg-gray-100">
-            Add Filter ▼
-            </button>
+        <SearchAndFilter/>
 
-            <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search subjects"
-            className="flex-1 border px-4 py-2 rounded-md text-sm outline-none focus:ring-2 focus:ring-green-700"
-            />
-        </div>
-
-        {/* ---------- Table ---------- */}
-        <div className="border rounded-md overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-            <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                <th className="px-4 py-2 text-left">Subject Name</th>
-                <th className="px-4 py-2 text-left">Code</th>
-                <th className="px-4 py-2 text-left">Class</th>
-                <th className="px-4 py-2 text-left">Type</th>
-                <th className="px-4 py-2 text-left">Marks</th>
-                <th className="px-4 py-2 text-left">Department</th>
-                <th className="px-4 py-2 text-center">Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {subjectStore.loading ? 
-                
-            <tr><td>
-                    "Loading..." 
-                </td></tr> 
-                
-            :
-                subjectStore.subjects?.length === 0 ? (
-                <tr>
-                    <td
-                    colSpan={6}
-                    className="text-center py-6 text-gray-500"
-                    >
-                    No subjects found
-                    </td>
-                </tr>
-                ) : (
-                subjectStore.subjects?.map((subject, index) => (
-                    <tr
-                    key={subject._id}
-                    className={`border-t ${
-                        index % 2 === 1 ? "bg-green-100" : ""
-                    }`}
-                    >
-                    <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                        <span>{subject.name}</span>
-                        {/* {subject.status === "active" && (
-                            <span className="text-xs text-green-700 font-medium">
-                            Active
-                            </span>
-                        )} */}
-                        </div>
-                    </td>
-
-                    <td className="px-4 py-3">{subject.code}</td>
-                    <td className="px-4 py-3">{subject.className}</td>
-                    <td className="px-4 py-3 capitalize">
-                        {subject.type}
-                    </td>
-                    <td className="px-4 py-3">
-                        {subject.passMarks} / {subject.maxMarks}
-                    </td>
-                    <td className="px-4 py-3 capitalize">
-                        {subject.department}
-                    </td>
-
-                    <td className="px-4 py-3">
-                        <div className="flex justify-center gap-3 text-gray-600">
-                        <Link to={`edit/${subject._id}`}>
+        <TableComponent
+            data={subjectStore.subjects ?? []}
+            keyField="code"
+            loading={subjectStore?.loading}
+            emptyMessage="No Subjects found"
+            columns={[
+                {header: "Name",accessor:"name"},
+                { header: "Code", accessor: "code" },
+                { header: "Class", accessor: "className" },
+                { header: "Subject-Type", accessor: "type" },
+                { header: "Total Marks", accessor: "maxMarks" },
+                { header: "Department", accessor: "department" },
+                {
+                header: "Actions",align: "center",
+                render: (subject) => (
+                    <div className="flex justify-center gap-3">
+                    <Link to={`edit/${subject._id}`}>
                             <Pencil
                                 className="w-4 h-4 cursor-pointer hover:text-green-700"
-                            />
-                        </Link>
-                        <Trash2
-                            className="w-4 h-4 cursor-pointer hover:text-red-600"
-                            onClick={() => handleDelete(subject._id)}
                         />
-                        </div>
-                    </td>
-                    </tr>
-                ))
-                )}
-            </tbody>
-            </table>
-        </div>
+                    </Link>
+                    <Trash2
+                        className="w-4 h-4 cursor-pointer hover:text-red-600"
+                        onClick={() => handleDelete(subject._id)}
+                    />
+                    </div>
+                ),
+                },
+            ]}
+            />
 
-        {/* Pagination */}
-        <div className="flex justify-center items-center gap-4 mt-10 text-sm text-gray-600">
-            <button className="text-gray-400">⬅</button>
-            <span className="text-green-700 font-medium">
-            Page 1 of 1
-            </span>
-            <button className="text-green-700">➡</button>
-        </div>
+        <Pagination/>
         </div>
     );
 };

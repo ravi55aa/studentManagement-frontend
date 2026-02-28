@@ -27,11 +27,9 @@ export const handleApi = async <TRequest = unknown, TData = unknown>(
         field?: string;
         code?: number;
     };
-
     }> => {
 
     try {
-
         const config: AxiosRequestConfig = {
         url: options.endPoint,
         method: options.method,

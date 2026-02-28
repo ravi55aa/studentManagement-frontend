@@ -39,7 +39,7 @@ const OtpVerification = () => {
         const config:HandleApiOptions<null>={
                     method:"get",
                     endPoint:`${forgotPassword.generateOtp}/${id}`,
-                    headers:{role:"admin"}
+                    headers:{role:"Admin"}
                 }
         
         const res = await handleApi<null,IOtp>(config);
@@ -101,7 +101,7 @@ const OtpVerification = () => {
                     method:"post",
                     endPoint:`${forgotPassword.verifyOtp}/${id}`,
                     payload:{generatedOtp:otp,userEnteredOtp:form.otp},
-                    headers:{role:"admin"}
+                    headers:{role:"Admin"}
                 }
         
       const res = await handleApi(config);

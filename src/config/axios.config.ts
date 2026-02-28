@@ -1,10 +1,9 @@
+
 import axios from "axios";
-
-
 
 export const axiosBaseURL=axios.create(
     {
-    baseURL:"http://localhost:4000",
+    baseURL:import.meta.env.VITE_BACKEND_URL,
     withCredentials:true, //allow [cookie/sessionData]
     timeout:15000,
     headers:{
@@ -12,8 +11,6 @@ export const axiosBaseURL=axios.create(
     }
     }
 );
-
-
 
 axiosBaseURL.interceptors.request.use(
     function(config){
@@ -24,8 +21,6 @@ axiosBaseURL.interceptors.request.use(
     return Promise.reject(error);
     }
 )
-
-
 
 axiosBaseURL.interceptors.response.use(
     function (response) {

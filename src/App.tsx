@@ -76,7 +76,8 @@ const App = () => {
         <Route path="/payment-success" element={<PaymentSuccess />} />
 
         //*school - Dashboard
-        <Route element={<ProtectedRoute />}>
+        {/* <Route element={<ProtectedRoute />}> */}
+        <Route >
         <Route path="/school/dashboard" element={<Dashboard/>}  >
           <Route index element={<DashboardHome/>}  />
           <Route path="centers" element={<Centers/>}  />

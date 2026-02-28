@@ -23,6 +23,7 @@ import {
     employmentStatusOptions, 
     teacherDesignationOptions 
         } from "@/constants/teacher";
+import { TeacherRoute } from "@/constants/routes.contants";
 /* ------------------------------------------------ */
 
 
@@ -129,7 +130,7 @@ const EditTeacherBio = ({ teacher }: { teacher: Partial<ITeacherBio> }) => {
         });
 
         const config: HandleApiOptions<FormData> = {
-            endPoint: `/teacher/bio/update/${teacher._id}`,
+            endPoint: `${TeacherRoute.updateBio}/${teacher._id}`,
             method: "patch",
             payload: formData,
             headers: { role: "School" },
@@ -245,7 +246,7 @@ const EditTeacherProfessional = ({
         if (!isValid.success) return;
 
         const config: HandleApiOptions<Partial<ITeacher>> = {
-        endPoint: `/teacher/update/${teacher.teacherId}`,
+        endPoint: `${TeacherRoute.updateProfessional}/${teacher.teacherId}`,
         method: "patch",
         payload: professionalForm,
         headers: { role: "School" },

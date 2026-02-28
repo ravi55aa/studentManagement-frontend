@@ -3,28 +3,33 @@ import { Bell } from "lucide-react";
 import {Link} from "react-router";
 import { HandleApiOptions,handleApi } from "@/api/global.api";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
-import { storeBatches } from "@/utils/Redux/Reducer/batchReducer";
+import { storeBatches, toggleBatchLoading } from "@/utils/Redux/Reducer/batchReducer";
 import { IBatches } from "@/interfaces/ISchool";
-import { ITeacherBio } from "@/interfaces/ITeacher";
+import {  ITeacherBio } from "@/interfaces/ITeacher";
 import AssignTeacherModal from "@/components/Teacher/AssignTeacherModal";
 import { toast } from "react-toastify";
+import { ActionBtn, Pagination } from "@/components";
+import SearchAndFilter from "@/components/SearchAndFilter";
+import { TableComponent } from "@/components/Table.compo";
+import { BatchRoute, TeacherRoute } from "@/constants/routes.contants";
 
 
 const BatchesPage = () => {
     const [search, setSearch] = useState("");
     const dispatch=useAppDispatch();
     const batchReduxStore=useAppSelector((state)=>state.batch);
-    const [unAssignedTeachers,setUnAssignedTeachers]=useState<ITeacherBio[]|[]>([])
+    const [unAssignedTeachers,setUnAssignedTeachers]=useState<ITeacherBio[]|[]>([]);
+    const teachersStore=useAppSelector((state)=>state.teacher);
     const [isAssignOpen, setIsAssignOpen] = useState(false);
-    const [selectedBatchId, setSelectedBatchId] = useState<string>("");
-
+    const [selectedBatch, setSelectedBatch] = useState<IBatches|null>(null);
     // const centerReduxStore=useAppSelector((state)=>state.center);
 
     useEffect(()=>{
         (async()=>{
+
             const config:HandleApiOptions<null>={
                         method:"get",
-                        endPoint:"/school/batches",
+                        endPoint:BatchRoute.get,
                         payload:null,
                         headers:{role:"School"}
                 }
@@ -32,20 +37,20 @@ const BatchesPage = () => {
             const fetchData= await handleApi<null,null>(config);
             dispatch(storeBatches(fetchData.data.data));
         })();
-    },[dispatch]);
+    },[dispatch,batchReduxStore.loading]);
 
 
     useEffect(()=>{
         (async()=>{
             const config:HandleApiOptions<null>={
                         method:"get",
-                        endPoint:"/teacher/all/unAssigned",
+                        endPoint:TeacherRoute.getAllUnAssigned,
                         payload:null,
                         headers:{role:"School"}
                 }
 
             const res= await handleApi<null,ITeacherBio[]>(config);
-            const teachers=res.data.data
+            const teachers=res.data?.data
             setUnAssignedTeachers(teachers);
             return true;
         })();
@@ -59,39 +64,70 @@ const BatchesPage = () => {
         batch.code.toLowerCase().includes(search.toLowerCase())
     );
 
+    
     /* ---------- Action Handlers ---------- */
     // const handleEnrollStudents = (id: string) =>
     //     console.log("Enroll students:", id);
+    
+    const handleUnAssignedTeachers=async(counselor:string|ITeacherBio):Promise<boolean>=>{
+        if(typeof counselor == 'string') return;
 
-    const handleOpenAssign = (batchId: string) => {
-        setSelectedBatchId(batchId);
+        const teacher_Professional_data = teachersStore.professional.find((teacher)=>teacher.teacherId==counselor._id);
+        
+        if(!teacher_Professional_data){
+            toast.info('No available teachers in the center, For this batch');
+        }
+
+        const center=teacher_Professional_data.center;
+
+        const config:HandleApiOptions<null>={
+                        method:"get",
+                        endPoint:TeacherRoute.getAllUnAssigned,
+                        payload:null,
+                        params:{center},
+                        headers:{role:"School"}
+                }
+
+        const res= await handleApi<null,ITeacherBio[]>(config);
+        const teachers=res.data?.data || [];
+        setUnAssignedTeachers(teachers);
+
+        return res.success;
+    }
+
+    const handleOpenAssign = async(batch: IBatches) => {
+        setSelectedBatch(batch);
+        await handleUnAssignedTeachers(batch.batchCounselor);
         setIsAssignOpen(true);
     };
-
-    const handleAssignTeacher = async (teacherId: string) => {
+    
+    const handleAssignTeacher = async (teacherId: string):Promise<boolean> => {
+        dispatch(toggleBatchLoading(true));
         const config: HandleApiOptions<object> = {
-            endPoint: `/school/batch/assign-teacher/${selectedBatchId}`,
+            endPoint: `${BatchRoute.assignTeacher}/${selectedBatch?._id}`,
             method: "patch",
             payload: { teacherId },
             headers: { role: "School" }
         };
+        setSearch('');
 
         const res = await handleApi(config);
 
+        dispatch(toggleBatchLoading(false));
         if (!res.success) {
             toast.error(res.data?.message??"Cannot assign the teacher");
-            return;
+            return res.success;
         }
         toast.success("New Teacher assigned successfully");
+        return res.success;
     };
-
 
     // const handlePromoteStudents = (id: string) =>
     //     console.log("Promote students:", id);
 
 
     return (
-        <div className="p-6 bg-[#fbf3f1] min-h-screen">
+        <div className="p-6 bg-[#ffffff] min-h-screen">
 
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -107,53 +143,27 @@ const BatchesPage = () => {
             <Bell className="text-green-700 w-5 h-5" />
         </div>
 
-        {/* Filter + Search */}
-        <div className="flex gap-3 mb-6">
-            <button className="border px-3 py-2 rounded-md text-sm bg-white">
-            Add Filter ▼
-            </button>
-            <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search"
-            className="flex-1 border px-4 py-2 rounded-md text-sm outline-none focus:ring-2 focus:ring-green-700"
-            />
-        </div>
+        <SearchAndFilter/>
 
-        {/* ---------- Desktop Table ---------- */}
-        <div className="hidden lg:block bg-white border rounded-md overflow-x-auto">
-            <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                <th className="px-4 py-2 text-left">Name</th>
-                {/* <th className="px-4 py-2 text-left">Center</th> */}
-                <th className="px-4 py-2 text-left">Batch Counselor</th>
-                <th className="px-4 py-2 text-left">Code</th>
-                <th className="px-4 py-2 text-center">Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {filteredBatches.map((batch, index) => (
-                <tr
-                    key={index}
-                    className={`border-t ${
-                    index % 2 === 1 ? "bg-green-100" : ""
-                    }`}
-                >
-                    <td className="px-4 py-3">{batch?.name}</td>
-                    {/* <td className="px-4 py-3">{batch?.center && batch?.center.name}</td> */}
-                    <td className="px-4 py-3">
-                        { 
-                        batch.batchCounselor && 
-                        batch.batchCounselor?.firstName }
-                    </td>
-                    <td className="px-4 py-3">{batch?.code}</td>
-                    <td className="px-4 py-3">
-                    <div className="flex flex-wrap justify-center gap-2">
-                        <ActionBtn label="Enroll" path={`edit/:${batch?._id}`}  />
+        <TableComponent
+            data={filteredBatches ?? []}
+            keyField="adminId"
+            loading={batchReduxStore?.loading}
+            emptyMessage="No Batches found"
+            columns={[
+                {header: "Name",accessor:"name"},
+                { header: "Code", accessor: "code" },
+                { header: "Batch Counselor", accessor: "batchCounselor",format:(value:{firstName:string})=>value.firstName.toUpperCase() },
+                { header: "Start Date", accessor: "schedule", format:(value:{startTime:string})=>value.startTime?.slice(0,10)},
+                { header: "End Date", accessor: "schedule", format:(value:{endTime:string})=>value.endTime?.slice(0,10)},
+                {
+                header: "Actions",
+                align: "center",
+                render: (batch) => (
+                    <div className="flex justify-center gap-3">
+                    <ActionBtn label="Enroll" path={`edit/:${batch?._id}`}  />
                         <button
-                            onClick={() => handleOpenAssign(batch._id)}
+                            onClick={() => handleOpenAssign(batch)}
                             className="px-3 py-1 rounded-md bg-gray-200 text-xs hover:bg-gray-300"
                             >
                             Assign New Teacher
@@ -162,19 +172,18 @@ const BatchesPage = () => {
                         <ActionBtn label="Promote" path={`edit/:${batch?._id}`} />
                         <ActionBtn label="Edit" path={`edit/${batch?._id}`} />
                     </div>
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-            </table>
-        </div>
+                ),
+                },
+            ]}
+            />
+
 
         <AssignTeacherModal
-        open={isAssignOpen}
-        teachers={unAssignedTeachers}
-        batchId={selectedBatchId}
-        onClose={() => setIsAssignOpen(false)}
-        onAssign={handleAssignTeacher}
+            open={isAssignOpen}
+            teachers={unAssignedTeachers}
+            batchId={selectedBatch?._id}
+            onClose={() => setIsAssignOpen(false)}
+            onAssign={handleAssignTeacher}
         />
 
 
@@ -201,33 +210,9 @@ const BatchesPage = () => {
             ))}
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-center items-center gap-4 mt-10 text-sm">
-            <span className="text-gray-500">⬅</span>
-            <span className="text-green-700 font-medium">
-            Page 1 of 1
-            </span>
-            <span className="text-green-700">➡</span>
-        </div>
+        <Pagination/>
         </div>
     );
     };
-
-    /* ---------- Reusable Action Button ---------- */
-    const ActionBtn = ({
-    label,
-    path,
-    }: {
-    path:string;
-    label: string;
-    }) => (
-    <Link to={path}>
-    <button
-        className="px-3 py-1 rounded-md bg-gray-200 text-xs hover:bg-gray-300"
-    >
-        {label}
-    </button>
-    </Link>
-);
 
 export default BatchesPage;

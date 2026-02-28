@@ -19,7 +19,7 @@ export type AssignTeacherModalProps = {
     teachers: ITeacherBio[];
     batchId: string;
     onClose: () => void;
-    onAssign: (teacherId: string) => Promise<void>;
+    onAssign: (teacherId: string) => Promise<boolean>;
 };
 
 export type INotification = {

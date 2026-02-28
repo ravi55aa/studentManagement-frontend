@@ -141,7 +141,6 @@ function CreateSchool() {
             />
 
             </div>
-            
 
             {/* Button */}
             <button 

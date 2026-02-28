@@ -77,7 +77,7 @@ const ResetPassword = () => {
             return;
         }
 
-        setError(res.error || "Password update failed");
+        setError(res.error.message || "Password update failed");
         } catch (err) {
             console.log(err,{cause:err.message});
             setError("Something went wrong");

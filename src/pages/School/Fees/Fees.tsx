@@ -1,7 +1,4 @@
 
-import { Section } from "@/components/Teacher/Section";
-import StatusBadge from "@/components/fee/StatusBadge.c";
-import TypeBadge from "@/components/fee/TypeBadge.c";
 import { Link, useNavigate } from "react-router-dom";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect } from "react";
@@ -12,6 +9,11 @@ import { storeFees,toggleFeeLoading } from "@/utils/Redux/Reducer/fee.reducer";
 import { Pagination,TopBar } from "@/components";
 import { toast } from "react-toastify";
 import { deleteSwal } from "@/utils/swal";
+import SearchAndFilter from "@/components/SearchAndFilter";
+import { TableComponent } from "@/components/Table.compo";
+import { FeeRoute } from "@/constants/routes.contants";
+import TypeBadge from "@/components/fee/TypeBadge.c";
+import StatusBadge from "@/components/fee/StatusBadge.c";
 
 
 
@@ -22,40 +24,40 @@ export default function FeeListPage() {
     const feeStore = useAppSelector((state)=>state.fees);
     const navigate=useNavigate();
 
+    const handleGetAllFess=async()=>{
+        dispatch(toggleFeeLoading(true))
+        const config:HandleApiOptions<null>={
+                    method:"get",
+                    endPoint:FeeRoute.getAll,
+                    payload:null,
+                    headers:{role:"School"}
+            }
+    
+        const res= await handleApi<null,IFee[]>(config);
+    
+        if(!res.success){
+            return res.success
+        }
+        dispatch(toggleFeeLoading(false));
+        dispatch(storeFees(res.data?.data.reverse()));
+    }
 
     useEffect(()=>{
             (async()=>{
-                
-                dispatch(toggleFeeLoading(true))
-                const config:HandleApiOptions<null>={
-                            method:"get",
-                            endPoint:"/fee/get-all",
-                            payload:null,
-                            headers:{role:"School"}
-                    }
-    
-                const res= await handleApi<null,IFee[]>(config);
-
-                if(!res.success){
-                    console.log("@fees.tsx res.error",res.error);
-                    return res.success
-                }
-                dispatch(toggleFeeLoading(false));
-                dispatch(storeFees(res.data.data));
-            })()
-    },[dispatch]);
-
+                handleGetAllFess();
+            })();
+    },[]);
 
 
     const handleDelete=async(id:string)=>{
 
         const result = await deleteSwal();
-        if(!result.isConfirmed) return;
+        if(!result.isConfirmed) return result.isConfirmed;
 
         dispatch(toggleFeeLoading(true));
         const config:HandleApiOptions<null>={
                 method:"delete",
-                endPoint:`/fee/delete/${id}`,
+                endPoint:`${FeeRoute.delete}/${id}`,
                 payload:null,
                 headers:{role:"School"}
             }
@@ -63,12 +65,13 @@ export default function FeeListPage() {
         const res= await handleApi<null,IFee[]>(config);
 
         if(!res.success){
-            console.log("@fees.tsx res.error",res.error);
             return res.success
         }
-        
         dispatch(toggleFeeLoading(false));
+        
+        await handleGetAllFess();
         toast.success("Fee Deleted Successfully");
+        return res.success;
     };
 
 
@@ -81,86 +84,40 @@ export default function FeeListPage() {
                 </button>
                 <TopBar to="add" />
             </div>
+        
+        <SearchAndFilter/>
 
-        <Section title="All Fees">
+            <TableComponent
+                        data={feeStore?.fees ?? []}
+                        keyField="_id"
+                        loading={feeStore?.loading}
+                        emptyMessage="No teachers found"
+                        columns={[
+                            {
+                            header: "Name",accessor:'name'},
+                            { header: "Code", accessor: "code" },
+                            { header: "Type", accessor: "type",render:(row)=><TypeBadge type={row?.type} /> },
+                        
+                            { header: "Total Amount", accessor: "totalAmount",format:(value:string)=>value+' ₹' },
+                            { header: "Status", accessor: "status",render:(row)=> <StatusBadge status={row?.status} />},
+                            {
+                            header: "Actions",
+                            align: "center",
+                            render: (fee) => (
+                                <div className="flex justify-center gap-3">
+                                <Link to={`/school/dashboard/fees/edit/${fee?._id}`}>
+                                    <Pencil className="w-4 h-4 text-green-600 hover:text-green-800 hover:underline cursor-pointer" />
+                                    </Link>
 
-            <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse">
-
-                <thead>
-                <tr className="bg-gray-100 text-sm text-left">
-                    <th className="p-3">Name</th>
-                    <th className="p-3">Code</th>
-                    <th className="p-3">Type</th>
-                    <th className="p-3">Applies To</th>
-                    <th className="p-3">Amount</th>
-                    <th className="p-3">Due Date</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3 text-right">Actions</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {feeStore.fees?.length === 0 ? (
-                    <tr>
-                    <td colSpan={8} className="p-4 text-center text-gray-500">
-                        No Fees Found
-                    </td>
-                    </tr>
-                ) : (
-                    feeStore.fees?.map((fee) => (
-                    <tr key={fee._id} className="border-t text-sm">
-
-                        <td className="p-3 font-medium">
-                        {fee?.name}
-                        </td>
-
-                        <td className="p-3 text-gray-600">
-                        {fee?.code}
-                        </td>
-
-                        <td className="p-3">
-                        <TypeBadge type={fee?.type} />
-                        </td>
-
-                        <td className="p-3">
-                        {fee?.appliesTo.model}
-                        </td>
-
-                        <td className="p-3">
-                        {fee?.currency} {fee?.totalAmount}
-                        </td>
-
-                        <td className="p-3">
-                        {new Date(fee?.dueDate).toLocaleDateString()}
-                        </td>
-
-                        <td className="p-3">
-                        <StatusBadge status={fee?.status} />
-                        </td>
-
-                        <td className="p-3 flex justify-end text-right space-x-2">
-
-                        <Link to={`/school/dashboard/fees/edit/${fee?._id}`}>
-                        <Pencil className="w-4 h-4 text-green-600 hover:text-green-800 hover:underline cursor-pointer" />
-                        </Link>
-
-                        <Trash2
-                        className="w-4 h-4 text-red-600 hover:text-red-800  hover:underline cursor-pointer"
-                        onClick={() => handleDelete(fee?._id)}
+                                    <Trash2
+                                    className="w-4 h-4 text-red-600 hover:text-red-800  hover:underline cursor-pointer"
+                                    onClick={() => handleDelete(fee?._id)}
+                                    />
+                                </div>
+                            ),
+                            },
+                        ]}
                         />
-
-                        </td>
-
-                    </tr>
-                    ))
-                )}
-                </tbody>
-
-            </table>
-            </div>
-
-        </Section>
 
         <Pagination/>
 

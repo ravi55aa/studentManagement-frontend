@@ -11,6 +11,7 @@ import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import {InputField} from "@/components";
 import { ITeacherBio } from "@/interfaces/ITeacher";
 import { toast } from "react-toastify";
+import { BatchRoute, TeacherRoute } from "@/constants/routes.contants";
 
 
 const AddBatch = () => {
@@ -30,21 +31,37 @@ const AddBatch = () => {
 
     useEffect(()=>{
             (async()=>{
-                const config:HandleApiOptions<null>={
-                            method:"get",
-                            endPoint:"/teacher/all/unAssigned",
-                            payload:null,
-                            headers:{role:"School"}
+                const span=document.getElementById('counselor');
+
+                if(!form.center){
+                    if(span){
+                        span.textContent="Before counselor, select a 'CENTER'";
                     }
-    
+                    return true;
+                }
+                
+                span.textContent='';
+                const config:HandleApiOptions<null>={
+                    method:"get",
+                    endPoint:TeacherRoute.getAllUnAssigned,
+                    payload:null,
+                    params:{"center":form.center},
+                    headers:{role:"School"}
+                }
+                
                 const res = await handleApi<null,ITeacherBio[]>(config);
-                const teachers=res.data.data
+                const teachers=res?.data?.data
+                console.log("@addBatch teachers",teachers);
+                
+                if(!teachers  || teachers.length<=0){
+                    span.textContent='Not found unassigned TEACHERS, from chosen CENTER';
+                }
+                
                 setUnAssignedTeachers(teachers);
                 return true;
             })();
-        },[]);
+        },[form.center]);
 
-    
 
     const [error, setError] = useState<string | null>(null);
     // const batchReduxStore=useAppSelector((state)=>state.batch);
@@ -81,7 +98,7 @@ const AddBatch = () => {
         //fetchData
         const config:HandleApiOptions<object>={
             method:"post",
-            endPoint:"/school/batches/add",
+            endPoint:BatchRoute.add,
             payload:form,
             headers:{role:"School"}
         }
@@ -99,7 +116,7 @@ const AddBatch = () => {
     };
 
     return (
-        <div className="p-6 bg-[#fbf3f1] min-h-screen">
+        <div className="p-6 bg-[#ffffff] min-h-screen">
 
         {/* Header */}
         <h1 className="text-2xl font-semibold text-gray-800 mb-1">
@@ -144,7 +161,7 @@ const AddBatch = () => {
 
 
             {/* Center */}
-            <div>
+            <div> 
                 <label className="block text-sm font-medium mb-1">
                 Center *
                 </label>
@@ -168,7 +185,7 @@ const AddBatch = () => {
             {/* Batch Counselor */}
             <div>
                 <label className="block text-sm font-medium mb-1">
-                Batch Counselor - (List of all available teachers from chosen 'center')
+                Batch Counselor - (List of all available teachers from chosen 'CENTER')
                 </label>
                 <select
                 name="counselor"

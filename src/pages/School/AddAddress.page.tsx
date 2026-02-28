@@ -19,11 +19,11 @@ import { useAppHandleInputChange as _useAppHandleInputChange  } from "@/hooks/us
 export default function AddAddress() {
 
     const [formData,setFormData]=useState({
-                street:"",
-                    city: "",
-                        state: "",
-                            zip: "",
-                                country: null,
+            street:"",
+            city: "",
+            state: "",
+            zip: "",
+            country: null,
     });
 
     const navigate
@@ -68,8 +68,6 @@ export default function AddAddress() {
 
             {/* Form */}
             <form onSubmit={handleOnSubmit} className="space-y-4">
-                
-                
                 <div className="flex flex-col gap-4">
                 {school_Register_SchemaFor_Address.map((ele,i)=>{
                     return (

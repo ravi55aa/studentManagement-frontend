@@ -355,7 +355,6 @@ const SchoolSettingsPage = () => {
             toast.error("Throwing error 409 : Check Later");
             return;
         }
-
         setSelectedFile(subDocument);
         setOpenView(true);
     };
@@ -367,7 +366,7 @@ const SchoolSettingsPage = () => {
 
         console.log("New file:", file);
 
-        // 🔥 API call here
+        // API call here
         // await uploadNewFile(file);
 
         setOpenView(false);

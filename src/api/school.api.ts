@@ -3,6 +3,7 @@ import { IAddress }
 import { axiosBaseURL } 
     from "@/config/axios.config"
 import { IResponse } from "@/interfaces/IResponse";
+import { schoolRoute } from "@/constants/routes.contants";
 
 
 
@@ -25,8 +26,7 @@ export const returnErrorObj=(err)=>{
 //         {
 //         try {
 //             const res:IResponse<null> = 
-               
-                
+
 //             return res.data;
 //         } catch(err){
 //             console.log("@school.api CatchBlock",'Somethig went error')
@@ -43,8 +43,8 @@ export const handleAddressCreateSchoolApi =
         {
         try {
             const res:IResponse<null> = 
-                await axiosBaseURL.post("/school/register/addAddress",formData,
-                    { headers: { "role": "admin"}});
+                await axiosBaseURL.post(schoolRoute.register_add_Address,formData,
+                    { headers: { "role": "Admin"}});
                 
             return res.data;
         } catch(err){
@@ -55,13 +55,12 @@ export const handleAddressCreateSchoolApi =
     }
 
 
-
 export const handleDocsUploadCreateSchoolApi = 
     async (formData):Promise<IResponse<null>>=>
         {
         try {
             const res:IResponse<null> = 
-                await axiosBaseURL.post("/school/register/uploadDocument",formData,
+                await axiosBaseURL.post(schoolRoute.register__add_documents,formData,
                     { headers: 
                         { "role": "admin","Content-Type":"multipart/formData"}
                     });
@@ -79,7 +78,7 @@ export const handleDocsUploadCreateSchoolApi =
     export const handleSchoolSignIn=async(payload:object)=>{
         try{
 
-            const response=await axiosBaseURL.get("/school/login",{
+            const response=await axiosBaseURL.get(schoolRoute.login,{
                 params:payload,
                 headers:{role:"Admin"}
             });

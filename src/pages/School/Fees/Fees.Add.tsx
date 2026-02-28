@@ -12,6 +12,7 @@ import { handleValidationOF } from "@/validation/validateFormData";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { toast } from "react-toastify";
 import { feeSchema } from "@/validation/school.validator";
+import { FeeRoute } from "@/constants/routes.contants";
 
 
 
@@ -28,9 +29,8 @@ export default function AddFeePage() {
         "Course":courses, 
         "Exam"  :subjects,
         "Center":center,
-        "Annual":annuals
+        "AcademicYear":annuals
     });
-    
 
     const [form, setForm] = useState({
         name: "",
@@ -42,11 +42,11 @@ export default function AddFeePage() {
             },
         status: "ACTIVE",
         totalAmount: 0,
-        dueDate: new Date(12/12/2024),
+        dueDate: null,
         currency: "INR",
         autoReminder: {
         enabled: false,
-        daysBeforeDue: 0,
+        daysBeforeDue: null,
         },
     });
 
@@ -58,6 +58,10 @@ export default function AddFeePage() {
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
+        const span=document.getElementById(name);
+        if(span){
+            span.textContent='';
+        }
 
         setForm((prev) => ({
         ...prev,
@@ -74,7 +78,7 @@ export default function AddFeePage() {
             model = "Course";
             break;
         case "ANNUAL":
-            model = "School";
+            model = "AcademicYear";
             break;
         case "EXAM":
             model = "Exam";
@@ -127,18 +131,21 @@ export default function AddFeePage() {
         
         setForm((prev)=>({...prev,
             totalAmount:Number(prev.totalAmount),
-            autoReminder:{enabled:prev.autoReminder.enabled,daysBeforeDue:Number(prev.autoReminder.daysBeforeDue)},
+            autoReminder:{
+                enabled:prev.autoReminder.enabled,
+                daysBeforeDue:Number(prev.autoReminder.daysBeforeDue)
+            },
         })); 
 
         const isValid=handleValidationOF(feeSchema,form);
         
-        if(isValid.success){
-            console.log("Validation_Error");
+        if(!isValid.success){
+            console.log("@feeAdd isValid",isValid.error);
             return false;
         }
 
         const config:HandleApiOptions<object>={
-            endPoint:"fee/add",
+            endPoint:FeeRoute.add,
             payload:form,
             headers:{role:"School"},
             method:"post"
@@ -156,9 +163,7 @@ export default function AddFeePage() {
         return true;
     };
 
-    /* ----------------------------------------
-        UI
-    ---------------------------------------- */
+    /* ----------------UI--------------------- */
 
     return (
         <div className="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-md">
@@ -200,6 +205,7 @@ export default function AddFeePage() {
                 </div>
             </div>
 
+            {/* select center/school/course/exam/course */}
             <Select
                 label="Fee Type"
                 name="type"
@@ -225,7 +231,7 @@ export default function AddFeePage() {
                     { label: `Select ${form.appliesTo.model}`, value: "" },
                     // Replace below with real redux data
                 ...(appliesToObj[form.appliesTo.model]?.map((value) =>  ({
-                    label: value.name,
+                    label: value.name ?? value.code,
                     value: value._id,
                     })) || [])
                 ]}
@@ -255,7 +261,7 @@ export default function AddFeePage() {
                 type="date"
                 label="Due Date"
                 name="dueDate"
-                value={form.dueDate}
+                value={form?.dueDate}
                 onChange={handleChange}
             />
 
@@ -281,6 +287,7 @@ export default function AddFeePage() {
                 type="checkbox"
                 name="enabled"
                 checked={form.autoReminder.enabled}
+                defaultChecked={false}
                 onChange={handleReminderChange}
             />
             <label>Enable Auto Reminder</label>

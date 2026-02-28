@@ -24,6 +24,7 @@ import { IAddress } from "@/interfaces/IRegister";
 import { useAppHandleInputChange as _useAppHandleInputChange } 
     from "@/hooks/useHandleInputChange"; 
 import { useAppSelector } from "@/hooks/useStoreHooks";
+import { AddressRoute, CenterRoute } from "@/constants/routes.contants";
 
 
 
@@ -61,7 +62,7 @@ const EditCenter = () => {
     useEffect(()=>{
         const fetchYear=async()=>{
             const config:HandleApiOptions<null>={
-                endPoint:`/school/centers/${id}`,
+                endPoint:`${CenterRoute.get}/${id}`,
                 method:"get",
                 headers:{role:"school"},
             }
@@ -100,7 +101,7 @@ const EditCenter = () => {
             
             const config:HandleApiOptions<null>={
                 method:"get",
-                    endPoint:`/address/get/${id}`,
+                    endPoint:`${AddressRoute.get}/${id}`,
                         headers:{role:"school"},
             }
 
@@ -154,7 +155,7 @@ const EditCenter = () => {
         //api call
         const config:HandleApiOptions<ICenterForm>={
             method: "put",
-                endPoint: `/school/centers/edit/${id}`,
+                endPoint: `${CenterRoute.edit}/${id}`,
                 payload: form,
                     headers:{role:"school"},
         }
@@ -194,7 +195,7 @@ const EditCenter = () => {
             //api call
             const config:HandleApiOptions<IAddress>={
                 method: "post",
-                    endPoint: `/school/centers/add/address/${id}`,
+                    endPoint: `${CenterRoute.addAddress}/${id}`,
                     payload: addressForm,
                 headers:{role:"school"},
             }

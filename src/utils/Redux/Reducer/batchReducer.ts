@@ -24,8 +24,8 @@ const batchSlice=createSlice({
             state.loading=false;
         },
 
-        toggleBatchLoading(state){
-            state.loading=state.loading?false:true;
+        toggleBatchLoading(state,action){
+            state.loading=action.payload;
         }
     }
 

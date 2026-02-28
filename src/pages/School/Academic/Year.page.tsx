@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Pencil, Trash2, Bell } from "lucide-react";
 import {Link} from "react-router";
 import { useAppDispatch,useAppSelector } from "@/hooks/useStoreHooks";
@@ -9,12 +9,15 @@ import {
     storeSchoolAcademicYears, 
     toggleAcademicLoading 
 } from "@/utils/Redux/Reducer/schoolYearReducer";
+import { Pagination } from "@/components";
+import { TableComponent } from "@/components/Table.compo";
+import SearchAndFilter from "@/components/SearchAndFilter";
 
 
 
 const AcademicYearsPage = () => {
-    const [search, setSearch] = useState("");
-    const [error, setError] = useState("");
+    //const [search, setSearch] = useState("");
+    //const [error, setError] = useState("");
     
     const dispatch=useAppDispatch();
     const {years,loading}=useAppSelector((state)=>state.schoolYear);
@@ -31,17 +34,17 @@ const AcademicYearsPage = () => {
 
                 const fetchData= await handleApi<null,null>(config);
                 dispatch(storeSchoolAcademicYears(fetchData.data.data));
-                setError("");
+                
             })()
-        },[])
+        },[dispatch])
 
 
     /* ---------- Filtering ---------- */
-    const filteredYears =years.filter(
-        (year) =>
-        year?.year?.includes(search) ||
-        year?.code?.toLowerCase().includes(search.toLowerCase())
-    );
+    // const filteredYears =years.filter(
+    //     (year) =>
+    //     year?.year?.includes(search) ||
+    //     year?.code?.toLowerCase().includes(search.toLowerCase())
+    // );
 
 
     /* ---------- Handlers ---------- */
@@ -73,9 +76,8 @@ const AcademicYearsPage = () => {
         
         if(deletedDoc.success){
             // Swal.fire("Deleted!", "Item deleted successfully.", "success");
+            
         }
-        
-        setError("");
         dispatch(toggleAcademicLoading(false));
         return true;
     };
@@ -92,106 +94,40 @@ const AcademicYearsPage = () => {
             <Bell className="text-green-700 w-5 h-5" />
         </div>
 
-        {error && <p>{error}</p>}
+        <SearchAndFilter/>
 
-        {/* Filter + Search */}
-        <div className="flex gap-3 mb-6">
-            <button className="border px-3 py-2 rounded-md text-sm bg-gray-100">
-            Add Filter ▼
-            </button>
-
-            <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search"
-            className="flex-1 border px-4 py-2 rounded-md text-sm outline-none focus:ring-2 focus:ring-green-700"
+        <TableComponent
+            data={ years ?? []}
+            keyField="code"
+            loading={loading}
+            emptyMessage="No teachers found"
+            columns={[
+                {header: "Academic Year", accessor:'year'},
+                { header: "Code", accessor: "code" },
+                { header: "Start Date", accessor: "startDate",format:(value:string)=>value.slice(0,10) },
+                { header: "End Date", accessor: "endDate",format:(value:string)=>value.slice(0,10) },
+                {
+                header: "Actions",
+                align: "center",
+                render: (year) => (
+                    <div className="flex justify-center gap-3">
+                    <Link to={`edit/${year._id}`}>
+                    <Pencil
+                        className="w-4 h-4 cursor-pointer hover:text-green-700"
+                    /></Link>
+                    <Trash2
+                        className="w-4 h-4 cursor-pointer hover:text-red-600"
+                        onClick={() => handleDelete(year._id)}
+                    />
+                    </div>
+                ),
+                },
+            ]}
             />
-        </div>
 
-        {/* ---------- Table ---------- */}
-        <div className="border rounded-md overflow-x-auto">
-
-            <table className="w-full text-sm border-collapse">
-            <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                <th className="px-4 py-2 text-left">Academic Year</th>
-                <th className="px-4 py-2 text-left">Code</th>
-                <th className="px-4 py-2 text-left">Start Date</th>
-                <th className="px-4 py-2 text-left">End Date</th>
-                <th className="px-4 py-2 text-center">Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                { loading==true ? 
-                
-                <tr><td>"Loading"</td></tr> 
-                
-                :
-                
-                filteredYears.length === 0 ? (
-                <tr>
-                    <td
-                    colSpan={5}
-                    className="text-center py-6 text-gray-500"
-                    >
-                    No academic years found
-                    </td>
-                </tr>
-                ) : (
-                filteredYears?.map((year, index) => (
-                    <tr
-                    key={index}
-                    className={`border-t ${
-                        index % 2 === 1 ? "bg-green-100" : ""
-                    }`}
-                    >
-                    <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                        <span>{year?.year}</span>
-                        {year?.status=="active" && (
-                            <span className="text-xs text-green-700 font-medium">
-                            Active
-                            </span>
-                        )}
-                        </div>
-                    </td>
-
-                    <td className="px-4 py-3">{year.code}</td>
-                    <td className="px-4 py-3">{year.startDate.split("T")[0]}</td>
-                    <td className="px-4 py-3">{year.endDate.split("T")[0]}</td>
-
-                    <td className="px-4 py-3">
-                        <div className="flex justify-center gap-3 text-gray-600">
-                        <Link to={`edit/${year._id}`}>
-                        <Pencil
-                            className="w-4 h-4 cursor-pointer hover:text-green-700"
-                        /></Link>
-                        <Trash2
-                            className="w-4 h-4 cursor-pointer hover:text-red-600"
-                            onClick={() => handleDelete(year._id)}
-                        />
-                        </div>
-                    </td>
-                    </tr>
-                ))
-                )
-            }
-            </tbody>
-            </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex justify-center items-center gap-4 mt-10 text-sm text-gray-600">
-            <button className="text-gray-400">⬅</button>
-            <span className="text-green-700 font-medium">
-            Page 1 of 1
-            </span>
-            <button className="text-green-700">➡</button>
-        </div>
+        <Pagination/>
         </div>
     );
 };
 
 export default AcademicYearsPage;
-

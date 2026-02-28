@@ -22,11 +22,12 @@ import {
 import { basicTeacherFields } from "@/constants/teacher.Fields";
 import { ActionBar, FileUpload,Grid } from "@/components/Teacher/ActionBar";
 import { Section } from "@/components/Teacher/Section";
+import { TeacherRoute } from "@/constants/routes.contants";
 /* ------------------------------------------------ */
 
 
 const AddTeacherPage = () => {
-    const [teacherId, setTeacherId] = useState<string | null>("");
+    const [teacherId, setTeacherId] = useState<string | null>("safsdfsdfsf");
     const [utils,setUtils]=useState(
             {   error:"",
                 loading:false,
@@ -184,7 +185,7 @@ const AddTeacherPage = () => {
 
 
         const config:HandleApiOptions<FormData>={
-          endPoint:"/teacher/bio/create",
+          endPoint:TeacherRoute.addBio,
           method:"post",
           payload:formData,
           headers:{role:"School"}
@@ -231,7 +232,7 @@ const AddTeacherPage = () => {
         }
 
         const config:HandleApiOptions<Partial<ITeacher>>={
-          endPoint:`/teacher/create/${teacherId}`,
+          endPoint:`${TeacherRoute.addProfessional}/${teacherId}`,
           method:"post",
           payload:professionalForm,
           headers:{role:"School"}

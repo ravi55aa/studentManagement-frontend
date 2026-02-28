@@ -13,6 +13,10 @@ import { storeAddress } from "@/utils/Redux/Reducer/address.reducer";
 import { IAddress } from "@/interfaces/IRegister";
 import Swal from "sweetalert2";
 import { deleteSwal } from "@/utils/swal";
+import { Pagination } from "@/components";
+import SearchAndFilter from "@/components/SearchAndFilter";
+import { TableComponent } from "@/components/Table.compo"; 
+import { AddressRoute, CenterRoute } from "@/constants/routes.contants";
 //import { useAppNavigate } from "@/hooks/navigate.hook";
 
 
@@ -24,7 +28,7 @@ const CentersPage = () => {
     
     const dispatch=useAppDispatch();
     const centerReduxStore=useAppSelector((store)=>store.center);
-    const addressReduxStore=useAppSelector((store)=>store.address);
+    //const addressReduxStore=useAppSelector((store)=>store.address);
 
 
     useEffect(()=>{
@@ -32,9 +36,9 @@ const CentersPage = () => {
             //All Centers fetch
             const config:HandleApiOptions<null>={
                         method:"get",
-                        endPoint:"/school/centers",
+                        endPoint:CenterRoute.get,
                         payload:null,
-                        headers:{role:"school"}
+                        headers:{role:"School"}
                 }
 
             const fetchAllCenters= await handleApi<null,null>(config);
@@ -42,18 +46,19 @@ const CentersPage = () => {
             //All addresses fetch
             const config2:HandleApiOptions<null>={
                 method:"get",
-                endPoint:"/address/all",
+                endPoint:AddressRoute.getAll,
                 payload:null,
-                headers:{role:"school"}
+                headers:{role:"School"}
             }
             
             const fetchedAllAddress= await handleApi<null,IAddress[]>(config2);
             dispatch(storeAddress(fetchedAllAddress?.data?.data));
             dispatch(setCenters(fetchAllCenters.data.data));
 
+            setSearch('');
             setError("");
         })()
-    },[]);
+    },[dispatch]);
 
 
 
@@ -81,7 +86,7 @@ const CentersPage = () => {
 
         const config:HandleApiOptions<null>={
                         method:"delete",
-                        endPoint:`/school/centers/${id}`,
+                        endPoint:`${CenterRoute.get}/${id}`,
                         payload:null,
                         headers:{role:"school"}
                 }
@@ -90,23 +95,20 @@ const CentersPage = () => {
 
         if(!res.success) return res.success;
         
+        console.log(error);
         Swal.fire("Deleted!", "Item deleted successfully", "success");
         dispatch(toggleCenterLoading());
 
         return res.success;
     };
 
-    const getAddressById = (id: string) => {
-        console.log(id);
-        const address=addressReduxStore?.addresses?.filter(
-            (addr) =>addr.userId === id
-        ); 
+    // const getAddressById = (id: string) => {
+    //     const address=addressReduxStore?.addresses?.filter(
+    //         (addr) =>addr.userId === id
+    //     );
 
-        console.log(address);
-
-        return address;
-    };
-
+    //     return address;
+    // };
 
 
 
@@ -122,89 +124,39 @@ const CentersPage = () => {
             <Bell className="text-green-700 w-5 h-5" />
         </div>
 
-        {/* Search */}
-        <div className="mb-6">
-            <input
-            type="text"
-            placeholder="Search centers..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-1/2 border px-4 py-2 rounded-md text-sm outline-none focus:ring-2 focus:ring-green-700"
-            />
-        </div>
+        <SearchAndFilter/>
 
-        {/* Error */}
-        {error && (
-            <p className="text-red-600 text-sm mb-4">{error}</p>
-        )}
-
-        {/* ---------- Desktop Table ---------- */}
-        <div className="hidden md:block overflow-x-auto border rounded-md">
-            <table className="w-full text-sm border-collapse">
-            <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                <th className="px-4 py-2 text-left">Title</th>
-                <th className="px-4 py-2 text-left">Code</th>
-                <th className="px-4 py-2 text-left">City, Country</th>
-                <th className="px-4 py-2 text-left">No of Students</th>
-                <th className="px-4 py-2 text-left">Strength</th>
-                <th className="px-4 py-2 text-center">Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-        {centerReduxStore?.loading ? (
-            <tr>
-            <td colSpan={5} className="text-center py-6">
-                Loading... (If continues kindly re-login)
-            </td>
-            </tr>
-        ) : filteredCenters?.length === 0 ? (
-            <tr>
-            <td colSpan={5} className="text-center py-6 text-gray-500">
-                No centers found
-            </td>
-            </tr>
-        ) : (
-            filteredCenters.map((center, index) => (
-            <tr
-                key={center._id}
-                className={`border-t ${index % 2 === 1 ? "bg-green-50" : ""}`}
-            >
-                <td className="px-4 py-3">{center.name}</td>
-                <td className="px-4 py-3">{center.code}</td>
-                <td className="px-4 py-3">
+        <TableComponent
+            data={filteredCenters ?? []}
+            keyField='_id'
+            loading={centerReduxStore?.loading}
+            emptyMessage="No Centers found"
+            columns={[
+                {header: "Name", accessor:"name"},
+                { header: "Code", accessor: "code" },
+                { header: "Current Strength", accessor: "currentStrength" },
+                { header: "Total Strength", accessor: "totalCapacity" },
                 {
-                    getAddressById(center._id)?.[0]?.city 
-                    +", "+ 
-                    getAddressById(center._id)?.[0]?.country
-                }
-                </td>
-                <td className="px-4 py-3">{center?.currentStrength}</td>
-                <td className="px-4 py-3">{center?.totalCapacity}</td>
-                <td className="px-4 py-3">
-                <div className="flex justify-center gap-3">
+                header: "Actions",
+                align: "center",
+                render: (center) => (
+                    <div className="flex justify-center gap-3">
                     <Link to={`edit/${center._id}`}>
-                    <Pencil className="w-4 h-4 hover:text-green-700" />
+                        <Pencil className="w-4 h-4 hover:text-green-600 cursor-pointer" />
                     </Link>
                     <Ban
-                    className="w-4 h-4 hover:text-yellow-600 cursor-pointer"
-                    onClick={() => handleDisable(center._id)}
+                    className="w-4 h-4"
+                    onClick={() => handleDisable(center?._id)}
                     />
                     <Trash2
-                    className="w-4 h-4 hover:text-red-600 cursor-pointer"
-                    onClick={() => handleDelete(center._id)}
+                    className="w-4 h-4"
+                    onClick={() => handleDelete(center?._id)}
                     />
-                </div>
-                </td>
-            </tr>
-            ))
-        )}
-        </tbody>
-
-
-            </table>
-        </div>
+                    </div>
+                ),
+                },
+            ]}
+        />
 
         {/* ---------- Mobile Card View ---------- */}
         <div className="md:hidden space-y-4">
@@ -249,12 +201,7 @@ const CentersPage = () => {
             )}
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-center items-center gap-4 mt-10 text-sm text-gray-600">
-            <button className="text-gray-400">⬅</button>
-            <span>Page 1 of 1</span>
-            <button className="text-green-700">➡</button>
-        </div>
+        <Pagination/>
 
         </div>
     );

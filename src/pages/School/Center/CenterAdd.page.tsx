@@ -18,6 +18,7 @@ import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { useAppHandleInputChange as _useAppHandleInputChange } from "@/hooks/useHandleInputChange";
 import { IAddress } from "@/interfaces/IRegister";
 import { useAppSelector } from "@/hooks/useStoreHooks";
+import { CenterRoute } from "@/constants/routes.contants";
 
 
 export interface ICenterForm {
@@ -104,9 +105,9 @@ const AddCenter = () => {
         //api call
         const config:HandleApiOptions<ICenterForm>={
             method: "post",
-            endPoint: "/school/centers/add",
+            endPoint: CenterRoute.add,
             payload: form,
-            headers:{role:"school"},
+            headers:{role:"School"},
         }
 
         const res=await handleApi<ICenterForm,ICenterForm>(config);
@@ -157,9 +158,9 @@ const AddCenter = () => {
 
         const config:HandleApiOptions<IAddress>={
             method: "post",
-            endPoint: `/school/centers/add/address/${id}`,
+            endPoint: `${CenterRoute.addAddress}/${id}`,
             payload: formData,
-            headers:{role:"school"},
+            headers:{role:"School"},
         }
 
         const res = await handleApi(config);

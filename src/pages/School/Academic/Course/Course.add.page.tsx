@@ -329,26 +329,6 @@ const CourseAddPage = () => {
             />
             </div>
 
-             {/* Center */}
-            <div>
-                <label className="block text-sm font-medium mb-1">
-                Center *
-                </label>
-                <select
-                name="center"
-                value={form.center}
-                onChange={handleChange}
-                className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
-                >
-                <option value="">Select center</option>
-                <option value='School'>Main-School</option>
-                {centersReduxStore.centers?.map((center)=>{
-                    return (<option value={center?._id}>{center?.name}</option>)
-
-                })}
-                </select>
-                <span id="center" className="text-red-500 errorDisplay"></span>
-            </div>
 
             {/* SCHEDULE */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -378,7 +358,29 @@ const CourseAddPage = () => {
                 value={form.maxStudents}
                 onChange={handleChange}
                 />
+                
+             {/* Center */}
+            <div >
+                <label className="block text-sm font-medium mb-1">
+                Center *
+                </label>
+                <select
+                name="center"
+                value={form.center}
+                onChange={handleChange}
+                className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
+                >
+                <option value="">Select center</option>
+                <option value='School'>Main-School</option>
+                {centersReduxStore.centers?.map((center)=>{
+                    return (<option value={center?._id}>{center?.name}</option>)
+
+                })}
+                </select>
+                <span id="center" className="text-red-500 errorDisplay"></span>
             </div>
+            </div>
+
 
 
             {/* SUB+CLASSES+COORDINATORS */}

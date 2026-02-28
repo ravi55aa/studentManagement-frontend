@@ -10,6 +10,7 @@ import { _useFormatDateForInput } from "@/hooks/useDateFormata";
 import {InputField} from "@/components";
 import { toast } from "react-toastify";
 import { ITeacherBio } from "@/interfaces/ITeacher";
+import { BatchRoute, TeacherRoute } from "@/constants/routes.contants";
 
 const EditBatch = () => {
     const [form, setForm] = useState({
@@ -31,26 +32,10 @@ const EditBatch = () => {
     const {goBack}=useAppNavigate();
 
     useEffect(()=>{
-        (async()=>{
-            const config:HandleApiOptions<null>={
-                        method:"get",
-                        endPoint:"/teacher/all/unAssigned",
-                        payload:null,
-                        headers:{role:"School"}
-                }
-
-            const res = await handleApi<null,ITeacherBio[]>(config);
-            const teachers=res.data.data
-            setUnAssignedTeachers(teachers);
-            return true;
-        })();
-    },[]);
-
-    useEffect(()=>{
         const fetchBatchById=async()=>{
             const config:HandleApiOptions<null>={
                 method:"get",
-                endPoint:`/school/batches/${id}`,
+                endPoint:`${BatchRoute.get}/${id}`,
                 headers:{role:"School"}
             }
 
@@ -71,6 +56,40 @@ const EditBatch = () => {
         }
         fetchBatchById();
     },[id]);
+
+
+    useEffect(()=>{
+            (async()=>{
+                const span=document.getElementById('counselor');
+
+                if(!form.center){
+                    if(span){
+                        span.textContent="Before counselor, select a 'CENTER'";
+                    }
+                    return true;
+                }
+                
+                span.textContent='';
+                const config:HandleApiOptions<null>={
+                    method:"get",
+                    endPoint:TeacherRoute.getAllUnAssigned,
+                    payload:null,
+                    params:{"center":form.center},
+                    headers:{role:"School"}
+                }
+                
+                const res = await handleApi<null,ITeacherBio[]>(config);
+                const teachers=res?.data?.data
+                console.log("@addBatch teachers",teachers);
+                
+                if(!teachers  || teachers.length<=0){
+                    span.textContent='Not found unassigned TEACHERS, from chosen CENTER';
+                }
+                
+                setUnAssignedTeachers(teachers);
+                return true;
+            })();
+        },[form.center]);
 
     const [error, setError] = useState<string | null>(null);
     //const batchReduxStore=useAppSelector((state)=>state.batch);

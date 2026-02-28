@@ -11,23 +11,26 @@ import {
     storeSchoolAcademicCoursesMeta, 
     toggleAcademicCourseLoading 
 } from "@/utils/Redux/Reducer/courses.reducer";
+import { Pagination } from "@/components";
+import SearchAndFilter from "@/components/SearchAndFilter";
+import { TableComponent } from "@/components/Table.compo";
 
 
 
 const CourseListPage = () => {
 
     const dispatch=useAppDispatch();
-    const {courses,courses_meta}=useAppSelector((state)=>state.courses);
+    const {courses}=useAppSelector((state)=>state.courses);
 
-    const [search, setSearch] = useState("");
-    const [filter, setFilter] = useState("");
+    // const [search, setSearch] = useState("");
+    // const [filter, setFilter] = useState("");
     //const [courses, setCourses] = useState(dummy_courses);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
 
 
-    //UseEffect Fetches Courses from Backend
+    //Fetches Courses from Backend
     useEffect(() => {
     const fetchCourses = async () => {
         try {
@@ -60,7 +63,119 @@ const CourseListPage = () => {
     };
 
     fetchCourses();
-    }, [search, filter]);
+    }, [dispatch]);
+
+
+    //   HandleDelete */
+    const handleDelete = async(id: string) => {
+    
+            const result = await Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it",
+            });
+    
+            if(!result.isConfirmed){
+                return;
+            }
+            
+            const config:HandleApiOptions<null>={
+                        method:"delete",
+                        endPoint:`${CourseRoute.get}/${id}`,
+                        payload:null,
+                        headers:{role:"school"}
+                    }
+    
+            const deletedDoc = await handleApi<null,null>(config);
+            
+            if(deletedDoc.success){
+                Swal.fire("Deleted!", "Item deleted successfully", "success");
+            }
+            console.log(error);
+            
+            dispatch(toggleAcademicCourseLoading());
+            return true;
+        };
+
+
+    return (
+        <div className="p-6 bg-white min-h-screen">
+
+        {/* Top Bar */}
+        <div className="flex justify-between items-center mb-4">
+            <Link to="add">
+                <button className="bg-green-700 text-white px-4 py-2 rounded-md text-sm hover:bg-green-800">
+                Add New
+                </button>
+            </Link>
+
+            <Bell className="w-5 h-5 text-green-700 cursor-pointer" />
+        </div>
+
+        <SearchAndFilter/>
+
+        
+        <TableComponent
+            data={courses ?? []}
+            keyField="_id"
+            loading={loading}
+            emptyMessage="No teachers found"
+            columns={[
+                {
+                header: "Name",accessor:'name'},
+                { header: "Code", accessor: "code" },
+                { header: "duration", accessor: "duration",format:(value:{value:string,unit:string})=>value?.value+" "+value?.unit },
+                {
+                header: "Actions",
+                align: "center",
+                render: (course) => (
+                    <div className="flex justify-center gap-3">
+                        <Link to={`edit/${course._id}`}>
+                        <Pencil className="w-4 h-4 hover:text-green-700 cursor-pointer" />
+                        </Link>
+
+                        <Ban className="w-4 h-4 hover:text-yellow-600 cursor-pointer" />
+
+                        <Trash2 
+                        onClick={()=>handleDelete(course?._id)} className="w-4 h-4 hover:text-red-600 cursor-pointer" />
+                    </div>
+                ),
+                },
+            ]}
+            />
+
+        <Pagination/>
+        
+        </div>
+    );
+};
+
+export default CourseListPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -77,16 +192,7 @@ const CourseListPage = () => {
     // };
 
 
-    /******************* Handlers ****/
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-    };
-
-    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilter(e.target.value);
-    };
-
-/*
+    /*
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -141,130 +247,17 @@ const CourseListPage = () => {
 
         return matchesSearch && matchesFilter;
     });
+
+
+
+const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    };
+
+    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilter(e.target.value);
+    };
+
 */
 
 
-    //   HandleDelete */
-    const handleDelete = async(id: string) => {
-    
-            const result = await Swal.fire({
-                title: "Are you sure?",
-                text: "This action cannot be undone!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it",
-            });
-    
-            if(!result.isConfirmed){
-                return;
-            }
-            
-            const config:HandleApiOptions<null>={
-                        method:"delete",
-                        endPoint:`${CourseRoute.get}/${id}`,
-                        payload:null,
-                        headers:{role:"school"}
-                    }
-    
-            const deletedDoc = await handleApi<null,null>(config);
-            
-            if(deletedDoc.success){
-                Swal.fire("Deleted!", "Item deleted successfully", "success");
-            }
-            
-            dispatch(toggleAcademicCourseLoading());
-            return true;
-        };
-
-
-    return (
-        <div className="p-6 bg-white min-h-screen">
-
-        {/* Top Bar */}
-        <div className="flex justify-between items-center mb-4">
-            <Link to="add">
-                <button className="bg-green-700 text-white px-4 py-2 rounded-md text-sm hover:bg-green-800">
-                Add New
-                </button>
-            </Link>
-
-            <Bell className="w-5 h-5 text-green-700 cursor-pointer" />
-        </div>
-
-        {/* Filter + Search */}
-        <div className="flex flex-col md:flex-row gap-3 mb-6">
-            <select onChange={handleFilterChange} className="border px-3 py-2 rounded-md text-sm w-40">
-            <option>Add Filter</option>
-            <option>Mathematics</option>
-            <option>Physics</option>
-            <option>Chemistry</option>
-            <option>Computer Science</option>
-            <option>Languages</option>
-            <option>Other</option>
-            </select>
-
-            <input
-            type="text"
-            onChange={handleSearchChange}
-            placeholder="Search"
-            className="flex-1 border px-4 py-2 rounded-md text-sm focus:ring-2 focus:ring-green-700 outline-none"
-            />
-        </div>
-        {error && <p className="text-sm text-red-500 errorDispaly">{error}</p>}
-
-        {/* Table */}
-        <div className="overflow-x-auto border rounded-md">
-            <table className="min-w-full text-sm">
-            <thead className="bg-white border-b">
-                <tr>
-                <th className="text-left px-4 py-2">Course</th>
-                <th className="text-left px-4 py-2">Code</th>
-                <th className="text-left px-4 py-2">Total Students</th>
-                <th className="text-left px-4 py-2">Duration</th>
-                <th className="text-center px-4 py-2">Actions</th>
-                </tr>
-            </thead>
-
-{!loading &&
-            <tbody>
-                {courses?.map((course, index) => (
-                <tr
-                    key={course?._id}
-                    className={`border-t ${
-                    index % 2 === 1 ? "bg-green-50" : ""
-                    }`}
-                >
-                    <td className="px-4 py-3">{course?.name}</td>
-                    <td className="px-4 py-3">{course?.code}</td>
-                    <td className="px-4 py-3">{courses_meta[index].maxStudents}</td>
-                    <td className="px-4 py-3">{course?.duration.value +" "+course?.duration.unit }</td>
-
-                    <td className="px-4 py-3">
-                    <div className="flex justify-center gap-3 text-gray-600">
-                        <Link to={`edit/${course._id}`}>
-                        <Pencil className="w-4 h-4 hover:text-green-700 cursor-pointer" />
-                        </Link>
-
-                        <Ban className="w-4 h-4 hover:text-yellow-600 cursor-pointer" />
-
-                        <Trash2 
-                        onClick={()=>handleDelete(course?._id)} className="w-4 h-4 hover:text-red-600 cursor-pointer" />
-                    </div>
-                    </td>
-                </tr>
-                ))}
-            </tbody>}
-            </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex justify-center items-center gap-4 mt-8 text-sm">
-            <button className="text-gray-400">◀</button>
-            <span className="text-green-700 font-medium">Page 1 of 1</span>
-            <button className="text-green-700">▶</button>
-        </div>
-        </div>
-    );
-};
-
-export default CourseListPage;

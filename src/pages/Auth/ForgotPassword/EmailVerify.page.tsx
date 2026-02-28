@@ -62,7 +62,7 @@ const ForgotPasswordEmailVerify = () => {
             return; 
         }
 
-        setError(res?.error);
+        setError(res.error.message);
     }
 
     return (

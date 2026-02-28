@@ -13,7 +13,7 @@ export interface IFee {
         code: string | null;
         status: string | null;
         totalAmount: number | null;
-        dueDate: Date | null;
+        dueDate: Date | null|string;
         currency: string | null;
         isDeleted:boolean | null;
         

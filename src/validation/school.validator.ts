@@ -475,25 +475,44 @@ export const passwordSchema = z
 export const autoReminderSchema = z
     .object({
         enabled: z.boolean(),
-
-        daysBeforeDue: z
-            .coerce
-            .number({message:"Total capacity value is required"})
-            .min(2, "Min capacity should be 10 ")
-            .optional()
+        daysBeforeDue: z.coerce.number().optional().nullable(),
     })
-    .refine(
-        (data) => {
-        if (data.enabled && !data.daysBeforeDue) {
-            return false;
+    .superRefine((data, ctx) => {
+        if (data.enabled) {
+        if (data.daysBeforeDue == null) {
+            ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Days before due is required when reminder is enabled",
+            path: ["daysBeforeDue"],
+            });
+            return;
         }
-        return true;
-        },
-        {
-        message: "Days before due is required when reminder is enabled",
-        path: ["daysBeforeDue"],
+
+        if (data.daysBeforeDue < 2) {
+            ctx.addIssue({
+            code: z.ZodIssueCode.too_small,
+            minimum: 2,
+            origin:"number",
+            inclusive: true,
+            type: "number",
+            message: "Min capacity should be 2",
+            path: ["daysBeforeDue"],
+            });
         }
-    );
+
+        if (data.daysBeforeDue > 30) {
+            ctx.addIssue({
+            code: z.ZodIssueCode.too_big,
+            maximum: 30,
+            inclusive: true,
+            origin:"number",
+            type: "number",
+            message: "Max capacity should be 30",
+            path: ["daysBeforeDue"],
+            });
+        }
+        }
+    });
 
 /* ---------------=MAIN FEE SCHEMA--------------------- */
 
@@ -543,7 +562,7 @@ export const feeSchema = z
         (data) => {
         const mapping = {
             COURSE: "Course",
-            ANNUAL: "School",
+            ANNUAL: "AcademicYear",
             EXAM: "Exam",
             CENTER: "Center",
             OTHER: data.appliesTo.model, // allow flexible

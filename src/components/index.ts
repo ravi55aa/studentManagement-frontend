@@ -5,3 +5,4 @@ export {default as "TopBar"} from "./TopBar.c";
 export {default as "InputField"} from "./inputField";
 export {default as "Select"} from "./Select";
 export {default as "SideBar"} from "./Sidebar.page";
+export {default as "ActionBtn"} from "./TableActionButton";

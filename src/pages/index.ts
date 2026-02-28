@@ -1,5 +1,3 @@
-
-
 export{default as "HomePage"} from "./HomePage"
 export{default as "NotFound"} from "./NotFound"
 
@@ -16,7 +14,6 @@ export{default as "DashboardHome"} from "./School/DashBoardHome.page"
 export{default as "Dashboard"} from "./School/Dashboard.page"
 
 export {default as "ViewSchool"} from "./School/ViewSchool.page"
-
 
 export {default as "Centers"} from "./School/Center/Center.page";
 export {default as "EditCenter"} from "./School/Center/Center.edit.page";

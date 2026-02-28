@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { feeSchema } from "@/validation/school.validator";
 import { IFee } from "@/interfaces/IFee";
 import { useParams } from "react-router-dom";
+import { FeeRoute } from "@/constants/routes.contants";
 
 export default function AddFeePage() {
 
@@ -40,7 +41,7 @@ export default function AddFeePage() {
             },
         status: "ACTIVE",
         totalAmount: 0,
-        dueDate: new Date(12/12/2024),
+        dueDate: null,
         currency: "INR",
         autoReminder: {
         enabled: false,
@@ -53,7 +54,7 @@ export default function AddFeePage() {
         const fetch=async()=>{
             const config:HandleApiOptions<null>={
             method:"get",
-            endPoint:`/fee/get/${id}`,
+            endPoint:`${FeeRoute.get}/${id}`,
             headers:{role:"School"}
             }
 
@@ -70,14 +71,14 @@ export default function AddFeePage() {
                     id: feeData.appliesTo.id||"",
                     },
                 status: feeData.status||"ACTIVE",
-                totalAmount: feeData.totalAmount||0,
-                dueDate: feeData.dueDate||new Date(12/12/2024),
+                totalAmount: feeData.totalAmount||0, 
+                dueDate: typeof feeData?.dueDate=='string' ? feeData?.dueDate.slice(0,10):null,
                 currency: feeData.currency||"INR",
                 autoReminder: feeData.autoReminder || {daysBeforeDue:0,enabled:false}
             });           
         }
         fetch();
-    },[]);
+    },[id]);
     
 
     /* --------------HANDLE CHANGE---------------------- */
@@ -166,7 +167,7 @@ export default function AddFeePage() {
         }
 
         const config:HandleApiOptions<object>={
-            endPoint:`fee/edit/${id}`,
+            endPoint:`${FeeRoute.edit}/${id}`,
             payload:form,
             headers:{role:"School"},
             method:"patch"
