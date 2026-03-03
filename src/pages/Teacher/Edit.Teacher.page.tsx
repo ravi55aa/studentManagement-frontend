@@ -3,7 +3,6 @@ import InputField from "@/components/inputField";
 import { toast } from "react-toastify";
 
 import { ITeacher,ITeacherBio } from "@/interfaces/ITeacher";
-import { handleApi, HandleApiOptions } from "@/api/global.api";
 
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { handleValidationOF } from "@/validation/validateFormData";
@@ -23,7 +22,7 @@ import {
     employmentStatusOptions, 
     teacherDesignationOptions 
         } from "@/constants/teacher";
-import { TeacherRoute } from "@/constants/routes.contants";
+import { TeacherService } from "@/api/Services/teacher.service";
 /* ------------------------------------------------ */
 
 
@@ -40,13 +39,7 @@ const EditTeacherPage = () => {
         const fetchTeacher = async () => {
         setLoading(true);
 
-        const config: HandleApiOptions<null> = {
-            endPoint: `/teacher/${id}`,
-            method: "get",
-            headers: { role: "School" },
-        };
-
-        const res = await handleApi<null, Teachers>(config);
+        const res = await TeacherService.get(id);
 
         if (!res.success) {
             toast.error("Failed to fetch teacher");
@@ -73,8 +66,10 @@ const EditTeacherPage = () => {
 export default EditTeacherPage;
 
 
-
-//**TEACHER-BIO-DATA */
+/**
+ * 
+ * TEACHER-BIO-DATA 
+ * */
 const EditTeacherBio = ({ teacher }: { teacher: Partial<ITeacherBio> }) => {
     const [form, setForm] = useState<Partial<ITeacherBio>>({
         firstName: teacher.firstName,
@@ -129,14 +124,7 @@ const EditTeacherBio = ({ teacher }: { teacher: Partial<ITeacherBio> }) => {
         }
         });
 
-        const config: HandleApiOptions<FormData> = {
-            endPoint: `${TeacherRoute.updateBio}/${teacher._id}`,
-            method: "patch",
-            payload: formData,
-            headers: { role: "School" },
-        };
-
-        const res = await handleApi(config);
+        const res = await TeacherService.editBio(teacher._id,formData);
 
         if (!res.success) {
         toast.error("Failed to update bio");
@@ -174,8 +162,10 @@ const EditTeacherBio = ({ teacher }: { teacher: Partial<ITeacherBio> }) => {
 };
 
 
-
-//**TEACHER-PROFESSIONAL-DATA */
+/**
+ * 
+ * TEACHER-PROFESSIONAL-DATA 
+ * */
 const EditTeacherProfessional = ({
     teacher,
     goBack,
@@ -245,18 +235,11 @@ const EditTeacherProfessional = ({
 
         if (!isValid.success) return;
 
-        const config: HandleApiOptions<Partial<ITeacher>> = {
-        endPoint: `${TeacherRoute.updateProfessional}/${teacher.teacherId}`,
-        method: "patch",
-        payload: professionalForm,
-        headers: { role: "School" },
-        };
-
-        const res = await handleApi(config);
+        const res = await TeacherService.editProfessional(teacher.teacherId,professionalForm);
 
         if (!res.success) {
-        toast.error("Failed to update professional details");
-        return;
+        toast.error(res.error.message);
+        return res.success;
         }
 
         toast.success("Teacher Updated Successfully");
@@ -313,7 +296,6 @@ const EditTeacherProfessional = ({
                 </select>
                 <span id="centerId" className="text-red-500 errorDisplay"></span>
             </div>
-
 
 
             {/* ACADEMIC YEAR  */}
@@ -376,6 +358,3 @@ const EditTeacherProfessional = ({
         </Section>
     );
 };
-
-
-

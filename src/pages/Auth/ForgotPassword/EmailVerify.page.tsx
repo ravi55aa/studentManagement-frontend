@@ -2,16 +2,11 @@ import React, { useState }
     from "react";
 import { useNavigate, Link } 
     from "react-router-dom";
-import { handleApi } 
-    from "@/api/global.api";
-import { HandleApiOptions } 
-    from "@/api/global.api";
 import { handleValidationOF } 
     from "@/validation/validateFormData";
 import { emailVerificationSchema } 
     from "@/validation/otpReset";
-import { IOtp } from "./Otp.page";
-import { forgotPassword } from "@/constants/routes.contants";
+import { AuthService } from "@/api/Services/user.service";
 
 
 const ForgotPasswordEmailVerify = () => {
@@ -23,16 +18,10 @@ const ForgotPasswordEmailVerify = () => {
 
     const [error, setError] = useState("");
 
-
-
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         document.getElementById(e.target.name)!.textContent = "";
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-
-
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,19 +34,11 @@ const ForgotPasswordEmailVerify = () => {
 
         setError("");
 
-        const config:HandleApiOptions<object>={
-            method:"post",
-            endPoint:forgotPassword.emailVerify,
-            payload:{email:form.email,model:"admin"},
-            headers:{role:"admin"}
-        }
-
-        const res = await handleApi<object, IOtp>(config);
+        const res = await AuthService.verifyEmail(form.email);
 
         if (res.success) {
-        
             localStorage.setItem("idToResetPassword",JSON.stringify(res.data.data._id));
-        
+
             navigate("/passwordReset/otp");
             return; 
         }

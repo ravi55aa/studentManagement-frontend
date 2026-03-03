@@ -1,55 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { HandleApiOptions, handleApi } from "@/api/global.api";
 import { toast } from "react-toastify";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { courseValSchema,courseFormSchema } from "@/validation/school.validator";
 import { _useFormatDateForInput } from "@/hooks/useDateFormata";
 //import {  IBatches } from "@/interfaces/ISchool";
-import { ICourseForm } from "./Course.add.page";
-import { CourseRoute } from "@/constants/routes.contants";
-import { classes_Obj } from "@/constants/classes.constant";
+import { initialForm,ICourseForm } from "@/interfaces/ICourseForm";
+import { classes_Obj } from "@/constants/classes.constant";;
+import { InputField, Select } from "@/components";
+import { Textarea } from "@/components/textArea";
+import { CourseService } from "@/api/Services/course.service";
+import { IGetAllCourse } from "@/types/tcourse";
 
-/* ===================== TYPES ===================== */
-
-export type CourseStatus = "active" | "inactive";
-export type DurationUnit = "hours" | "months" | "years";
-
-
-    /* ===================== INITIAL STATE ===================== */
-
-    const initialForm: ICourseForm = {
-        name: "",
-        code: "",
-        academicYear: "",
-        //level: "",
-        description: "",
-        status: "active",
-
-        duration: {
-            value: 0,
-            unit: "hours",
-        },
-
-        schedule: {
-            startDate: "",
-            endDate: "",
-        },
-
-        maxStudents: 0,
-        enrollmentOpen: true,
-
-        subjects: [],
-        classes: [],
-        coordinators: [],
-
-        eligibilityCriteria: "",
-        syllabusUrl: "",
-        attachments: [],
-        modelType:'',
-        center:''
-    };
 
 /* ===================== COMPONENT ===================== */
 
@@ -64,58 +27,58 @@ const CourseEditPage = () => {
     /*UseEffect for fetch edit data's */
     useEffect(()=>{
         const fetchCourse=async()=>{
-            const config:HandleApiOptions<null>={
-                endPoint:`${CourseRoute.get}/${id}`,
-                method:"get",
-                headers:{role:"school"},
+
+            const res = await CourseService.get(id)
+
+            if(!res.success){
+                toast.warn(res.error.message);
+                return res.success;
             }
-            const res = await handleApi(config);
-            const courseToEdit=res?.data.data;
-            const {courses,courses_meta}=courseToEdit[0];
+
+            const courseToEdit=res?.data?.data;
+
+            const {course,meta}:IGetAllCourse=courseToEdit;
 
             const initialForm: ICourseForm = {
-                    name: courses.name,
-                    code: courses.code,
-                    academicYear: courses.academicYear.code,
-                    //level: courses.level,
-                    description: courses.description,
-                    status: courses.status,
+                    name: course?.name,
+                    code: course?.code,
+                    academicYear: typeof course?.academicYear=='string' ? course?.academicYear :course?.academicYear,
+                    //level: course.level,
+                    description: course?.description,
+                    status: course?.status,
 
-                    duration:courses.duration,
+                    duration:course?.duration,
 
                     schedule: {
-                        startDate:_useFormatDateForInput(courses?.schedule.startDate),
-                        endDate:_useFormatDateForInput(courses?.schedule?.endDate)
+                        startDate:_useFormatDateForInput(course?.schedule.startDate),
+                        endDate:_useFormatDateForInput(course?.schedule?.endDate)
                     },
 
-                    maxStudents:courses_meta.maxStudents,
+                    maxStudents:Number(meta?.maxStudents),
                     enrollmentOpen: true,
 
-                    subjects: courses_meta.subjects,
-                    classes: courses_meta.classes,
-                    coordinators: courses_meta.coordinators,
+                    subjects: meta?.subjects,
+                    classes: [...meta.classes],
+                    coordinators: meta?.coordinators,
 
-                    modelType: courses_meta.modelType,
-                    center: courses_meta.center,
+                    modelType: course?.modelType,
+                    center: course.modelType =='School'?'School':course?.center,
 
                     eligibilityCriteria: "",
                     syllabusUrl: "",
-                    attachments: courses_meta.attachments ?? [],
+                    attachments:  [],
                 };
+            initialForm.academicYear=course?.academicYear.code;
 
-            initialForm.classes=courses_meta.classes;
-            initialForm.academicYear=courses.academicYear.code;
+            if(meta.subjects  && meta?.subjects[0].subjectType == "ACADEMIC"){
+                initialForm.subjects=meta?.subjects[0]?.subjectRef;
 
-            if(courses_meta.subjects && courses_meta.subjects[0].subjectType == "ACADEMIC"){
-                initialForm.subjects=courses_meta.subjects[0].subjectRef;
-
-                initialForm.subjects.includes(undefined)
+                initialForm.subjects?.includes(undefined)
             } else {
-                initialForm.subjects=courses_meta.subjects[0].customSubjectName;
+                initialForm.subjects=meta?.subjects[0]?.customSubjectName;
             }
             //pending for the coordinators;
             
-            console.log("@course_Edit courses_meta.subjects",courses_meta.subjects);
             setForm(initialForm);
         }
         fetchCourse();
@@ -219,6 +182,15 @@ const CourseEditPage = () => {
         // core
         formData.append("name", form.name);
         formData.append("code", form.code);
+
+        formData.append("center", form.center);
+
+        if(form.center !== 'School'){
+            formData.append('modelType','Centers');
+        } else {
+            formData.append('modelType','School');
+        }
+
         formData.append("academicYear", form.academicYear);
         //formData.append("level", form.level);
         formData.append("description", form.description);
@@ -237,7 +209,7 @@ const CourseEditPage = () => {
         // relations
 
         form.subjects=subjectReduxStore.subjects.map((subject)=>{
-            if(form.subjects.includes(subject._id)){
+            if(form.subjects?.includes(subject._id)){
                 return subject.code;
             }
         });
@@ -254,15 +226,11 @@ const CourseEditPage = () => {
             formData.append("docs", file)
         );
 
-        const config: HandleApiOptions<FormData> = {
-            method: "put",
-            endPoint: `${CourseRoute.edit}/${id}`,
-            payload: formData,
-            headers: { role: "school" },
-        };
-
-        const res = await handleApi(config);
-        if (!res.success) throw new Error(res.error.message);
+        const res = await CourseService.update(id,formData);
+        if (!res.success){
+            toast.error(res.error.message);
+            return res.success;
+        } 
 
         toast.success("Course edited successfully");
         navigate(-1);
@@ -277,7 +245,7 @@ const CourseEditPage = () => {
     const handleBatchToggle = (value: string,key:string) => {
         console.log(form.subjects);
 
-        if(key=="subjects" && form.subjects.includes("other")){
+        if(key=="subjects" && form.subjects?.includes("other")){
             const i=form.subjects.indexOf("other");
             form.subjects.splice(i,1);
         }
@@ -313,14 +281,14 @@ const CourseEditPage = () => {
         >
             {/* BASIC */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input label="Course Name *" name="name" value={form?.name} onChange={handleChange} />
-            <Input label="Code *" name="code" value={form?.code} onChange={handleChange} />
+            <InputField label="Course Name *" name="name" value={form?.name} onChange={handleChange} />
+            <InputField label="Code *" name="code" value={form?.code} onChange={handleChange} />
             {/* <Input label="Level" name="level" value={form?.level} onChange={handleChange} /> */}
             </div>
 
             {/* DURATION */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
+            <InputField
                 label="Duration Value *"
                 name="duration.value"
                 type="number"
@@ -347,7 +315,7 @@ const CourseEditPage = () => {
                 </label>
                 <select
                 name="center"
-                value={form.center}
+                value={form?.center}
                 onChange={handleChange}
                 className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none"
                 >
@@ -363,14 +331,14 @@ const CourseEditPage = () => {
 
             {/* SCHEDULE */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input label="Start Date" name="schedule.startDate" type="date" value={form?.schedule.startDate} onChange={handleChange} />
-                <Input label="End Date" name="schedule.endDate" type="date" value={form?.schedule.endDate
+                <InputField label="Start Date" name="schedule.startDate" type="date" value={form?.schedule.startDate} onChange={handleChange} />
+                <InputField label="End Date" name="schedule.endDate" type="date" value={form?.schedule.endDate
                 } onChange={handleChange} />
             </div>
 
             {/* MAXSTUDENTS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input label="Max students" name="maxStudents" type="number" value={form?.maxStudents} onChange={handleChange} />
+            <InputField label="Max students" name="maxStudents" type="number" value={form?.maxStudents} onChange={handleChange} />
             </div>
 
 
@@ -392,7 +360,7 @@ const CourseEditPage = () => {
                     >
                         <input
                         type="checkbox"
-                        checked={form.classes.includes(classes_Obj[batch])}
+                        checked={form.classes?.includes(classes_Obj[batch])}
                         onChange={() => handleBatchToggle(classes_Obj[batch],"classes")}
                         className="accent-green-700"
                         />
@@ -405,7 +373,7 @@ const CourseEditPage = () => {
                     ))}
                 </div>
 
-                {form.classes.length === 0 && (
+                {form?.classes?.length === 0 && (
                     <p className="text-xs text-gray-500 mt-1">
                     No batches selected
                     </p>
@@ -456,11 +424,11 @@ const CourseEditPage = () => {
                         
                         { form.subjects[0] == "other"
                         &&
-                        <Input label="Enter the Subject" name="otherCourse" type="text" value={form.subjects[1]} onChange={handleSelfDevSubjectOfCourse} />
+                        <InputField label="Enter the Subject" name="otherCourse" type="text" value={form.subjects[1]} onChange={handleSelfDevSubjectOfCourse} />
                         } 
                     </div>
 
-                    {form?.classes.length === 0 && (
+                    {form?.classes?.length === 0 && (
                         <p className="text-xs text-gray-500 mt-1">
                         No batches selected
                         </p>
@@ -499,9 +467,9 @@ const CourseEditPage = () => {
                         ))}
                     </div>
 
-                    {form?.classes.length === 0 && (
+                    {form?.classes?.length === 0 && (
                         <p className="text-xs text-gray-500 mt-1">
-                        No batches selected
+                        No Academic year selected
                         </p>
                     )}
                     </div>
@@ -545,41 +513,5 @@ const CourseEditPage = () => {
 };
 
 export default CourseEditPage;
-
-/* ===================== INPUTS ===================== */
-
-const Input = (props: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) => (
-    <div>
-        <label className="block text-sm font-medium mb-1">{props.label}</label>
-        <input {...props} className="w-full border rounded px-3 py-2 text-sm" />
-    </div>
-);
-
-    const Textarea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) => (
-    <div>
-        <label className="block text-sm font-medium mb-1">{props.label}</label>
-        <textarea {...props} rows={3} className="w-full border rounded px-3 py-2 text-sm" />
-        <span id={props.name} className="text-sm text-red-500 errorDisplay"></span>
-    </div>
-);
-
-const Select = (
-    props: React.SelectHTMLAttributes<HTMLSelectElement> & {
-        label: string;
-        options: { label: string; value: string }[];
-    }
-    ) => (
-    <div>
-        <label className="block text-sm font-medium mb-1">{props.label}</label>
-        <select {...props} className="w-full border rounded px-3 py-2 text-sm">
-        <option value="">Select</option>
-        {props.options.map((o) => (
-            <option key={o.value} value={o.value}>
-            {o.label}
-            </option>
-        ))}
-        </select>
-    </div>
-);
 
 

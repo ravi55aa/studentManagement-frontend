@@ -5,17 +5,16 @@ import { handleValidationOF }
     from "@/validation/validateFormData";
 import {  useState } 
     from "react";
-import { HandleApiOptions,handleApi } 
-    from "@/api/global.api";
 import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import { toast } from "react-toastify";
 import {useAppNavigate} from "@/hooks/useNavigate.hook";
 
 import { toggleAcademicLoading } from "@/utils/Redux/Reducer/schoolYearReducer";
 import { Select,InputField } from "@/components";
-import { SubjectRoute } from "@/constants/routes.contants";
 import { department_Array } from "@/constants/deparment";
-import { RadioGroup } from "@/components/Teacher";
+import { CheckList, RadioGroup } from "@/components/Teacher";
+import FormActions from "@/components/FormAction";
+import { SubjectService } from "@/api/Services/subject.service";
 
 
 enum subjectType {
@@ -124,6 +123,14 @@ const AddSubject = () => {
             passMarks:Number(form.passMarks),
             credits:Number(form.credits),
         }
+
+        if(Number(form.className) > 10 || Number(form.className)<1){
+            const span=document.getElementById('className');
+            if(span){
+                span.textContent='Enter a valid class(1-10)'
+            }
+            return false;
+        }
         
         const validation=handleValidationOF(schoolSubjectSchema,payload);
         
@@ -145,15 +152,7 @@ const AddSubject = () => {
                 formData.append(field,form[field]);
             }
         }
-        
-        //api.call()
-        const config:HandleApiOptions<object>={
-            method:"post",
-            endPoint:SubjectRoute.add,
-            payload:formData
-        }
-        
-        const response=await handleApi(config);
+        const response=await SubjectService.create(formData);
         
         if(!response.success) return response.success;
         
@@ -255,37 +254,21 @@ const AddSubject = () => {
                 onChange={handleChange}
             />
 
-            {/* Level */}
-            {/* <Select
-                label="Level"
-                name="level"
-                value={form.level}
-                onChange={handleChange}
-                options={[
-                { label: "Primary", value: "primary" },
-                { label: "Secondary", value: "secondary" },
-                { label: "Higher Secondary", value: "higher-secondary" },
-                { label: "Degree", value: "degree" },
-                ]}
-            /> */}
-
             {/* Academic Year */}
-            <div>
-            <label className="block text-sm font-medium mb-1">
-            Academic Year
-            </label>
-            {year.years.length<=0 ?
-            <input type="text" readOnly placeholder="No Academic Years: could be fetch_err()" />
-            : (
-            <select onChange={handleChange} value={form.academicYear} className="w-full border rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-green-700 outline-none" name="academicYear" id="year">
-                <option value="">Academic Year</option>
-                {year.years?.map((ele,index)=>{
-                    return(
-                        <option key={index} value={ele?._id}>{ele.code}</option>
-                    )
-                })}
-            </select>)}
-            </div>
+            <CheckList
+                type="radio"
+                label="Select Academic Year"
+                name="academicYear"
+                items={year?.years}
+                selected={form.academicYear}
+                displayKey="year"
+                onChange={(code) =>
+                setForm((prev) => ({
+                    ...prev,
+                    academicYear: code,
+                }))
+                }
+                />
 
             {/* Department */}
             <RadioGroup
@@ -316,45 +299,6 @@ const AddSubject = () => {
 
             {/* ------------------- combined ------------------- */}
             <div className="flex justify-around max-h-64 overflow-y-scroll">
-            {/* ---------- Choose Batches ---------- */}
-                {/* <div className="mt-6">
-                <label className="block text-sm font-medium mb-2">
-                    Choose Batches
-                </label>
-
-                <div className="border rounded-md p-4 max-h-56 overflow-y-auto space-y-2 bg-gray-50">
-                    {batches.batches.length<=0 ?
-                    <input readOnly type="text" placeholder="No Batch Data: could be fetch_err()"/>
-                    :
-                    batches.batches?.map((batch) => (
-                    <label
-                        key={batch?.code}
-                        className="flex items-center gap-3 text-sm cursor-pointer"
-                    >
-                        <input
-                        type="checkbox"
-                        checked={form.batchesToFollow.includes(batch.code)}
-                        onChange={() => handleBatchToggle(batch.code)}
-                        className="accent-green-700"
-                        />
-                        <span>
-                        {batch?.name}
-                        <span className="text-gray-500 ml-1">
-                            ({batch?.code})
-                        </span>
-                        </span>
-                        
-                    </label>
-                    ))}
-                </div>
-
-                {form.batchesToFollow.length === 0 && (
-                    <p className="text-xs text-gray-500 mt-1">
-                    No batches selected
-                    </p>
-                )}
-                </div> */}
-
 
             {/* Reference Books */}
             <div className="mt-6">
@@ -403,26 +347,95 @@ const AddSubject = () => {
 
 
             {/* Actions */}
-            <div className="flex justify-end gap-4 mt-10">
-            <button
-                onClick={goBack}
-                type="button"
-                className="px-6 py-2 border rounded-md text-sm text-gray-600 hover:bg-gray-100"
-            >
-                Cancel
-            </button>
-            <button
-                type="submit"
-                className="px-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
-            >
-                {"Save Subject"}
-            </button>
-            </div>
+            <FormActions submitLabel="Save Subject" onCancel={goBack}  submitType="submit"/>
         </form>
         </div>
     );
     };
 
-    export default AddSubject;
+export default AddSubject;
 
-    /* ---------- Reusable Inputs ---------- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {/* ---------- Choose Batches ---------- */}
+                {/* <div className="mt-6">
+                <label className="block text-sm font-medium mb-2">
+                    Choose Batches
+                </label>
+
+                <div className="border rounded-md p-4 max-h-56 overflow-y-auto space-y-2 bg-gray-50">
+                    {batches.batches.length<=0 ?
+                    <input readOnly type="text" placeholder="No Batch Data: could be fetch_err()"/>
+                    :
+                    batches.batches?.map((batch) => (
+                    <label
+                        key={batch?.code}
+                        className="flex items-center gap-3 text-sm cursor-pointer"
+                    >
+                        <input
+                        type="checkbox"
+                        checked={form.batchesToFollow.includes(batch.code)}
+                        onChange={() => handleBatchToggle(batch.code)}
+                        className="accent-green-700"
+                        />
+                        <span>
+                        {batch?.name}
+                        <span className="text-gray-500 ml-1">
+                            ({batch?.code})
+                        </span>
+                        </span>
+                        
+                    </label>
+                    ))}
+                </div>
+
+                {form.batchesToFollow.length === 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                    No batches selected
+                    </p>
+                )}
+                </div> */}

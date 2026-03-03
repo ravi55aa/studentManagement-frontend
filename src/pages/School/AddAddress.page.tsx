@@ -28,30 +28,26 @@ export default function AddAddress() {
 
     const navigate
         = useNavigate();
-    
-
 
     const handleOnSubmit = 
-            async(e: React.FormEvent<HTMLFormElement>) => {
-                e.preventDefault();
-                
-                const isValidated = 
-                    handleValidationOF(
-                        addressValidate,formData);
-                    //validateMethod(Schema,data)
-                
-                if(!isValidated.success){return isValidated.success;}
-    
-                const res = 
-                    await handleAddressCreateSchoolApi(formData);
-                    console.log(res);
-                if(!res.success){return res.success;}
-    
-                navigate("/school/register/uploadDocuments");
-                return res.success;
+        async(e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            
+            const isValidated = 
+                handleValidationOF(
+                    addressValidate,formData);
+                //validateMethod(Schema,data)
+            
+            if(!isValidated.success){return isValidated.success;}
+
+            const res = 
+                await handleAddressCreateSchoolApi(formData);
+                console.log(res);
+            if(!res.success){return res.success;}
+
+            navigate("/school/register/uploadDocuments");
+            return res.success;
         }
-
-
 
 
     return (

@@ -24,10 +24,6 @@ import { useAppDispatch } from "@/hooks/useStoreHooks";
 import { storeCurrentUser } from "@/utils/Redux/Reducer/currentUser.reducer";
 
 
-
-
-
-
 const SignInSchool = () => {
 
     const navigate = useNavigate();
@@ -41,14 +37,10 @@ const SignInSchool = () => {
     const [error, setError] = useState("");
 
 
-
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         document.getElementById(e.target.name).textContent="";
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -77,7 +69,6 @@ const SignInSchool = () => {
     const handleForgotPassword=()=>{
         return navigate("/forgot-password");
     }
-
 
 
     return (

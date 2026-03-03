@@ -1,12 +1,12 @@
 
-import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { schoolAcademicYearSchema } from "@/validation/school.validator";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { useState } from "react";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { toast } from "react-toastify";
 import {InputField} from "@/components"; 
-import { YearRoute } from "@/constants/routes.contants";
+import FormActions from "@/components/FormAction";
+import { AcademicYearService } from "@/api/Services/year.service";
 
 const AddAcademicYear = () => {
     const [form, setForm] = useState({
@@ -44,7 +44,6 @@ const AddAcademicYear = () => {
         e.preventDefault();
 
         const isValid = handleValidationOF(schoolAcademicYearSchema,form);
-        console.log("@yearAdd.page form",form);
 
         if(!isValid.success){
             setError("Validation Error...");
@@ -58,25 +57,16 @@ const AddAcademicYear = () => {
         status: newStatus
         }));
 
-
-        const config:HandleApiOptions<object>={
-            method:"post",
-            endPoint:YearRoute.add,
-            headers:{"Content-type":"application/json"},
-            payload:form
-        };
-
-        const res=await handleApi(config);
+        const res=await AcademicYearService.add(form);
 
         if(!res.success){
             setError(res?.error.message);
-            console.log("@yearAdd response,",res);
-            return false;
+            return res.success;
         }
         
+        setError(null);
         toast.success("New Year Created");
         goBack();
-        setError(null);
         return true;
     };
 
@@ -158,21 +148,7 @@ const AddAcademicYear = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-4 mt-8">
-            <button
-                onClick={goBack}
-                type="button"
-                className="px-6 py-2 border rounded-md text-sm text-gray-600 hover:bg-gray-100"
-            >
-                Cancel
-            </button>
-            <button
-                type="submit"
-                className="px-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
-            >
-                Save Academic Year
-            </button>
-            </div>
+            <FormActions submitLabel="Save Academic Year" onCancel={goBack}  submitType="submit"/>
         </form>
         </div>
     );

@@ -116,7 +116,7 @@ export interface IAcademicCourseMeta {
     coordinators: string[] | null;
     eligibilityCriteria: string | null;
     attachments: unknown[];
-    batches: string[] | null;
+    classes: string[] | null;
     syllabusUrl?: string | null;
     maxStudents: string | null;
     courseId: string | null;

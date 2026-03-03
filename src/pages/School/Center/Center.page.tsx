@@ -16,7 +16,8 @@ import { deleteSwal } from "@/utils/swal";
 import { Pagination } from "@/components";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import { TableComponent } from "@/components/Table.compo"; 
-import { AddressRoute, CenterRoute } from "@/constants/routes.contants";
+import { AddressRoute } from "@/constants/routes.contants";
+import { CenterService } from "@/api/Services/center.service";
 //import { useAppNavigate } from "@/hooks/navigate.hook";
 
 
@@ -34,14 +35,8 @@ const CentersPage = () => {
     useEffect(()=>{
         (async()=>{
             //All Centers fetch
-            const config:HandleApiOptions<null>={
-                        method:"get",
-                        endPoint:CenterRoute.get,
-                        payload:null,
-                        headers:{role:"School"}
-                }
 
-            const fetchAllCenters= await handleApi<null,null>(config);
+            const fetchAllCenters= await CenterService.getAll();
             
             //All addresses fetch
             const config2:HandleApiOptions<null>={
@@ -84,14 +79,7 @@ const CentersPage = () => {
 
         if (!result.isConfirmed) return;
 
-        const config:HandleApiOptions<null>={
-                        method:"delete",
-                        endPoint:`${CenterRoute.get}/${id}`,
-                        payload:null,
-                        headers:{role:"school"}
-                }
-
-        const res= await handleApi<null,null>(config);
+        const res=await CenterService.delete(id);
 
         if(!res.success) return res.success;
         

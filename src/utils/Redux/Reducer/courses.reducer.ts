@@ -26,8 +26,8 @@ const courseSlice=createSlice({
         storeSchoolAcademicCoursesMeta(state,action:PayloadAction<IAcademicCourseMeta[]>){
             state.courses_meta=action.payload;
         },
-        toggleAcademicCourseLoading(state){
-            state.loading=state.loading?false:true;
+        toggleAcademicCourseLoading(state,action){
+            state.loading=action.payload;
         },
     }
 });

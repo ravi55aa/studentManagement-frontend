@@ -5,8 +5,9 @@ export enum forgotPassword{
     updatePassword="/auth/forgot-password/updatePassword"
 }
 
-export enum schoolRoute {
+export enum SchoolRoute {
     login='/school/login',
+    register='/school/register',
     register_add_Address='/school/register/addAddress',
     register__add_documents='/school/register/uploadDocument',
 
@@ -43,7 +44,7 @@ export enum BatchRoute{
     get="/school/batches",
     add="/school/batches/add",
     assignTeacher='/school/batch/assign-teacher',
-    edit="/school/academic/subjects/edit",
+    edit="/school/batches/edit",
 }
 
 export enum TeacherRoute{

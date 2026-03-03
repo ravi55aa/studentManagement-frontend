@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 
 import { EDepartment, Gender_types } from "@/types/enums";
 import { ITeacher,ITeacherBio } from "@/interfaces/ITeacher";
-import { handleApi, HandleApiOptions } from "@/api/global.api";
 
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { department_obj } from "@/constants/deparment";
@@ -22,7 +21,7 @@ import {
 import { basicTeacherFields } from "@/constants/teacher.Fields";
 import { ActionBar, FileUpload,Grid } from "@/components/Teacher/ActionBar";
 import { Section } from "@/components/Teacher/Section";
-import { TeacherRoute } from "@/constants/routes.contants";
+import { TeacherService } from "@/api/Services/teacher.service";
 /* ------------------------------------------------ */
 
 
@@ -183,24 +182,13 @@ const AddTeacherPage = () => {
       }
     });
 
-
-        const config:HandleApiOptions<FormData>={
-          endPoint:TeacherRoute.addBio,
-          method:"post",
-          payload:formData,
-          headers:{role:"School"}
-        };
-
-        const res =
-        await handleApi<FormData,Partial<ITeacherBio>>(config);
+        const res = await TeacherService.addBio(formData);
 
         if(!res.success){
-          toast.error("Cannot Create the teacher Err:500");
-          console.log("@AddTeacher.page res",res);
+          toast.error(res.error?.message);
           return false;
         }
         const teacher=res?.data.data;
-
 
         //Store the teacher._id at LS=localStorage
         //later delete the ._id form the LS;
@@ -231,15 +219,7 @@ const AddTeacherPage = () => {
           return isValid.success;
         }
 
-        const config:HandleApiOptions<Partial<ITeacher>>={
-          endPoint:`${TeacherRoute.addProfessional}/${teacherId}`,
-          method:"post",
-          payload:professionalForm,
-          headers:{role:"School"}
-        };
-
-        const res =
-        await handleApi<Partial<ITeacher>,Partial<ITeacher>>(config);
+        const res = await TeacherService.addProfessional(teacherId,professionalForm);
 
         if(!res.success){
           toast.error(res.error.message);

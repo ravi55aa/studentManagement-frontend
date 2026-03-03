@@ -2,8 +2,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect } from "react";
-import { handleApi, HandleApiOptions } from "@/api/global.api";
-import { IFee } from "@/interfaces/IFee";
+
 import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import { storeFees,toggleFeeLoading } from "@/utils/Redux/Reducer/fee.reducer";
 import { Pagination,TopBar } from "@/components";
@@ -11,9 +10,9 @@ import { toast } from "react-toastify";
 import { deleteSwal } from "@/utils/swal";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import { TableComponent } from "@/components/Table.compo";
-import { FeeRoute } from "@/constants/routes.contants";
 import TypeBadge from "@/components/fee/TypeBadge.c";
 import StatusBadge from "@/components/fee/StatusBadge.c";
+import { FeeService } from "@/api/Services/fee.service";
 
 
 
@@ -26,16 +25,11 @@ export default function FeeListPage() {
 
     const handleGetAllFess=async()=>{
         dispatch(toggleFeeLoading(true))
-        const config:HandleApiOptions<null>={
-                    method:"get",
-                    endPoint:FeeRoute.getAll,
-                    payload:null,
-                    headers:{role:"School"}
-            }
-    
-        const res= await handleApi<null,IFee[]>(config);
+
+        const res= await FeeService.getAll();
     
         if(!res.success){
+            toast.error(res.error.message);
             return res.success
         }
         dispatch(toggleFeeLoading(false));
@@ -55,18 +49,14 @@ export default function FeeListPage() {
         if(!result.isConfirmed) return result.isConfirmed;
 
         dispatch(toggleFeeLoading(true));
-        const config:HandleApiOptions<null>={
-                method:"delete",
-                endPoint:`${FeeRoute.delete}/${id}`,
-                payload:null,
-                headers:{role:"School"}
-            }
 
-        const res= await handleApi<null,IFee[]>(config);
+        const res= await FeeService.delete(id)
 
         if(!res.success){
+            toast.warn(res.error.message);
             return res.success
         }
+
         dispatch(toggleFeeLoading(false));
         
         await handleGetAllFess();

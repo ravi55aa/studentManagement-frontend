@@ -6,12 +6,13 @@ import { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { batchSchema } from "@/validation/school.validator";
-import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import {InputField} from "@/components";
 import { ITeacherBio } from "@/interfaces/ITeacher";
 import { toast } from "react-toastify";
-import { BatchRoute, TeacherRoute } from "@/constants/routes.contants";
+import FormActions from "@/components/FormAction";
+import { TeacherService } from "@/api/Services/teacher.service";
+import { BatchService } from "@/api/Services/batch.service";
 
 
 const AddBatch = () => {
@@ -41,17 +42,9 @@ const AddBatch = () => {
                 }
                 
                 span.textContent='';
-                const config:HandleApiOptions<null>={
-                    method:"get",
-                    endPoint:TeacherRoute.getAllUnAssigned,
-                    payload:null,
-                    params:{"center":form.center},
-                    headers:{role:"School"}
-                }
                 
-                const res = await handleApi<null,ITeacherBio[]>(config);
+                const res = await TeacherService.getAllUnAssigned(form.center);
                 const teachers=res?.data?.data
-                console.log("@addBatch teachers",teachers);
                 
                 if(!teachers  || teachers.length<=0){
                     span.textContent='Not found unassigned TEACHERS, from chosen CENTER';
@@ -95,17 +88,10 @@ const AddBatch = () => {
         const isValid=handleValidationOF(batchSchema,form);
         if(!isValid.success) return isValid.success;
 
-        //fetchData
-        const config:HandleApiOptions<object>={
-            method:"post",
-            endPoint:BatchRoute.add,
-            payload:form,
-            headers:{role:"School"}
-        }
+        const res=await BatchService.create(form);
 
-        const res=await handleApi(config);
         if(!res.success){
-            toast.error(res.data.error);
+            toast.error(res.error.message);
             return res.success;
         }
 
@@ -242,21 +228,8 @@ const AddBatch = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-4 mt-8">
-            <button
-                onClick={goBack}
-                type="button"
-                className="px-6 py-2 border rounded-md text-sm text-gray-600 hover:bg-gray-100"
-            >
-                Cancel
-            </button>
-            <button
-                type="submit"
-                className="px-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
-            >
-                Save Batch
-            </button>
-            </div>
+            <FormActions submitLabel="Save Batch" onCancel={goBack}  submitType="submit"/>
+            
         </form>
         </div>
     );

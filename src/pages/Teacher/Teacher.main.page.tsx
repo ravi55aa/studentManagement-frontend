@@ -1,4 +1,3 @@
-import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import { IGetAllTeachers, ITeacherBio } from "@/interfaces/ITeacher";
 import { Eye, Pencil, Bell } from "lucide-react";
@@ -11,7 +10,7 @@ import profileImg from "@/assets/profile_image.jpg";
 import { TableComponent } from "@/components/Table.compo";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import { Pagination } from "@/components";
-import { TeacherRoute } from "@/constants/routes.contants";
+import { TeacherService } from "@/api/Services/teacher.service";
 
 const TeachersListPage = () => {
 
@@ -27,25 +26,17 @@ const TeachersListPage = () => {
 
     useEffect(()=>{
             (async()=>{
-                const config:HandleApiOptions<null>=
-                    {
-                        method:"get",
-                        endPoint:TeacherRoute.getAll,
-                        payload:null,
-                        headers:{role:"School"}
-                    }
 
-                const res=await handleApi<null,IGetAllTeachers>(config);
+                const res=await TeacherService.getAll();
                 
                 if(!res.success){
-                    toast.warn(res.data.error);
+                    toast.warn(res.error.message);
                     return;
                 }
 
                 const {teacherBio,teachersSchoolData}=res.data.data;
                 const result:IGetAllTeachers={teacherBio,teachersSchoolData}
                 dispatch(storeTeachers(result));
-
 
                 return true;
             })();

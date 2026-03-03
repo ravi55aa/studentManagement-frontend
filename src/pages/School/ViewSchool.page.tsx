@@ -28,10 +28,11 @@ import {
 } from "@/utils/Redux/Reducer/school.reducer";
 
 import { 
-    AddressRoute, 
-    DocumentRoute, 
-    schoolRoute 
+    DocumentRoute,  
 } from "@/constants/routes.contants";
+import { SchoolService } from "@/api/Services/school.service";
+import { AddressService } from "@/api/Services/address.service";
+import { DocumentService } from "@/api/Services/document.service";
 
 
 /* ------------------------------------------------ */
@@ -60,7 +61,6 @@ const SchoolSettingsPage = () => {
             isOpenUploadDocument:false
         }
     );
-
 
 
     //address
@@ -100,15 +100,7 @@ const SchoolSettingsPage = () => {
      */
     useEffect(()=>{
             (async()=>{
-                const config:HandleApiOptions<null>=
-                    {
-                        method:"get",
-                        endPoint:schoolRoute.viewSchool,
-                        payload:null,
-                        headers:{role:"School"}
-                    }
-
-                const res= await handleApi<null,ISubjectReducer>(config);
+                const res= await SchoolService.view();
                 
                 if(!res.data){
                     toast.warn("Kindly re-login again")
@@ -169,21 +161,13 @@ const SchoolSettingsPage = () => {
         const id=address.userId;
         const formData=new FormData();
         formData.append("profile",image.file);
-        
-        //api call
-        const config:HandleApiOptions<object>={
-            method: "patch",
-            endPoint: `${schoolRoute.updateMeta}/${id}`,
-            payload: formData,
-            headers:{role:"School"},
-        }
 
-        const res=await handleApi<object,null>(config);
+        const res=await SchoolService.updateMeta(id,formData);
         dispatch(toggleMDALoading());
 
         if(!res.success){
             setUtils({
-                error:res.data?.message || 
+                error:res.error?.message || 
                 res.data?.error,
                 loading:false,
                 isOpen:false,
@@ -218,22 +202,15 @@ const SchoolSettingsPage = () => {
         const isValid=handleValidationOF(passwordSchema,passwords);
         
         if(!isValid.success){
+            toast.warn(isValid.error.issues[0]?.message)
             return false;
         }
         const data=
         {role:"School",password1:passwords.pass1,password2:passwords.pass2};
 
-        const config:HandleApiOptions<object>={
-            endPoint:`${schoolRoute.resetPassword}/${userId}`,
-            method:"patch",
-            payload:data,
-            headers:{role:"School"}
-        };
-        
-
         setShowOtp(false);
         
-        const res=await handleApi<object,null>(config);
+        const res=await SchoolService.resetPassword(userId,data);
 
         setShowResetModal(false);
         if(!res.success){
@@ -261,13 +238,7 @@ const SchoolSettingsPage = () => {
 
             dispatch(toggleMDALoading());
 
-            const config:HandleApiOptions<IAddress>={
-                method:"put",
-                endPoint:`${AddressRoute.edit}/${id}`,
-                payload:form,
-                headers:{role:"School"}
-            }
-            const res=await handleApi<IAddress,null>(config);
+            const res=await AddressService.update(id,form);
             
             dispatch(toggleMDALoading());
             if(!res.success){return res.success};
@@ -327,15 +298,7 @@ const SchoolSettingsPage = () => {
         
         const delete_fileName=documents.docs[index].fileName;
 
-        const config:HandleApiOptions<null>={
-            endPoint:`${DocumentRoute.document}/${userId}`,
-            payload:null,
-            method:"delete",
-            headers:{role:"School"},
-            params:{"file_Name":delete_fileName}
-        }
-
-        const res=await handleApi<null,null>(config);
+        const res=await DocumentService.delete(userId, delete_fileName);
         
         dispatch(toggleMDALoading());
         if(!res.success){
@@ -383,14 +346,8 @@ const SchoolSettingsPage = () => {
             });
 
             dispatch(toggleMDALoading());
-            const config:HandleApiOptions<FormData>={
-                method:"put",
-                endPoint:`${DocumentRoute.document}/${userId}`,
-                payload:formData,
-                headers:{role:"School"},
-            }
 
-            const res=await handleApi<FormData,null>(config);
+            const res=await DocumentService.create(userId,formData);
             
             dispatch(toggleMDALoading());
             if(!res.success){

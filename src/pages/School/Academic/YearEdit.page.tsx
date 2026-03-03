@@ -1,4 +1,3 @@
-import { handleApi,HandleApiOptions } from "@/api/global.api";
 import { IAcademicYear } from "@/interfaces/ISchool";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -8,8 +7,10 @@ import { _useFormatDateForInput } from "@/hooks/useDateFormata";
 import {InputField} from "@/components";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { schoolAcademicYearSchema } from "@/validation/school.validator";
-import { YearRoute } from "@/constants/routes.contants";
-
+import FormActions from "@/components/FormAction";
+import { AcademicYearService } from "@/api/Services/year.service";
+import { toggleAcademicLoading } from "@/utils/Redux/Reducer/schoolYearReducer";
+import { useAppDispatch } from "@/hooks/useStoreHooks";
 
 
 const EditAcademicYear = () => {
@@ -18,21 +19,25 @@ const EditAcademicYear = () => {
     const [form, setForm] = useState<IAcademicYear>();
     const [error, setError] = useState<string>("");
     const {goBack}=useAppNavigate();
+    const dispatch=useAppDispatch();
 
     useEffect(()=>{
         const fetchYear=async()=>{
-            const config:HandleApiOptions<null>={
-                endPoint:`${YearRoute.get}/${id}`,
-                method:"get",
-                headers:{role:"School"},
+            dispatch(toggleAcademicLoading(true));
+            const res=await AcademicYearService.get(id);
+            
+            if(!res.success){
+                toast.error(res.error.message);
+                return res.success;
             }
-            const res=await handleApi<null,IAcademicYear>(config);
+            
+            dispatch(toggleAcademicLoading(false));
             setForm(res.data?.data);
             _useFormatDateForInput(res.data.data.endDate);  
             return true;
         }
         fetchYear();
-    },[]);
+    },[id]);
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -54,7 +59,6 @@ const EditAcademicYear = () => {
     const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault();
         setError("")
-        console.log("@yearEdit form",form);
 
         const isValid = handleValidationOF(schoolAcademicYearSchema,form);
         
@@ -62,21 +66,15 @@ const EditAcademicYear = () => {
             setError("VALIDATION ERROR");
             return false;
         }
+        const res=await AcademicYearService.edit(id,form);
 
-        const config:HandleApiOptions<object>={
-                endPoint:`${YearRoute.edit}/${id}`,
-                method:"put",
-                payload:form,
-                headers:{role:"school"},
-            }
-        const res=await handleApi<object,null>(config);
-
-        if(res.success ){
-            toast.success("updated Successfully");
+        if(!res.success ){
+            toast.error(res.error.message);
+            return res.success;
         }
-
+        
         setError("");
-
+        toast.success("updated Successfully");
         goBack();
         return true;
     };
@@ -140,27 +138,10 @@ const EditAcademicYear = () => {
                 />
                 <span className="text-sm">Active</span>
             </div>
-
             </div>
-
-            
 
             {/* Actions */}
-            <div className="flex justify-end gap-4 mt-8">
-            <button
-                onClick={goBack}
-                type="button"
-                className="px-6 py-2 border rounded-md text-sm text-gray-600 hover:bg-gray-100"
-            >
-                Cancel
-            </button>
-            <button
-                type="submit"
-                className="px-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
-            >
-                Update Academic Year
-            </button>
-            </div>
+            <FormActions submitLabel="Save Academic Year" onCancel={goBack}  submitType="submit"/>
         </form>
         </div>
     );

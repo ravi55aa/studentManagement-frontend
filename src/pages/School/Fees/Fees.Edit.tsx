@@ -5,17 +5,17 @@ import { useAppNavigate } from "@/hooks/useNavigate.hook";
 
 import InputField from "@/components/inputField"; 
 import { Select } from "@/components";
-import { Section } from "@/components/Teacher/Section"; 
-import { ActionBar } from "@/components/Teacher/ActionBar";
+import { Section } from "@/components/Teacher/Section";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 
-import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { toast } from "react-toastify";
 import { feeSchema } from "@/validation/school.validator";
-import { IFee } from "@/interfaces/IFee";
+
 import { useParams } from "react-router-dom";
-import { FeeRoute } from "@/constants/routes.contants";
+
+import FormActions from "@/components/FormAction";
+import { FeeService } from "@/api/Services/fee.service";
 
 export default function AddFeePage() {
 
@@ -52,13 +52,13 @@ export default function AddFeePage() {
 
     useEffect(()=>{
         const fetch=async()=>{
-            const config:HandleApiOptions<null>={
-            method:"get",
-            endPoint:`${FeeRoute.get}/${id}`,
-            headers:{role:"School"}
+
+            const res=await FeeService.get(id);
+            if(!res.success){
+                toast.warn(res.error.message);
+                return res.success;
             }
 
-            const res=await handleApi<null,Partial<IFee>>(config);
             
             const feeData=res?.data?.data;
 
@@ -152,7 +152,6 @@ export default function AddFeePage() {
     };
 
     const handleSubmit = async () => {
-        console.log("Fee Data:", form);
         
         setForm((prev)=>({...prev,
             totalAmount:Number(prev.totalAmount),
@@ -165,18 +164,11 @@ export default function AddFeePage() {
             console.log("Validation_Error");
             return false;
         }
-
-        const config:HandleApiOptions<object>={
-            endPoint:`${FeeRoute.edit}/${id}`,
-            payload:form,
-            headers:{role:"School"},
-            method:"patch"
-        };
-
-        const res=await handleApi(config);
+        const res=await FeeService.update(id,form);
         
         if(!res.success){
             setApplies2Obj((prev)=>({...prev,School:courses}));
+            toast.warn(res.error.message);
             return res.success;
         }
 
@@ -326,22 +318,7 @@ export default function AddFeePage() {
             )}
         </Section>
 
-        <ActionBar>
-            <button
-            type="button"
-            onClick={goBack}
-            className="px-6 py-2 border rounded-md"
-            >
-            Cancel
-            </button>
-
-            <button
-            onClick={handleSubmit}
-            className="px-6 py-2 bg-green-700 text-white rounded-md"
-            >
-            Add Fee
-            </button>
-        </ActionBar>
+        <FormActions submitLabel="Save Fee" onCancel={goBack}  submitType="button" onSubmit={handleSubmit}/>
 
         </div>
     );

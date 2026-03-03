@@ -1,7 +1,7 @@
 import {  useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 import {Link} from "react-router";
-import { HandleApiOptions,handleApi } from "@/api/global.api";
+
 import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import { storeBatches, toggleBatchLoading } from "@/utils/Redux/Reducer/batchReducer";
 import { IBatches } from "@/interfaces/ISchool";
@@ -11,7 +11,9 @@ import { toast } from "react-toastify";
 import { ActionBtn, Pagination } from "@/components";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import { TableComponent } from "@/components/Table.compo";
-import { BatchRoute, TeacherRoute } from "@/constants/routes.contants";
+
+import { TeacherService } from "@/api/Services/teacher.service";
+import { BatchService } from "@/api/Services/batch.service";
 
 
 const BatchesPage = () => {
@@ -26,30 +28,22 @@ const BatchesPage = () => {
 
     useEffect(()=>{
         (async()=>{
+            const res = await BatchService.getAll()
 
-            const config:HandleApiOptions<null>={
-                        method:"get",
-                        endPoint:BatchRoute.get,
-                        payload:null,
-                        headers:{role:"School"}
-                }
+            if(!res.success){
+                toast.warn(res.error.message);
+                return res.success;
+            }
 
-            const fetchData= await handleApi<null,null>(config);
-            dispatch(storeBatches(fetchData.data.data));
+            const batches=res.data.data;
+            dispatch(storeBatches(batches));
         })();
     },[dispatch,batchReduxStore.loading]);
 
 
     useEffect(()=>{
         (async()=>{
-            const config:HandleApiOptions<null>={
-                        method:"get",
-                        endPoint:TeacherRoute.getAllUnAssigned,
-                        payload:null,
-                        headers:{role:"School"}
-                }
-
-            const res= await handleApi<null,ITeacherBio[]>(config);
+            const res= await TeacherService.getAllUnAssigned(''); 
             const teachers=res.data?.data
             setUnAssignedTeachers(teachers);
             return true;
@@ -77,18 +71,9 @@ const BatchesPage = () => {
         if(!teacher_Professional_data){
             toast.info('No available teachers in the center, For this batch');
         }
-
         const center=teacher_Professional_data.center;
 
-        const config:HandleApiOptions<null>={
-                        method:"get",
-                        endPoint:TeacherRoute.getAllUnAssigned,
-                        payload:null,
-                        params:{center},
-                        headers:{role:"School"}
-                }
-
-        const res= await handleApi<null,ITeacherBio[]>(config);
+        const res= await TeacherService.getAllUnAssigned(center)
         const teachers=res.data?.data || [];
         setUnAssignedTeachers(teachers);
 
@@ -103,15 +88,9 @@ const BatchesPage = () => {
     
     const handleAssignTeacher = async (teacherId: string):Promise<boolean> => {
         dispatch(toggleBatchLoading(true));
-        const config: HandleApiOptions<object> = {
-            endPoint: `${BatchRoute.assignTeacher}/${selectedBatch?._id}`,
-            method: "patch",
-            payload: { teacherId },
-            headers: { role: "School" }
-        };
+        
+        const res = await BatchService.assignTeacher(selectedBatch?._id,teacherId) 
         setSearch('');
-
-        const res = await handleApi(config);
 
         dispatch(toggleBatchLoading(false));
         if (!res.success) {

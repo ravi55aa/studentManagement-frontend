@@ -19,12 +19,14 @@ import { addCenter_Form_Fields,
 import { useParams } from "react-router-dom";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { toast } from "react-toastify";
-import { ICenterForm } from "@/interfaces/ISchool";
+
 import { IAddress } from "@/interfaces/IRegister";
 import { useAppHandleInputChange as _useAppHandleInputChange } 
     from "@/hooks/useHandleInputChange"; 
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { AddressRoute, CenterRoute } from "@/constants/routes.contants";
+import FormActions from "@/components/FormAction";
+import { CenterService } from "@/api/Services/center.service";
 
 
 
@@ -32,14 +34,14 @@ const EditCenter = () => {
 
     const [form, setForm] = useState({
         name: "",
-            code: "",
-                phone: "",
-            email: "",
-            headInCharge: "",
-                currentStrength: "",
-            totalCapacity: "",
-            type: "",
-                isMain: false,
+        code: "",
+        phone: "",
+        email: "",
+        headInCharge: "",
+        currentStrength: "",
+        totalCapacity: "",
+        type: "",
+        isMain: false,
         isActive: true,
     });
 
@@ -61,15 +63,13 @@ const EditCenter = () => {
 
     useEffect(()=>{
         const fetchYear=async()=>{
-            const config:HandleApiOptions<null>={
-                endPoint:`${CenterRoute.get}/${id}`,
-                method:"get",
-                headers:{role:"school"},
-            }
-            const res=await handleApi<null,ICenterForm>(config);
+            
+            const res=await CenterService.get(id);
 
             if(!res.success){
                 setUtils({error:"Center Edit error" ,openAddress:false});
+                toast.warn(res.error.message);
+                return res.success;
             }
 
             const subjectDoc=res?.data?.data;
@@ -83,7 +83,7 @@ const EditCenter = () => {
 
                 currentStrength: subjectDoc?.currentStrength||"",
 
-                    totalCapacity: subjectDoc?.totalCapacity||"",
+                    totalCapacity: subjectDoc?.totalCapacity||'',
                         type: subjectDoc?.type||"",
                             isMain: subjectDoc?.isMain||false,
                             isActive: subjectDoc?.isActive||false,
@@ -152,15 +152,7 @@ const EditCenter = () => {
         //const isValid=handleValidationOF(centerSchema,form);
         //if(!isValid.success) return isValid.success;
 
-        //api call
-        const config:HandleApiOptions<ICenterForm>={
-            method: "put",
-                endPoint: `${CenterRoute.edit}/${id}`,
-                payload: form,
-                    headers:{role:"school"},
-        }
-
-        const res=await handleApi(config);
+        const res=await CenterService.update(id,form);
 
         if(res.success){
             toast.success("Updated Successfully");
@@ -190,17 +182,8 @@ const EditCenter = () => {
                         
                         if(!isValidated.success){return isValidated.success;}
     
-            const id=JSON.parse(localStorage.getItem("newCenter_id_ForAddress"));
-    
-            //api call
-            const config:HandleApiOptions<IAddress>={
-                method: "post",
-                    endPoint: `${CenterRoute.addAddress}/${id}`,
-                    payload: addressForm,
-                headers:{role:"school"},
-            }
-    
-            const res=await handleApi(config);
+            const id=JSON.parse(localStorage.getItem("newCenter_id_ForAddress"));  
+            const res=await CenterService.addAddress(id,addressForm) ;
     
             if(!res.success){
                 setUtils((prev)=>({...prev,error:res.data.error}));
@@ -302,21 +285,9 @@ const EditCenter = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-4 mt-8">
-            <button
-                type="button"
-                onClick={goBack}
-                className="px-6 py-2 border rounded-md text-sm text-gray-600 hover:bg-gray-100"
-            >
-                Cancel
-            </button>
-            <button
-                type="submit"
-                className="px-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
-            >
-                Update Center
-            </button>
-            </div>
+            <FormActions submitLabel="Update Center" onCancel={goBack}  submitType="submit"/>
+
+
         </form>
             <button
                 type="button"

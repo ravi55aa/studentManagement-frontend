@@ -4,10 +4,10 @@ import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useSocket } from "@/hooks/useAppContext";
 import { Section } from "../Teacher/Section";
-import { ActionBar } from "../Teacher/ActionBar";
 import {InputField,Select} from "@/components";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { NotificationRoutes } from "@/constants/routes.contants";
+import FormActions from "../FormAction";
 
 
 
@@ -179,27 +179,8 @@ export default function AddNotificationPage() {
 
         </Section>
 
-        <div className="flex  gap-2 justify-end">
-        <ActionBar>
-            <button
-            disabled={loading}
-            onClick={goBack}
-            className=" px-6 py-2 rounded-md border disabled:opacity-50"
-            >
-            Back
-            </button>
-        </ActionBar>
 
-        <ActionBar>
-            <button
-            disabled={loading}
-            onClick={handleSubmit}
-            className="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-800 disabled:opacity-50"
-            >
-            {loading ? "Sending..." : "Send Notification"}
-            </button>
-        </ActionBar>
-        </div>
+    <FormActions submitLabel="Send Notification" loading={loading} onCancel={goBack}  submitType="button" onSubmit={handleSubmit}/>
 
         </div>
     );

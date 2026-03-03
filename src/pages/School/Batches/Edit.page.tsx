@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { batchSchema } from "@/validation/school.validator";
-import { handleApi, HandleApiOptions } from "@/api/global.api";
 import { useParams } from "react-router-dom";
-import { IBatches } from "@/interfaces/ISchool";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { _useFormatDateForInput } from "@/hooks/useDateFormata";
 import {InputField} from "@/components";
 import { toast } from "react-toastify";
 import { ITeacherBio } from "@/interfaces/ITeacher";
-import { BatchRoute, TeacherRoute } from "@/constants/routes.contants";
+import FormActions from "@/components/FormAction";
+import { TeacherService } from "@/api/Services/teacher.service";
+import { BatchService } from "@/api/Services/batch.service";
 
 const EditBatch = () => {
     const [form, setForm] = useState({
@@ -33,13 +33,8 @@ const EditBatch = () => {
 
     useEffect(()=>{
         const fetchBatchById=async()=>{
-            const config:HandleApiOptions<null>={
-                method:"get",
-                endPoint:`${BatchRoute.get}/${id}`,
-                headers:{role:"School"}
-            }
 
-            const res=await handleApi<null,IBatches>(config);
+            const res=await BatchService.get(id);
             
             const batchData=res?.data?.data;
 
@@ -48,7 +43,7 @@ const EditBatch = () => {
                 modelType:batchData?.modelType ||"School",
                 code:batchData?.code || "",
                 center:batchData?.center|| "" ,
-                counselor: batchData?.batchCounselor,
+                counselor: batchData.batchCounselor,
                 startDate:_useFormatDateForInput(batchData?.schedule.startTime) || "",
                 endDate:_useFormatDateForInput(batchData?.schedule.endTime) || "",
                 isActive:batchData?.status=="active" ?true:false,
@@ -68,17 +63,9 @@ const EditBatch = () => {
                     }
                     return true;
                 }
-                
                 span.textContent='';
-                const config:HandleApiOptions<null>={
-                    method:"get",
-                    endPoint:TeacherRoute.getAllUnAssigned,
-                    payload:null,
-                    params:{"center":form.center},
-                    headers:{role:"School"}
-                }
-                
-                const res = await handleApi<null,ITeacherBio[]>(config);
+
+                const res = await TeacherService.getAllUnAssigned(form.center)
                 const teachers=res?.data?.data
                 console.log("@addBatch teachers",teachers);
                 
@@ -127,15 +114,8 @@ const EditBatch = () => {
             return isValid.success;
         }
 
-        //fetchData
-        const config:HandleApiOptions<object>={
-            method:"put",
-            endPoint:`/school/batches/edit/${id}`,
-            payload:form,
-            headers:{role:"school"}
-        }
+        const res=await BatchService.update(id,form);
 
-        const res=await handleApi(config);
         if(!res.success){
             toast.error(res.error.message);
             return res.success;
@@ -269,22 +249,7 @@ const EditBatch = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-4 mt-8">
-            
-            <button
-            onClick={goBack}
-                type="button"
-                className="px-6 py-2 border rounded-md text-sm text-gray-600 hover:bg-gray-100"
-            >
-                Cancel
-            </button>
-            <button
-                type="submit"
-                className="px-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
-            >
-                Edit Batch
-            </button>
-            </div>
+            <FormActions submitLabel="Save Batch" onCancel={goBack}  submitType="submit"/>
         </form>
         </div>
     );

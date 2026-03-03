@@ -3,7 +3,7 @@ import { IAddress }
 import { axiosBaseURL } 
     from "@/config/axios.config"
 import { IResponse } from "@/interfaces/IResponse";
-import { schoolRoute } from "@/constants/routes.contants";
+import { SchoolRoute } from "@/constants/routes.contants";
 
 
 
@@ -43,7 +43,7 @@ export const handleAddressCreateSchoolApi =
         {
         try {
             const res:IResponse<null> = 
-                await axiosBaseURL.post(schoolRoute.register_add_Address,formData,
+                await axiosBaseURL.post(SchoolRoute.register_add_Address,formData,
                     { headers: { "role": "Admin"}});
                 
             return res.data;
@@ -60,7 +60,7 @@ export const handleDocsUploadCreateSchoolApi =
         {
         try {
             const res:IResponse<null> = 
-                await axiosBaseURL.post(schoolRoute.register__add_documents,formData,
+                await axiosBaseURL.post(SchoolRoute.register__add_documents,formData,
                     { headers: 
                         { "role": "admin","Content-Type":"multipart/formData"}
                     });
@@ -78,7 +78,7 @@ export const handleDocsUploadCreateSchoolApi =
     export const handleSchoolSignIn=async(payload:object)=>{
         try{
 
-            const response=await axiosBaseURL.get(schoolRoute.login,{
+            const response=await axiosBaseURL.get(SchoolRoute.login,{
                 params:payload,
                 headers:{role:"Admin"}
             });

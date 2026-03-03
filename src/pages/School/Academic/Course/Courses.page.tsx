@@ -1,11 +1,8 @@
 import { Pencil, Ban, Trash2, Bell } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router";
-import { HandleApiOptions,handleApi } from "@/api/global.api";
-import {IAcademicCourse,IAcademicCourseMeta} from "@/interfaces/ISchool.ts"
 import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import Swal from "sweetalert2";
-import { CourseRoute } from "@/constants/routes.contants";
 import { 
     storeSchoolAcademicCourses, 
     storeSchoolAcademicCoursesMeta, 
@@ -14,19 +11,18 @@ import {
 import { Pagination } from "@/components";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import { TableComponent } from "@/components/Table.compo";
-
+import { CourseService } from "@/api/Services/course.service";
+import { toast } from "react-toastify";
 
 
 const CourseListPage = () => {
 
     const dispatch=useAppDispatch();
-    const {courses}=useAppSelector((state)=>state.courses);
+    const {courses,loading}=useAppSelector((state)=>state.courses);
 
     // const [search, setSearch] = useState("");
     // const [filter, setFilter] = useState("");
     //const [courses, setCourses] = useState(dummy_courses);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
 
 
@@ -34,17 +30,9 @@ const CourseListPage = () => {
     useEffect(() => {
     const fetchCourses = async () => {
         try {
-        setLoading(true);
+        dispatch(toggleAcademicCourseLoading(true));
 
-        const config:HandleApiOptions<null> = {
-            method: "get",
-            endPoint: CourseRoute.get,
-            payload:null,
-            headers: { role: "school" },
-        };
-
-        type fetchedApiDataType={courses:IAcademicCourse[],courses_meta:IAcademicCourseMeta[]}
-        const res = await handleApi<null,fetchedApiDataType>(config);
+        const res = await CourseService.getAll();
 
         if (!res.success) {
             throw new Error(res.error.message);
@@ -54,11 +42,11 @@ const CourseListPage = () => {
         dispatch(storeSchoolAcademicCourses(courses))
         dispatch(storeSchoolAcademicCoursesMeta(courses_meta));
 
-            setError(null);
+            
         } catch (err) {
-            setError(err || "Failed to fetch courses");
+            toast.error(err.message);
         } finally {
-            setLoading(false);
+            dispatch(toggleAcademicCourseLoading(false));
         }
     };
 
@@ -68,36 +56,28 @@ const CourseListPage = () => {
 
     //   HandleDelete */
     const handleDelete = async(id: string) => {
-    
-            const result = await Swal.fire({
-                title: "Are you sure?",
-                text: "This action cannot be undone!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it",
-            });
-    
-            if(!result.isConfirmed){
-                return;
-            }
-            
-            const config:HandleApiOptions<null>={
-                        method:"delete",
-                        endPoint:`${CourseRoute.get}/${id}`,
-                        payload:null,
-                        headers:{role:"school"}
-                    }
-    
-            const deletedDoc = await handleApi<null,null>(config);
-            
-            if(deletedDoc.success){
-                Swal.fire("Deleted!", "Item deleted successfully", "success");
-            }
-            console.log(error);
-            
-            dispatch(toggleAcademicCourseLoading());
-            return true;
-        };
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it",
+        });
+
+        if(!result.isConfirmed){
+            return;
+        }
+        const deletedDoc = await CourseService.delete(id);
+
+        if(!deletedDoc.success){
+            Swal.fire("Deleted!", deletedDoc.error.message, "error");
+            return deletedDoc.success;
+        }
+        
+        Swal.fire("Deleted!", "Item deleted successfully", "success");
+        dispatch(toggleAcademicCourseLoading(false));
+        return true;
+    };
 
 
     return (
@@ -126,7 +106,10 @@ const CourseListPage = () => {
                 {
                 header: "Name",accessor:'name'},
                 { header: "Code", accessor: "code" },
-                { header: "duration", accessor: "duration",format:(value:{value:string,unit:string})=>value?.value+" "+value?.unit },
+                { header: "duration", 
+                    accessor: "duration",
+                    format:(value:{value:string,unit:string})=>value?.value+" "+value?.unit 
+                },
                 {
                 header: "Actions",
                 align: "center",
@@ -150,7 +133,7 @@ const CourseListPage = () => {
         
         </div>
     );
-};
+};  
 
 export default CourseListPage;
 
@@ -197,7 +180,7 @@ export default CourseListPage;
         e.preventDefault();
 
         try {
-            setLoading(true);
+
 
             // basic validation
             if (!form.name || !form.code || !form.program) {
@@ -232,7 +215,7 @@ export default CourseListPage;
         } catch (err) {
             setError(err.message || "Unable to save course");
         } finally {
-            setLoading(false);
+
         }
     };
 

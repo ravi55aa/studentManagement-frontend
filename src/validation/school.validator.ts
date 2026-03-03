@@ -263,8 +263,9 @@ export const schoolSubjectSchema = z
         .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase (A-Z, 0-9, -, _)"),
 
         className: z
-        .string()
-        .min(1,"Class is required")
+        .string('Valid class is required')
+        .min(1,"minimum class in 1")
+        .max(2,"Maximum class is 10")
         ,
 
         type: z.enum(["theory", "practical", "both"], {
@@ -346,7 +347,7 @@ export const courseValSchema = z.object({
     /* ---------- core ---------- */
     name: z
         .string()
-        .min(3, "Course name must be at least 3 characters"),
+        .min(2, "Course name must be at least 3 characters"),
 
     code: z
         .string()

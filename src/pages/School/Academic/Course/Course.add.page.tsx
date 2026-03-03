@@ -1,87 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HandleApiOptions, handleApi } from "@/api/global.api";
 import { toast } from "react-toastify";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { courseValSchema,courseFormSchema } from "@/validation/school.validator";
-import {InputField} from "@/components";
-import { CourseRoute } from "@/constants/routes.contants";
+import {InputField, Select} from "@/components";
 import { classes_Obj } from "@/constants/classes.constant";
-
-/* ===================== TYPES ===================== */
-
-export type CourseStatus = "active" | "inactive";
-export type DurationUnit = "hours" | "months" | "years";
-
-export interface ICourseForm {
-    name: string;
-    code: string;
-    academicYear: string;
-    //level: string;
-    description: string;
-    status: CourseStatus;
-
-    duration: {
-        value: number;
-        unit: DurationUnit;
-    };
-
-    schedule: {
-        startDate: string;
-        endDate: string;
-    };
-
-    maxStudents: number;
-    enrollmentOpen: boolean;
-
-    subjects: string[];
-    classes: string[];
-    coordinators: string[];
-
-    eligibilityCriteria: string;
-    syllabusUrl: string;
-    attachments: File[];
-    modelType:string,
-    center:string,
-    }
-
-    /* ===================== INITIAL STATE ===================== */
-
-    const initialForm: ICourseForm = {
-    name: "",
-    code: "",
-    academicYear: "",
-    //level: "",
-    description: "",
-    status: "active",
-
-    duration: {
-        value: 0,
-        unit: "hours",
-    },
-
-    schedule: {
-        startDate: "",
-        endDate: "",
-    },
-
-    modelType:'School',
-    center:'',
-
-    maxStudents: 0,
-    enrollmentOpen: true,
-
-    subjects: [],
-    classes: [],
-    coordinators: [],
-
-    eligibilityCriteria: "",
-    syllabusUrl: "",
-    attachments: [],
-};
-
-/* ===================== COMPONENT ===================== */
+import {ICourseForm, initialForm} from "@/interfaces/ICourseForm";
+import { Textarea } from "@/components/textArea";
+import { CheckList } from "@/components/Teacher";
+import { CourseService } from "@/api/Services/course.service";
 
 const CourseAddPage = () => {
     const navigate = useNavigate();
@@ -212,14 +140,7 @@ const CourseAddPage = () => {
             formData.append("docs", file)
         );
 
-        const config: HandleApiOptions<FormData> = {
-            method: "post",
-            endPoint: CourseRoute.add,
-            payload: formData,
-            headers: { role: "school" },
-        };
-
-        const res = await handleApi(config);
+        const res = await CourseService.create(formData);
         if (!res.success) {
             toast.error(res.error.message);
             return false
@@ -379,6 +300,7 @@ const CourseAddPage = () => {
                 </select>
                 <span id="center" className="text-red-500 errorDisplay"></span>
             </div>
+
             </div>
 
 
@@ -429,7 +351,7 @@ const CourseAddPage = () => {
 
                     <div className="border rounded-md p-4 max-h-56 overflow-y-auto space-y-2 bg-gray-50">
                         {subjectReduxStore.subjects.length<=0 ?
-                        <input readOnly type="text" placeholder="No Batch Data: could be fetch_err()"/>
+                        <input readOnly type="text" placeholder="No Subjects Data: could be fetch_err()"/>
                         :
                         subjectReduxStore.subjects?.map((subject) => (
                         <label
@@ -466,7 +388,7 @@ const CourseAddPage = () => {
                         { form.subjects[0] == "other"
                         &&
                         
-                        <Input label="Enter the Subject" name="otherCourse" type="text" value={form.subjects[1]} onChange={handleSelfDevSubjectOfCourse} />
+                        <InputField label="Enter the Subject" name="otherCourse" type="text" value={form.subjects[1]} onChange={handleSelfDevSubjectOfCourse} />
                         } 
                     </div>
 
@@ -478,44 +400,21 @@ const CourseAddPage = () => {
                     </div>
 
                 {/* Academic Year */}
-                <div className="mt-6">
-                    <label className="block text-sm font-medium mb-2">
-                        Choose AcademicYear
-                    </label>
-
-                    <div className="border rounded-md p-4 max-h-56 overflow-y-auto space-y-2 bg-gray-50">
-                        {
-                        academicYearReduxStore.years?.map((year) => (
-                        <label
-                            key={year?.code}
-                            className="flex items-center gap-3 text-sm cursor-pointer"
-                        >
-                            <input
-                            type="radio"
-                            name="academicYear"
-                            value={year.code}
-                            onChange={(e) => handleChange(e)}
-                            className="accent-green-700"
-                            />
-                            <span>
-                            {year?.code}
-                            <span className="text-gray-500 ml-1">
-                                ({year?.startDate.split("T")[0]})
-                            </span>
-                            </span>
-                            
-                        </label>
-                        ))}
-                    </div>
-
-                    {form.academicYear.length === 0 && (
-                        <p className="text-xs text-gray-500 mt-1">
-                        No batches selected
-                        </p>
-                    )}
-                    </div>
+                    <CheckList
+                        label="Select Academic Year"
+                        items={academicYearReduxStore.years}
+                        type="radio"
+                        name="academicYear"
+                        selected={form.academicYear}
+                        displayKey="year"
+                        onChange={(code) =>
+                        setForm((prev) => ({
+                            ...prev,
+                            academicYear: code,
+                        }))
+                        }
+                    />
             </div>
-
 
 
             {/* DESCRIPTION */}
@@ -555,39 +454,3 @@ const CourseAddPage = () => {
 
 export default CourseAddPage;
 
-/* ===================== INPUTS ===================== */
-
-const Input = (props: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) => (
-    <div>
-        <label className="block text-sm font-medium mb-1">{props.label}</label>
-        <input {...props} className="w-full border rounded px-3 py-2 text-sm" />
-        
-    </div>
-);
-
-const Textarea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) => (
-    <div>
-        <label className="block text-sm font-medium mb-1">{props.label}</label>
-        <textarea {...props} rows={3} className="w-full border rounded px-3 py-2 text-sm" />
-        <span id={props.name} className="text-sm text-red-500 errorDisplay"></span>
-    </div>
-);
-
-const Select = (
-    props: React.SelectHTMLAttributes<HTMLSelectElement> & {
-        label: string;
-        options: { label: string; value: string }[];
-    }
-    ) => (
-    <div>
-        <label className="block text-sm font-medium mb-1">{props.label}</label>
-        <select {...props} className="w-full border rounded px-3 py-2 text-sm">
-        <option value="">Select</option>
-        {props.options.map((o) => (
-            <option key={o.value} value={o.value}>
-            {o.label}
-            </option>
-        ))}
-        </select>
-    </div>
-);

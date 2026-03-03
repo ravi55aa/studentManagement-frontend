@@ -13,7 +13,7 @@ import { handleValidationOF }
 // import { handleMetaDataCreateSchoolApi } 
 //     from "@/api/school.api";
 import { toast } from "react-toastify";
-import { HandleApiOptions,handleApi } from "@/api/global.api";
+import { SchoolService } from "@/api/Services/school.service";
 
 
 
@@ -67,14 +67,7 @@ function CreateSchool() {
             if(!isValidated.success)
                 {return isValidated.success;}
 
-            const config:HandleApiOptions<object>={
-                endPoint:"/school/register",
-                method:'post',
-                payload:formData,
-                headers:{role:"Admin"}
-            }
-
-            const res=await handleApi(config);
+            const res=await SchoolService.register(formData)
             
             if(!res.success) 
             {

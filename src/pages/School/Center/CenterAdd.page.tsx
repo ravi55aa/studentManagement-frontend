@@ -8,17 +8,15 @@ import { handleValidationOF }
     from "@/validation/validateFormData";
 import { useState } 
     from "react";
-import { HandleApiOptions,handleApi }
-from "@/api/global.api";
 import {InputField} 
     from "@/components";
 import { addCenter_Form_Fields, inputStyleRegisterSchoolAddress, school_Register_SchemaFor_Address } from "@/constants/createSchool";
 import { toast } from "react-toastify";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { useAppHandleInputChange as _useAppHandleInputChange } from "@/hooks/useHandleInputChange";
-import { IAddress } from "@/interfaces/IRegister";
 import { useAppSelector } from "@/hooks/useStoreHooks";
-import { CenterRoute } from "@/constants/routes.contants";
+import FormActions from "@/components/FormAction";
+import { CenterService } from "@/api/Services/center.service";
 
 
 export interface ICenterForm {
@@ -102,15 +100,7 @@ const AddCenter = () => {
             userModel:prev.headInCharge==adminReduxStore.id?'Admin':'Teacher'
         }))
 
-        //api call
-        const config:HandleApiOptions<ICenterForm>={
-            method: "post",
-            endPoint: CenterRoute.add,
-            payload: form,
-            headers:{role:"School"},
-        }
-
-        const res=await handleApi<ICenterForm,ICenterForm>(config);
+        const res=await CenterService.create(form);
 
 
         if(!res.success){
@@ -156,14 +146,7 @@ const AddCenter = () => {
          * thats why config is needed;
          */
 
-        const config:HandleApiOptions<IAddress>={
-            method: "post",
-            endPoint: `${CenterRoute.addAddress}/${id}`,
-            payload: formData,
-            headers:{role:"School"},
-        }
-
-        const res = await handleApi(config);
+        const res = await CenterService.addAddress(id,formData)
 
         if(!res.success){
             setUtils((prev)=>({...prev,error:res.data.error}));
@@ -271,21 +254,8 @@ const AddCenter = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-4 mt-8">
-            <button
-                onClick={goBack}
-                type="button"
-                className="px-6 py-2 border rounded-md text-sm text-gray-600 hover:bg-gray-100"
-            >
-                Cancel
-            </button>
-            <button
-                type="submit"
-                className="px-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
-            >
-                Save Center
-            </button>
-            </div>
+            <FormActions submitLabel="Update Center" onCancel={goBack}  submitType="submit"/>
+
         </form>
         }
 

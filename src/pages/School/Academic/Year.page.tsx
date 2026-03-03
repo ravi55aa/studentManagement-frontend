@@ -2,9 +2,7 @@ import { useEffect } from "react";
 import { Pencil, Trash2, Bell } from "lucide-react";
 import {Link} from "react-router";
 import { useAppDispatch,useAppSelector } from "@/hooks/useStoreHooks";
-import { HandleApiOptions,handleApi } from "@/api/global.api";
 import Swal from "sweetalert2";
-import { YearRoute } from "@/constants/routes.contants";
 import { 
     storeSchoolAcademicYears, 
     toggleAcademicLoading 
@@ -12,6 +10,8 @@ import {
 import { Pagination } from "@/components";
 import { TableComponent } from "@/components/Table.compo";
 import SearchAndFilter from "@/components/SearchAndFilter";
+import { AcademicYearService } from "@/api/Services/year.service";
+import { toast } from "react-toastify";
 
 
 
@@ -25,16 +25,16 @@ const AcademicYearsPage = () => {
 
     useEffect(()=>{
             (async()=>{
-                const config:HandleApiOptions<null>={
-                            method:"get",
-                            endPoint:YearRoute.get,
-                            payload:null,
-                            headers:{role:"school"}
-                    }
-
-                const fetchData= await handleApi<null,null>(config);
-                dispatch(storeSchoolAcademicYears(fetchData.data.data));
+                dispatch(toggleAcademicLoading(true));
+                const res = await AcademicYearService.getAll();
                 
+                if(!res.success){
+                    return res.success;
+                }
+
+                const allYear=res?.data?.data;
+                dispatch(toggleAcademicLoading(false));
+                dispatch(storeSchoolAcademicYears(allYear));
             })()
         },[dispatch])
 
@@ -65,19 +65,15 @@ const AcademicYearsPage = () => {
             return;
         }
 
-        const config:HandleApiOptions<null>={
-                        method:"delete",
-                        endPoint:`${YearRoute.get}/${id}`,
-                        payload:null,
-                        headers:{role:"school"}
-                    }
-
-        const deletedDoc = await handleApi<null,null>(config);
+        const res = await AcademicYearService.delete(id);
         
-        if(deletedDoc.success){
-            // Swal.fire("Deleted!", "Item deleted successfully.", "success");
-            
+        if(!res.success){
+            toast.error(res.error.message);
+            return res.success;
         }
+        await AcademicYearService.getAll();
+        
+        toast.success('Deleted Successfully');
         dispatch(toggleAcademicLoading(false));
         return true;
     };

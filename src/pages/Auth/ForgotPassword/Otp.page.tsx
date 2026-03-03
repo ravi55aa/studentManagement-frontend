@@ -2,8 +2,7 @@ import React, { useState,useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { otpVerificationSchema } from "@/validation/otpReset";
-import { HandleApiOptions,handleApi } from "@/api/global.api";
-import { forgotPassword } from "@/constants/routes.contants";
+import { AuthService } from "@/api/Services/user.service";
 
 
 export interface IOtp extends Document {
@@ -35,14 +34,8 @@ const OtpVerification = () => {
         if(!id){
           throw new Error("Reset Password, 'id' not find");
         }
-
-        const config:HandleApiOptions<null>={
-                    method:"get",
-                    endPoint:`${forgotPassword.generateOtp}/${id}`,
-                    headers:{role:"Admin"}
-                }
         
-        const res = await handleApi<null,IOtp>(config);
+        const res = await AuthService.generateOtp(id);
         const otp=res.data.data.otp;
         localStorage.setItem("generatedOtp",JSON.stringify(otp));
         return true;
@@ -95,16 +88,9 @@ const OtpVerification = () => {
 
     const id=JSON.parse(localStorage.getItem("idToResetPassword"));
 
-    const otp=JSON.parse(localStorage.getItem("generatedOtp"));
-    
-      const config:HandleApiOptions<object>={
-                    method:"post",
-                    endPoint:`${forgotPassword.verifyOtp}/${id}`,
-                    payload:{generatedOtp:otp,userEnteredOtp:form.otp},
-                    headers:{role:"Admin"}
-                }
+    const gOtp=JSON.parse(localStorage.getItem("generatedOtp"));
         
-      const res = await handleApi(config);
+    const res = await AuthService.verifyOtp(gOtp,form.otp,id);
 
     if (res.success) {
       navigate("/passwordReset");

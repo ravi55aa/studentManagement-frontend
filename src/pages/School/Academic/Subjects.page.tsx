@@ -1,14 +1,13 @@
 import { useEffect } from "react";
 import { Pencil, Trash2, Bell } from "lucide-react";
 import {Link} from "react-router";
-import { HandleApiOptions,handleApi } from "@/api/global.api";
 import { useAppSelector,useAppDispatch } from "@/hooks/useStoreHooks";
 import {storeSchoolAcademicSubjects,toggleAcademicSubLoading } from "@/utils/Redux/Reducer/subjectReducer";
 import Swal from "sweetalert2";
-import { SubjectRoute } from "@/constants/routes.contants";
 import { Pagination } from "@/components";
 import SearchAndFilter from "@/components/SearchAndFilter";
 import { TableComponent } from "@/components/Table.compo";
+import { SubjectService } from "@/api/Services/subject.service";
 
 
 const SubjectsPage = () => {
@@ -19,17 +18,11 @@ const SubjectsPage = () => {
     
     useEffect(()=>{
         (async()=>{
-            const config:HandleApiOptions<null>={
-                        method:"get",
-                        endPoint:SubjectRoute.get,
-                        payload:null,
-                        headers:{role:"School"}
-                }
-
-            const fetchData= await handleApi<null,null>(config);
-            dispatch(storeSchoolAcademicSubjects(fetchData.data?.data||[]));
+            const res=await SubjectService.getAll();
+            const subjects=res.data?.data || [];
+            dispatch(storeSchoolAcademicSubjects(subjects));
         })()
-    },[dispatch]);
+    },[dispatch,subjectStore.loading]);
 
 
     const handleDelete = async(id: string) => {
@@ -45,20 +38,15 @@ const SubjectsPage = () => {
         if(!result.isConfirmed){
             return;
         }
-        
-        const config:HandleApiOptions<null>={
-                    method:"delete",
-                    endPoint:`${SubjectRoute.get}/${id}`,
-                    payload:null,
-                    headers:{role:"School"}
-                }
 
-        const deletedDoc = await handleApi<null,null>(config);
+        const res = await SubjectService.delete(id);
         
-        if(deletedDoc.success){
-            Swal.fire("Deleted!", "Item deleted successfully", "success");
+        if(!res.success){
+            Swal.fire("Deleted!", res.error?.message, "error");
+            return res.success;
         }
         
+        Swal.fire("Deleted!", "Item deleted successfully", "success");
         dispatch(toggleAcademicSubLoading(false));
         return true;
     };

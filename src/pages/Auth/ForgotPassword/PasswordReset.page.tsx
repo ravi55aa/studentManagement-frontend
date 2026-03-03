@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HandleApiOptions, handleApi } from "@/api/global.api";
-import { forgotPassword } from "@/constants/routes.contants";
+import { AuthService } from "@/api/Services/user.service";
 
 const ResetPassword = () => {
     const navigate = useNavigate();
@@ -61,14 +60,7 @@ const ResetPassword = () => {
             localStorage.getItem("idToResetPassword")!
         );
 
-        const config: HandleApiOptions<object> = {
-            method: "patch",
-            endPoint: `${forgotPassword.updatePassword}/${id}`,
-            payload: { newPassword: form.newPassword,modelName:"admin" },
-            headers: { role: "admin" },
-        };
-
-        const res = await handleApi(config);
+        const res = await AuthService.updatePassword(id,form.newPassword);
 
         if (res.success) {
             localStorage.removeItem("idToResetPassword");
