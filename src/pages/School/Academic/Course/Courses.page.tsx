@@ -1,181 +1,148 @@
-import { Pencil, Ban, Trash2, Bell } from "lucide-react";
-import { useEffect } from "react";
-import { Link } from "react-router";
-import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
-import Swal from "sweetalert2";
-import { 
-    storeSchoolAcademicCourses, 
-    storeSchoolAcademicCoursesMeta, 
-    toggleAcademicCourseLoading 
-} from "@/utils/Redux/Reducer/courses.reducer";
-import { Pagination } from "@/components";
-import SearchAndFilter from "@/components/SearchAndFilter";
-import { TableComponent } from "@/components/Table.compo";
-import { CourseService } from "@/api/Services/course.service";
-import { toast } from "react-toastify";
-
+import { Pencil, Ban, Trash2, Bell } from 'lucide-react';
+import { useEffect } from 'react';
+import { Link } from 'react-router';
+import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
+import Swal from 'sweetalert2';
+import {
+  storeSchoolAcademicCourses,
+  storeSchoolAcademicCoursesMeta,
+  toggleAcademicCourseLoading,
+} from '@/utils/Redux/Reducer/courses.reducer';
+import { Pagination } from '@/components';
+import SearchAndFilter from '@/components/SearchAndFilter';
+import { TableComponent } from '@/components/Table.compo';
+import { CourseService } from '@/api/Services/course.service';
+import { toast } from 'react-toastify';
 
 const CourseListPage = () => {
+  const dispatch = useAppDispatch();
+  const { courses, loading } = useAppSelector((state) => state.courses);
 
-    const dispatch=useAppDispatch();
-    const {courses,loading}=useAppSelector((state)=>state.courses);
+  // const [search, setSearch] = useState("");
+  // const [filter, setFilter] = useState("");
+  //const [courses, setCourses] = useState(dummy_courses);
 
-    // const [search, setSearch] = useState("");
-    // const [filter, setFilter] = useState("");
-    //const [courses, setCourses] = useState(dummy_courses);
-
-
-
-    //Fetches Courses from Backend
-    useEffect(() => {
+  //Fetches Courses from Backend
+  useEffect(() => {
     const fetchCourses = async () => {
-        try {
+      try {
         dispatch(toggleAcademicCourseLoading(true));
 
         const res = await CourseService.getAll();
 
         if (!res.success) {
-            throw new Error(res.error.message);
+          throw new Error(res.error.message);
         }
 
-        const {courses,courses_meta}=res.data.data;
-        dispatch(storeSchoolAcademicCourses(courses))
+        const { courses, courses_meta } = res.data.data;
+        dispatch(storeSchoolAcademicCourses(courses));
         dispatch(storeSchoolAcademicCoursesMeta(courses_meta));
-
-            
-        } catch (err) {
-            toast.error(err.message);
-        } finally {
-            dispatch(toggleAcademicCourseLoading(false));
-        }
+      } catch (err) {
+        toast.error(err.message);
+      } finally {
+        dispatch(toggleAcademicCourseLoading(false));
+      }
     };
 
     fetchCourses();
-    }, [dispatch]);
+  }, [dispatch]);
 
+  //   HandleDelete */
+  const handleDelete = async (id: string) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action cannot be undone!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it',
+    });
 
-    //   HandleDelete */
-    const handleDelete = async(id: string) => {
-        const result = await Swal.fire({
-            title: "Are you sure?",
-            text: "This action cannot be undone!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes, delete it",
-        });
+    if (!result.isConfirmed) {
+      return;
+    }
+    const deletedDoc = await CourseService.delete(id);
 
-        if(!result.isConfirmed){
-            return;
-        }
-        const deletedDoc = await CourseService.delete(id);
+    if (!deletedDoc.success) {
+      Swal.fire('Deleted!', deletedDoc.error.message, 'error');
+      return deletedDoc.success;
+    }
 
-        if(!deletedDoc.success){
-            Swal.fire("Deleted!", deletedDoc.error.message, "error");
-            return deletedDoc.success;
-        }
-        
-        Swal.fire("Deleted!", "Item deleted successfully", "success");
-        dispatch(toggleAcademicCourseLoading(false));
-        return true;
-    };
+    Swal.fire('Deleted!', 'Item deleted successfully', 'success');
+    dispatch(toggleAcademicCourseLoading(false));
+    return true;
+  };
 
+  return (
+    <div className="p-6 bg-white min-h-screen">
+      {/* Top Bar */}
+      <div className="flex justify-between items-center mb-4">
+        <Link to="add">
+          <button className="bg-green-700 text-white px-4 py-2 rounded-md text-sm hover:bg-green-800">
+            Add New
+          </button>
+        </Link>
 
-    return (
-        <div className="p-6 bg-white min-h-screen">
+        <Bell className="w-5 h-5 text-green-700 cursor-pointer" />
+      </div>
 
-        {/* Top Bar */}
-        <div className="flex justify-between items-center mb-4">
-            <Link to="add">
-                <button className="bg-green-700 text-white px-4 py-2 rounded-md text-sm hover:bg-green-800">
-                Add New
-                </button>
-            </Link>
+      <SearchAndFilter />
 
-            <Bell className="w-5 h-5 text-green-700 cursor-pointer" />
-        </div>
+      <TableComponent
+        data={courses ?? []}
+        keyField="_id"
+        loading={loading}
+        emptyMessage="No teachers found"
+        columns={[
+          {
+            header: 'Name',
+            accessor: 'name',
+          },
+          { header: 'Code', accessor: 'code' },
+          {
+            header: 'duration',
+            accessor: 'duration',
+            format: (value: { value: string; unit: string }) => value?.value + ' ' + value?.unit,
+          },
+          {
+            header: 'Actions',
+            align: 'center',
+            render: (course) => (
+              <div className="flex justify-center gap-3">
+                <Link to={`edit/${course._id}`}>
+                  <Pencil className="w-4 h-4 hover:text-green-700 cursor-pointer" />
+                </Link>
 
-        <SearchAndFilter/>
+                <Ban className="w-4 h-4 hover:text-yellow-600 cursor-pointer" />
 
-        
-        <TableComponent
-            data={courses ?? []}
-            keyField="_id"
-            loading={loading}
-            emptyMessage="No teachers found"
-            columns={[
-                {
-                header: "Name",accessor:'name'},
-                { header: "Code", accessor: "code" },
-                { header: "duration", 
-                    accessor: "duration",
-                    format:(value:{value:string,unit:string})=>value?.value+" "+value?.unit 
-                },
-                {
-                header: "Actions",
-                align: "center",
-                render: (course) => (
-                    <div className="flex justify-center gap-3">
-                        <Link to={`edit/${course._id}`}>
-                        <Pencil className="w-4 h-4 hover:text-green-700 cursor-pointer" />
-                        </Link>
+                <Trash2
+                  onClick={() => handleDelete(course?._id)}
+                  className="w-4 h-4 hover:text-red-600 cursor-pointer"
+                />
+              </div>
+            ),
+          },
+        ]}
+      />
 
-                        <Ban className="w-4 h-4 hover:text-yellow-600 cursor-pointer" />
-
-                        <Trash2 
-                        onClick={()=>handleDelete(course?._id)} className="w-4 h-4 hover:text-red-600 cursor-pointer" />
-                    </div>
-                ),
-                },
-            ]}
-            />
-
-        <Pagination/>
-        
-        </div>
-    );
-};  
+      <Pagination />
+    </div>
+  );
+};
 
 export default CourseListPage;
 
+// const handleChange = (
+//     e: React.ChangeEvent< HTMLSelectElement>
+//     ) => {
+//     const { name, value } = e.target;
 
+//     setForm((prev) => ({
+//         ...prev,
+//         [name]: value,
+//     }));
+// };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // const handleChange = (
-    //     e: React.ChangeEvent< HTMLSelectElement>
-    //     ) => {
-    //     const { name, value } = e.target;
-
-    //     setForm((prev) => ({
-    //         ...prev,
-    //         [name]: value,
-    //     }));
-    // };
-
-
-    /*
+/*
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -242,5 +209,3 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     };
 
 */
-
-

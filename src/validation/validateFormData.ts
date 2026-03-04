@@ -1,35 +1,31 @@
-import { ZodSchema, ZodIssue } from "zod";
+import { ZodSchema, ZodIssue } from 'zod';
 
-export const handleValidationOF = <T extends object>(
-    schema: ZodSchema<T>,
-    formData: T
-) => {
-        const result = schema.safeParse(formData);
+export const handleValidationOF = <T extends object>(schema: ZodSchema<T>, formData: T) => {
+  const result = schema.safeParse(formData);
 
-        if (!result.success) {
-            const issues: ZodIssue[] = result.error.issues; 
+  if (!result.success) {
+    const issues: ZodIssue[] = result.error.issues;
 
-            console.log("issues",issues);
-            
-            issues.forEach((issue) => {
-                const fieldName = issue.path.join(" ");
-                console.log("The fieldName",fieldName);   
+    console.log('issues', issues);
 
-                // if(issue.path.length>1){
-                //     fieldName=issue.path.join(",")[0]?.toString();
-                // }
+    issues.forEach((issue) => {
+      const fieldName = issue.path.join(' ');
+      console.log('The fieldName', fieldName);
 
-                const spanTag = document.getElementById(fieldName);
+      // if(issue.path.length>1){
+      //     fieldName=issue.path.join(",")[0]?.toString();
+      // }
 
-                if (spanTag) {
-                    spanTag.textContent = issue.message;
-                }
-            });
-        }
+      const spanTag = document.getElementById(fieldName);
 
-        return result;
+      if (spanTag) {
+        spanTag.textContent = issue.message;
+      }
+    });
+  }
+
+  return result;
 };
-
 
 /* 
 validation error

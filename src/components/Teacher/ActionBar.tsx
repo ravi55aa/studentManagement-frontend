@@ -1,36 +1,31 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 export interface GridProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 export const Grid = ({ children }: GridProps) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{children}</div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{children}</div>
 );
-
 
 export function FileUpload({ label, ...props }) {
-    return (
-        <div>
-        <p className="text-sm font-medium mb-1">{label}</p>
-        <input type="file" {...props} />
-        </div>
-    );
+  return (
+    <div>
+      <p className="text-sm font-medium mb-1">{label}</p>
+      <input type="file" {...props} />
+    </div>
+  );
 }
 
-
-export const ActionBar = ({ children }:GridProps) => (
-    <div className="flex justify-end mt-6">{children}</div>
+export const ActionBar = ({ children }: GridProps) => (
+  <div className="flex justify-end mt-6">{children}</div>
 );
 
-
 export function Detail({ label, value }: { label: string; value }) {
-    return (
-        <div>
-        <p className="text-gray-500">{label}</p>
-        <p className="font-medium">{value || "-"}</p>
-        </div>
-    );
+  return (
+    <div>
+      <p className="text-gray-500">{label}</p>
+      <p className="font-medium">{value || '-'}</p>
+    </div>
+  );
 }
-
-

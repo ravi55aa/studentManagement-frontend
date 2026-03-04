@@ -40,15 +40,15 @@ export default defineConfig([
       // other options...
     },
   },
-])
+]);
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 
 export default defineConfig([
   globalIgnores(['dist']),
@@ -69,19 +69,18 @@ export default defineConfig([
       // other options...
     },
   },
-])
+]);
 ```
-
 
 **4-2-2026**
 1.Started Teacher ui/ux
-    
+
     - List Teachers ui is ready
 
     - View a Teacher Modal is ready
 
     - Create Teacher flow
-  
+
         Step 1: Basic Details (VISIBLE)
         --------------------------------
         • Personal info
@@ -99,14 +98,13 @@ export default defineConfig([
         • Designation
         • Department
         • Dates
-        • Save & Finish 
+        • Save & Finish
 
-    - zod validation is done 
-
+    - zod validation is done
 
 **6-2-2026**
 completed adding teachers
 Cleared the error, like adding batches and subject
 Only one teacher allowed to per class
 Also giving errors while inserting documents and profile
-update the employedId code. given function 
+update the employedId code. given function

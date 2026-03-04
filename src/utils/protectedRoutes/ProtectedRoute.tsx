@@ -1,19 +1,18 @@
-import { useAppSelector } from "@/hooks/useStoreHooks";
-import { Navigate, Outlet } from "react-router-dom";
-
+import { useAppSelector } from '@/hooks/useStoreHooks';
+import { Navigate, Outlet } from 'react-router-dom';
 
 interface ProtectedRouteProps {
-    redirectPath?: string;
+  redirectPath?: string;
 }
 
-const ProtectedRoute = ({ redirectPath = "/school/login" }: ProtectedRouteProps) => {
-    const { user } = useAppSelector((state) => state.currentUser);
+const ProtectedRoute = ({ redirectPath = '/login' }: ProtectedRouteProps) => {
+  const { user } = useAppSelector((state) => state.currentUser);
 
-    if (!user) {
-        return <Navigate to={redirectPath} replace />;
-    }
+  if (!user) {
+    return <Navigate to={redirectPath} replace />;
+  }
 
-    return <Outlet />;
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

@@ -1,37 +1,35 @@
-import { IBatches } from "@/interfaces/ISchool";
-import { createSlice } from "@reduxjs/toolkit";
+import { IBatches } from '@/interfaces/ISchool';
+import { createSlice } from '@reduxjs/toolkit';
 
-interface BatchInterface{
-    batches:IBatches[],
-    error:string|null,
-    loading:boolean
+interface BatchInterface {
+  batches: IBatches[];
+  error: string | null;
+  loading: boolean;
 }
 
-const initialState:BatchInterface={
-    batches:[],
-    error:"",
-    loading:false
-}
+const initialState: BatchInterface = {
+  batches: [],
+  error: '',
+  loading: false,
+};
 
-const batchSlice=createSlice({
-    name:"batches",
+const batchSlice = createSlice({
+  name: 'batches',
 
-    initialState,
+  initialState,
 
-    reducers:{
-        storeBatches(state,action){
-            state.batches=action.payload;
-            state.loading=false;
-        },
+  reducers: {
+    storeBatches(state, action) {
+      state.batches = action.payload;
+      state.loading = false;
+    },
 
-        toggleBatchLoading(state,action){
-            state.loading=action.payload;
-        }
-    }
-
+    toggleBatchLoading(state, action) {
+      state.loading = action.payload;
+    },
+  },
 });
 
-
-export const {storeBatches,toggleBatchLoading}=batchSlice.actions;
+export const { storeBatches, toggleBatchLoading } = batchSlice.actions;
 
 export default batchSlice.reducer;

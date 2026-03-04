@@ -1,343 +1,300 @@
 //validation is pending
 
+import { addressValidate } from '@/validation/school.validator';
+import { handleValidationOF } from '@/validation/validateFormData';
+import { useEffect, useState } from 'react';
+import { HandleApiOptions, handleApi } from '@/api/global.api';
+import { InputField } from '@/components';
+import {
+  addCenter_Form_Fields,
+  inputStyleRegisterSchoolAddress,
+  school_Register_SchemaFor_Address,
+} from '@/constants/createSchool';
+import { useParams } from 'react-router-dom';
+import { useAppNavigate } from '@/hooks/useNavigate.hook';
+import { toast } from 'react-toastify';
 
-
-import { addressValidate } 
-    from "@/validation/school.validator";
-import { handleValidationOF } 
-    from "@/validation/validateFormData";
-import { useEffect, useState } 
-    from "react";
-import { HandleApiOptions,handleApi }
-from "@/api/global.api";
-import {InputField} 
-    from "@/components";
-import { addCenter_Form_Fields, 
-    inputStyleRegisterSchoolAddress, 
-    school_Register_SchemaFor_Address 
-    } from "@/constants/createSchool";
-import { useParams } from "react-router-dom";
-import { useAppNavigate } from "@/hooks/useNavigate.hook";
-import { toast } from "react-toastify";
-
-import { IAddress } from "@/interfaces/IRegister";
-import { useAppHandleInputChange as _useAppHandleInputChange } 
-    from "@/hooks/useHandleInputChange"; 
-import { useAppSelector } from "@/hooks/useStoreHooks";
-import { AddressRoute, CenterRoute } from "@/constants/routes.contants";
-import FormActions from "@/components/FormAction";
-import { CenterService } from "@/api/Services/center.service";
-
-
+import { IAddress } from '@/interfaces/IRegister';
+import { useAppHandleInputChange as _useAppHandleInputChange } from '@/hooks/useHandleInputChange';
+import { useAppSelector } from '@/hooks/useStoreHooks';
+import { AddressRoute, CenterRoute } from '@/constants/routes.contants';
+import FormActions from '@/components/FormAction';
+import { CenterService } from '@/api/Services/center.service';
 
 const EditCenter = () => {
+  const [form, setForm] = useState({
+    name: '',
+    code: '',
+    phone: '',
+    email: '',
+    headInCharge: '',
+    currentStrength: '',
+    totalCapacity: '',
+    type: '',
+    isMain: false,
+    isActive: true,
+  });
 
-    const [form, setForm] = useState({
-        name: "",
-        code: "",
-        phone: "",
-        email: "",
-        headInCharge: "",
-        currentStrength: "",
-        totalCapacity: "",
-        type: "",
-        isMain: false,
-        isActive: true,
-    });
+  const [addressForm, setAddressForm] = useState({
+    street: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: 'india',
+  });
+  const teachersStore = useAppSelector((state) => state.teacher.bio);
+  const adminReduxStore = useAppSelector((state) => state.currentUser.user);
 
-    const [addressForm,setAddressForm]=useState({
-                street:"",
-                    city: "",
-                        state: "",
-                            zip: "",
-                                country: 'india',
-    });
-    const teachersStore=useAppSelector((state)=>state.teacher.bio);
-    const adminReduxStore=useAppSelector((state)=>state.currentUser.user);
+  const { id } = useParams();
+  const { goBack, goToCenter } = useAppNavigate();
 
-    const {id}=useParams();
-    const {goBack,goToCenter}=useAppNavigate();
+  const [util, setUtils] = useState({ error: '', openAddress: false });
 
-    const [util, setUtils] = useState({error:"",openAddress:false});
+  useEffect(() => {
+    const fetchYear = async () => {
+      const res = await CenterService.get(id);
 
+      if (!res.success) {
+        setUtils({ error: 'Center Edit error', openAddress: false });
+        toast.warn(res.error.message);
+        return res.success;
+      }
 
-    useEffect(()=>{
-        const fetchYear=async()=>{
-            
-            const res=await CenterService.get(id);
+      const subjectDoc = res?.data?.data;
 
-            if(!res.success){
-                setUtils({error:"Center Edit error" ,openAddress:false});
-                toast.warn(res.error.message);
-                return res.success;
-            }
+      setForm({
+        name: subjectDoc?.name || '',
+        code: subjectDoc?.code || '',
+        phone: subjectDoc?.phone || '',
+        email: subjectDoc?.email || '',
+        headInCharge: subjectDoc?.headInCharge || '',
 
-            const subjectDoc=res?.data?.data;
-            
-            setForm({
-                name: subjectDoc?.name||"",
-                    code: subjectDoc?.code||"",
-                        phone: subjectDoc?.phone||"",
-                            email: subjectDoc?.email||"",
-                            headInCharge: subjectDoc?.headInCharge||"",
+        currentStrength: subjectDoc?.currentStrength || '',
 
-                currentStrength: subjectDoc?.currentStrength||"",
+        totalCapacity: subjectDoc?.totalCapacity || '',
+        type: subjectDoc?.type || '',
+        isMain: subjectDoc?.isMain || false,
+        isActive: subjectDoc?.isActive || false,
+      });
 
-                    totalCapacity: subjectDoc?.totalCapacity||'',
-                        type: subjectDoc?.type||"",
-                            isMain: subjectDoc?.isMain||false,
-                            isActive: subjectDoc?.isActive||false,
-            });
+      setUtils((prev) => ({ ...prev, error: null }));
+      return true;
+    };
+    fetchYear();
+  }, []);
 
-            setUtils((prev)=>({...prev,error:null}));
-            return true;
-        }
-        fetchYear();
-    },[]);
+  useEffect(() => {
+    const fetchesCenterAddress = async () => {
+      const config: HandleApiOptions<null> = {
+        method: 'get',
+        endPoint: `${AddressRoute.get}/${id}`,
+        headers: { role: 'school' },
+      };
 
+      const res = await handleApi<null, IAddress>(config);
 
-    useEffect(()=>{
-        const fetchesCenterAddress=async ()=>{
-            
-            const config:HandleApiOptions<null>={
-                method:"get",
-                    endPoint:`${AddressRoute.get}/${id}`,
-                        headers:{role:"school"},
-            }
+      if (!res.success) {
+        setUtils({ error: res.data?.message || res.data?.error, openAddress: true });
+      }
 
-            const res=await handleApi<null,IAddress>(config);
+      const doc = res?.data?.data;
+      console.log('@editCenters addressDoc', res);
 
-            if(!res.success){
-                setUtils({error:res.data?.message || res.data?.error,openAddress:true});
-            }
+      setAddressForm({
+        street: doc?.street || '',
+        city: doc?.city || '',
+        state: doc?.state || '',
+        zip: doc?.zip || '',
+        country: doc?.country || 'india',
+      });
 
-            const doc=res?.data?.data;
-            console.log("@editCenters addressDoc",res);
-            
-            setAddressForm({
-                street:doc?.street||"",
-                    city: doc?.city||"",
-                        state: doc?.state||"",
-                            zip: doc?.zip||"",
-                                country: doc?.country||"india",
-            });
-
-            setUtils((prev)=>({...prev,error:null}));
-            return true;
-        }
-
-        fetchesCenterAddress();
-    },[]);
-
-
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
-        const { name, value, type, checked } = e.target as HTMLInputElement;
-
-        document.getElementById(e.target.name)!.textContent = "";
-
-        setForm((prev) => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : value,
-        }));
+      setUtils((prev) => ({ ...prev, error: null }));
+      return true;
     };
 
+    fetchesCenterAddress();
+  }, []);
 
-    const handleSubmit = async (e: React.FormEvent):Promise<boolean>=> {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
 
-        e.preventDefault();
+    document.getElementById(e.target.name)!.textContent = '';
 
-        //validation
-        //const isValid=handleValidationOF(centerSchema,form);
-        //if(!isValid.success) return isValid.success;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
 
-        const res=await CenterService.update(id,form);
+  const handleSubmit = async (e: React.FormEvent): Promise<boolean> => {
+    e.preventDefault();
 
-        if(res.success){
-            toast.success("Updated Successfully");
-        }
-        setUtils((prev)=>({...prev,error:null}));
+    //validation
+    //const isValid=handleValidationOF(centerSchema,form);
+    //if(!isValid.success) return isValid.success;
 
-        return true;
-    };
+    const res = await CenterService.update(id, form);
 
+    if (res.success) {
+      toast.success('Updated Successfully');
+    }
+    setUtils((prev) => ({ ...prev, error: null }));
 
-    /*****Address*****/
+    return true;
+  };
 
-    const handleEditAddress=()=>{
-        setUtils((prev)=>({...prev,openAddress:!util.openAddress}));
+  /*****Address*****/
 
+  const handleEditAddress = () => {
+    setUtils((prev) => ({ ...prev, openAddress: !util.openAddress }));
+  };
 
+  const handleAddressSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const isValidated = handleValidationOF(addressValidate, addressForm);
+    //validateMethod(Schema,data)
+
+    if (!isValidated.success) {
+      return isValidated.success;
     }
 
-    const handleAddressSubmit = 
-                    async(e: React.FormEvent<HTMLFormElement>) => {
-                        e.preventDefault();
-                        
-                        const isValidated = 
-                            handleValidationOF(
-                                addressValidate,addressForm);
-                            //validateMethod(Schema,data)
-                        
-                        if(!isValidated.success){return isValidated.success;}
-    
-            const id=JSON.parse(localStorage.getItem("newCenter_id_ForAddress"));  
-            const res=await CenterService.addAddress(id,addressForm) ;
-    
-            if(!res.success){
-                setUtils((prev)=>({...prev,error:res.data.error}));
-            }
-            
-            toast.success("Address updated successfully");
-            
-            setUtils((prev)=>({...prev,error:null}));
-            localStorage.removeItem("newCenter_id_ForAddress");
-            goToCenter();
-            return true;
-        };
+    const id = JSON.parse(localStorage.getItem('newCenter_id_ForAddress'));
+    const res = await CenterService.addAddress(id, addressForm);
 
+    if (!res.success) {
+      setUtils((prev) => ({ ...prev, error: res.data.error }));
+    }
 
-    return (
-        <div className="p-6 bg-white min-h-screen">
+    toast.success('Address updated successfully');
 
-        {/* Header */}
-        <h1 className="text-2xl font-semibold text-gray-800 mb-1">
-            Edit Center
-        </h1>
-        <p className="text-sm text-gray-500 mb-6">
-            Fill in the details to update center
-        </p>
+    setUtils((prev) => ({ ...prev, error: null }));
+    localStorage.removeItem('newCenter_id_ForAddress');
+    goToCenter();
+    return true;
+  };
 
-        {/* Error */}
-        {util.error && (
-            <p className="text-red-600 text-sm mb-4">{util.error}</p>
-        )}
+  return (
+    <div className="p-6 bg-white min-h-screen">
+      {/* Header */}
+      <h1 className="text-2xl font-semibold text-gray-800 mb-1">Edit Center</h1>
+      <p className="text-sm text-gray-500 mb-6">Fill in the details to update center</p>
 
-        {/* Form */}
-        <form
-            onSubmit={handleSubmit}
-            className="bg-white border rounded-md p-6"
-        >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Error */}
+      {util.error && <p className="text-red-600 text-sm mb-4">{util.error}</p>}
 
-            
-            {addCenter_Form_Fields?.map((ele,i)=>{
-                return (
-                    <InputField 
-                    key={i}
-                    uniqueKey={ele?.name+i+i+i}
-                    onChange={handleChange}
-                    name={ele?.name}
-                    type={ele?.type}
-                    value={(form?.[ele.name])?.toString()}
-                    placeholder={ele?.placeholder}
-                    />
-            )})}
-
-            {/* Head In Charge */}
-            <div>
-                <label>Head In charge</label>
-                <select
-                name="headInCharge"
-                value={form?.headInCharge}
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="bg-white border rounded-md p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {addCenter_Form_Fields?.map((ele, i) => {
+            return (
+              <InputField
+                key={i}
+                uniqueKey={ele?.name + i + i + i}
                 onChange={handleChange}
-                className={inputStyleRegisterSchoolAddress}
-                >
-                <option value="">Select admin</option>
-                <option value={adminReduxStore.id}>Admin</option>
-                {
-                    teachersStore.map((teacher,id)=>{
-                        return (<option key={id} value={teacher._id}>{teacher.firstName} {teacher.lastName}</option>)
-                    })
-                }
-                </select>
-                <span className="ps-2 text-red-500" id="headInCharge"></span>
-            </div>
+                name={ele?.name}
+                type={ele?.type}
+                value={form?.[ele.name]?.toString()}
+                placeholder={ele?.placeholder}
+              />
+            );
+          })}
 
-
-            {/* Toggles */}
-            <div className="flex items-center gap-3">
-                <input
-                type="checkbox"
-                name="isMain"
-                checked={form?.isMain}
-                onChange={handleChange}
-                className="accent-green-700"
-                />
-                <span className="text-sm text-gray-700">
-                Is Main Center
-                </span>
-            </div>
-
-            <div className="flex items-center gap-3">
-                <input
-                type="checkbox"
-                name="isActive"
-                checked={form?.isActive}
-                onChange={handleChange}
-                className="accent-green-700"
-                />
-                <span className="text-sm text-gray-700">
-                Is Active
-                </span>
-            </div>
-            </div>
-
-            {/* Actions */}
-            <FormActions submitLabel="Update Center" onCancel={goBack}  submitType="submit"/>
-
-
-        </form>
-            <button
-                type="button"
-                onClick={handleEditAddress}
-                className="px-6 flex-end my-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
+          {/* Head In Charge */}
+          <div>
+            <label>Head In charge</label>
+            <select
+              name="headInCharge"
+              value={form?.headInCharge}
+              onChange={handleChange}
+              className={inputStyleRegisterSchoolAddress}
             >
-                {util.openAddress ? "Close Edit Address" : "Edit Address ?" } 
-            </button>
+              <option value="">Select admin</option>
+              <option value={adminReduxStore.id}>Admin</option>
+              {teachersStore.map((teacher, id) => {
+                return (
+                  <option key={id} value={teacher._id}>
+                    {teacher.firstName} {teacher.lastName}
+                  </option>
+                );
+              })}
+            </select>
+            <span className="ps-2 text-red-500" id="headInCharge"></span>
+          </div>
 
+          {/* Toggles */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              name="isMain"
+              checked={form?.isMain}
+              onChange={handleChange}
+              className="accent-green-700"
+            />
+            <span className="text-sm text-gray-700">Is Main Center</span>
+          </div>
 
-        {util.openAddress &&
-                <div className="flex min-h-screen bg-white px-4">
-                    <div className="w-full max-w-md">
-                        <h1 className="text-3xl font-bold mb-2">
-                        Add Center Address
-                        </h1>
-                        <p className=" text-gray-600 mb-8">
-                        Please enter your school center location details.
-                        </p>
-                    <form onSubmit={handleAddressSubmit} className="space-y-4">
-                                    
-                        <div className="flex flex-col gap-4">
-                        {addressForm && school_Register_SchemaFor_Address?.map((ele,i)=>{
-                            return (
-                            <InputField 
-                            key={i+ele.name}
-                            uniqueKey={ele.name+i+i}
-                            onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{_useAppHandleInputChange(e,setAddressForm)}}
-                            name={ele.name}
-                            type={ele.type}
-                            placeholder={ele.placeholder}
-                            value={addressForm?.[ele.name] ?? ""}
-                            />
-                        )})}
-                        </div>
-                    
-                    
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition"
-                        >
-                            Update Center Address;
-                        </button>
-                        </form>
-                    </div>
-                </div>
-                }
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              name="isActive"
+              checked={form?.isActive}
+              onChange={handleChange}
+              className="accent-green-700"
+            />
+            <span className="text-sm text-gray-700">Is Active</span>
+          </div>
         </div>
-    );
+
+        {/* Actions */}
+        <FormActions submitLabel="Update Center" onCancel={goBack} submitType="submit" />
+      </form>
+      <button
+        type="button"
+        onClick={handleEditAddress}
+        className="px-6 flex-end my-6 py-2 bg-green-700 text-white rounded-md text-sm hover:bg-green-800"
+      >
+        {util.openAddress ? 'Close Edit Address' : 'Edit Address ?'}
+      </button>
+
+      {util.openAddress && (
+        <div className="flex min-h-screen bg-white px-4">
+          <div className="w-full max-w-md">
+            <h1 className="text-3xl font-bold mb-2">Add Center Address</h1>
+            <p className=" text-gray-600 mb-8">Please enter your school center location details.</p>
+            <form onSubmit={handleAddressSubmit} className="space-y-4">
+              <div className="flex flex-col gap-4">
+                {addressForm &&
+                  school_Register_SchemaFor_Address?.map((ele, i) => {
+                    return (
+                      <InputField
+                        key={i + ele.name}
+                        uniqueKey={ele.name + i + i}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          _useAppHandleInputChange(e, setAddressForm);
+                        }}
+                        name={ele.name}
+                        type={ele.type}
+                        placeholder={ele.placeholder}
+                        value={addressForm?.[ele.name] ?? ''}
+                      />
+                    );
+                  })}
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition"
+              >
+                Update Center Address;
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default EditCenter;

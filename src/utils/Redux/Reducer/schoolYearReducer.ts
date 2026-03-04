@@ -1,35 +1,31 @@
-import {  IAcademicYear } from "@/interfaces/ISchool";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { IAcademicYear } from '@/interfaces/ISchool';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface IYear  {
-    years: IAcademicYear[];
-    loading: boolean;
-    error: string | null;
+interface IYear {
+  years: IAcademicYear[];
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: IYear = {
-    years: [],
-    loading: false,
-    error: null,
+  years: [],
+  loading: false,
+  error: null,
 };
 
-
-const yearSlice=createSlice({
-    name:"schoolYear",
-    initialState,
-    reducers:{
-        storeSchoolAcademicYears(state,action:PayloadAction<IAcademicYear[]>){
-            state.years=action.payload;
-        },
-        toggleAcademicLoading(state,action){
-            state.loading=action.payload;
-        },
-    }
+const yearSlice = createSlice({
+  name: 'schoolYear',
+  initialState,
+  reducers: {
+    storeSchoolAcademicYears(state, action: PayloadAction<IAcademicYear[]>) {
+      state.years = action.payload;
+    },
+    toggleAcademicLoading(state, action) {
+      state.loading = action.payload;
+    },
+  },
 });
 
-
-export const { storeSchoolAcademicYears,toggleAcademicLoading} = yearSlice.actions;
+export const { storeSchoolAcademicYears, toggleAcademicLoading } = yearSlice.actions;
 
 export default yearSlice.reducer;
-
-

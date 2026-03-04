@@ -1,578 +1,455 @@
+import * as z from 'zod';
 
+export const schoolMetaDataValidate = z
+  .object({
+    adminName: z.string().min(2, 'Name too short'),
+    schoolName: z.string().min(2, 'Name too short'),
+    email: z.string().email('Invalid email'),
+    password: z
+      .string()
+      .min(6, 'Password must be 6+ characters')
+      .max(8, 'Password must not be greater tha 8 characters'),
+    reEnter: z.string(),
+    profile: z.any().optional(),
+    phone: z
+      .string()
+      .regex(/^[6-9]\d{9}$/, 'Enter valid 10 digits number')
+      .optional(),
+  })
+  .refine((data) => data.password === data.reEnter, {
+    message: 'Passwords do not match',
+    path: ['reEnter'],
+  });
 
-import * as z from "zod";
+export const schoolSignInSchema = z.object({
+  schoolName: z.string().min(2, 'Name too short'),
 
+  password: z
+    .string()
+    .min(6, 'Password must be 6+ characters')
+    .max(8, 'Password must not be greater tha 8 characters'),
+});
 
+export const addressValidate = z.object({
+  zip: z.string().regex(/^[1-9][0-9]{5}$/, 'Enter valid 6-digits ZIP code '),
 
+  street: z
+    .string()
+    .min(3, 'Street name must be at least 3 characters')
+    .max(50, 'Street name is too long'),
 
-export const schoolMetaDataValidate = 
-    z.object({
-        adminName: z.string().min(2, "Name too short"),
-        schoolName: z.string().min(2, "Name too short"),
-        email: z.string().email("Invalid email"),
-        password: z
-            .string()
-            .min(6, "Password must be 6+ characters")
-            .max(8, "Password must not be greater tha 8 characters"),
-        reEnter: z.string(),
-        profile: z.any().optional(),
-        phone: z.string().regex(/^[6-9]\d{9}$/, "Enter valid 10 digits number").optional()
-    })
-    .refine((data) => data.password === data.reEnter, {
-        message: "Passwords do not match",
-        path: ["reEnter"],
-    });
+  city: z
+    .string()
+    .min(3, 'City name must be at least 3 characters')
+    .max(30, 'City name is too long'),
 
+  state: z
+    .string()
+    .min(3, 'State name must be at least 3 characters')
+    .max(20, 'State name is too long'),
 
-
-
-export const schoolSignInSchema = 
-    z.object({
-        
-        schoolName: z
-            .string()
-                .min(2, "Name too short"),
-        
-        password: z
-            .string()
-                .min(6, "Password must be 6+ characters")
-                    .max(8, "Password must not be greater tha 8 characters")
-    });
-
-
-
-
-export const addressValidate =
-    z.object({
-        zip: z
-            .string()
-                .regex(/^[1-9][0-9]{5}$/, "Enter valid 6-digits ZIP code "),
-
-        street: z
-            .string()
-                .min(3, "Street name must be at least 3 characters")
-                .max(50, "Street name is too long"),
-
-        city: z
-            .string()
-                .min(3, "City name must be at least 3 characters")
-                .max(30, "City name is too long"),
-
-        state: z
-            .string()
-                .min(3, "State name must be at least 3 characters")
-                .max(20, "State name is too long"),
-
-        country: z
-            .string()
-                .min(3, "Country name must be at least 3 characters")
-                .max(20, "Country name is too long"),
-    });
-
-
-
+  country: z
+    .string()
+    .min(3, 'Country name must be at least 3 characters')
+    .max(20, 'Country name is too long'),
+});
 
 /**
- * Center 
+ * Center
  */
-const emptyToUndefined = (v: unknown) =>
-    typeof v === "string" && v.trim() === ""
-    ? undefined
-    : v;
+const emptyToUndefined = (v: unknown) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 
-export const centerSchema = z.object({
+export const centerSchema = z
+  .object({
     name: z
-        .string()
-        .min(3, "Center name must be at least 3 characters")
-        .max(100, "Center name is too long"),
+      .string()
+      .min(3, 'Center name must be at least 3 characters')
+      .max(100, 'Center name is too long'),
 
     code: z
-        .string()
-        .min(2, "Center code must be at least 2 characters")
-        .max(20, "Center code is too long")
-        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase (A-Z, 0-9, -, _)"),
+      .string()
+      .min(2, 'Center code must be at least 2 characters')
+      .max(20, 'Center code is too long')
+      .regex(/^[A-Z0-9-_]+$/, 'Code must be uppercase (A-Z, 0-9, -, _)'),
 
-    phone: 
-        z
-        .string()
-        .regex(/^[6-9]\d{9}$/, {
-            message: "Phone number must be 10 digits and start with 6–9",
-        })
-    ,
-
+    phone: z.string().regex(/^[6-9]\d{9}$/, {
+      message: 'Phone number must be 10 digits and start with 6–9',
+    }),
     email: z
-    .string({
-        message: "Email is required",
-    })
-    .trim()
-    .toLowerCase()
-    .regex(
-        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-        "Enter a valid email address"
-    ),
+      .string({
+        message: 'Email is required',
+      })
+      .trim()
+      .toLowerCase()
+      .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Enter a valid email address'),
 
     headInCharge: z
-        .string({
-        message: "Head in charge is required"
-        })
-        .min(1, "Head in charge cannot be empty"),
+      .string({
+        message: 'Head in charge is required',
+      })
+      .min(1, 'Head in charge cannot be empty'),
 
-    currentStrength: z
-        .string()
-        .optional()
-        ,
-
+    currentStrength: z.string().optional(),
     totalCapacity: z.coerce
-        .number({message:"Total capacity value is required"})
-        .min(10, "Min capacity should be 10 ")
-        .max(150, "Max applicable students 150, according to your subscription")
-    ,
-
+      .number({ message: 'Total capacity value is required' })
+      .min(10, 'Min capacity should be 10 ')
+      .max(150, 'Max applicable students 150, according to your subscription'),
     isMain: z.boolean(),
 
     isActive: z.boolean(),
-    })
-    .refine(
+  })
+  .refine(
     (data) =>
-        !data.currentStrength ||
-        !data.totalCapacity ||
-        Number(data.currentStrength) <= Number(data.totalCapacity),
+      !data.currentStrength ||
+      !data.totalCapacity ||
+      Number(data.currentStrength) <= Number(data.totalCapacity),
     {
-        message: "Current strength cannot exceed total capacity",
-        path: ["currentStrength"],
-    }
-);
-
-
+      message: 'Current strength cannot exceed total capacity',
+      path: ['currentStrength'],
+    },
+  );
 
 /**
  * Batch
  */
 
-export const batchSchema = z.object({
+export const batchSchema = z
+  .object({
     name: z
-        .string()
-        .min(2, "Batch name must be at least 2 characters")
-        .max(50, "Batch name is too long"),
+      .string()
+      .min(2, 'Batch name must be at least 2 characters')
+      .max(50, 'Batch name is too long'),
 
     code: z
-        .string()
-        .min(1, "Batch code is required")
-        .max(20, "Batch code is too long")
-        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase (A-Z, 0-9, -, _)"),
+      .string()
+      .min(1, 'Batch code is required')
+      .max(20, 'Batch code is too long')
+      .regex(/^[A-Z0-9-_]+$/, 'Code must be uppercase (A-Z, 0-9, -, _)'),
 
-    center: z
-        .string()
-        .min(1, "Center is required"),
+    center: z.string().min(1, 'Center is required'),
 
-    counselor: z
-        .string()
-        .optional(),
+    counselor: z.string().optional(),
 
     startDate: z
-        .string()
-        .optional()
-        .refine(
-        (val) => !val || !Number.isNaN(Date.parse(val)),
-        "Invalid start date"
-        ),
+      .string()
+      .optional()
+      .refine((val) => !val || !Number.isNaN(Date.parse(val)), 'Invalid start date'),
 
     endDate: z
-        .string()
-        .optional()
-        .refine(
-        (val) => !val || !Number.isNaN(Date.parse(val)),
-        "Invalid end date"
-        ),
+      .string()
+      .optional()
+      .refine((val) => !val || !Number.isNaN(Date.parse(val)), 'Invalid end date'),
 
-    modelType:z.string().default('School'),
+    modelType: z.string().default('School'),
 
     isActive: z.boolean(),
-    })
-    .refine(
+  })
+  .refine(
     (data) =>
-        !data.startDate ||
-        !data.endDate ||
-        new Date(data.endDate) >= new Date(data.startDate),
+      !data.startDate || !data.endDate || new Date(data.endDate) >= new Date(data.startDate),
     {
-        message: "End date must be after start date",
-        path: ["endDate"],
-    }
-);
-
-
-
+      message: 'End date must be after start date',
+      path: ['endDate'],
+    },
+  );
 
 /* ---------- School Academic Year ---------- */
-const isValidDate = (value: string) =>
-    !Number.isNaN(Date.parse(value));
+const isValidDate = (value: string) => !Number.isNaN(Date.parse(value));
 
 export const schoolAcademicYearSchema = z
-    .object({
-        year: z
-            .string()
-            .regex(
-                /^(\d{4})-(\d{2})$/,
-                "Year must be in format YYYY-YY"
-            )
-            .refine((value) => {
-                const [start, end] = value.split("-");
-                return Number(end) === (Number(start.slice(2)) + 1);
-            }, {
-                message: "Academic year must be continuous (2025-26)"
-            }).optional(),
-
-        code: z
-        .string()
-        .min(2, "Code is required")
-        .max(10, "Code is too long")
-        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase (A-Z, 0-9, -, _)"),
-
-        startDate: z
-        .string()
-        .refine(isValidDate, "Invalid start date"),
-
-        endDate: z
-        .string()
-        .refine(isValidDate, "Invalid end date"),
-
-        isActive: z.boolean().optional(),
-    })
-    .refine(
-        (data) =>
-        new Date(data.endDate) > new Date(data.startDate),
+  .object({
+    year: z
+      .string()
+      .regex(/^(\d{4})-(\d{2})$/, 'Year must be in format YYYY-YY')
+      .refine(
+        (value) => {
+          const [start, end] = value.split('-');
+          return Number(end) === Number(start.slice(2)) + 1;
+        },
         {
-        message: "End date must be after start date",
-        path: ["endDate"],
-        }
-    );
+          message: 'Academic year must be continuous (2025-26)',
+        },
+      )
+      .optional(),
 
+    code: z
+      .string()
+      .min(2, 'Code is required')
+      .max(10, 'Code is too long')
+      .regex(/^[A-Z0-9-_]+$/, 'Code must be uppercase (A-Z, 0-9, -, _)'),
 
+    startDate: z.string().refine(isValidDate, 'Invalid start date'),
+
+    endDate: z.string().refine(isValidDate, 'Invalid end date'),
+
+    isActive: z.boolean().optional(),
+  })
+  .refine((data) => new Date(data.endDate) > new Date(data.startDate), {
+    message: 'End date must be after start date',
+    path: ['endDate'],
+  });
 
 /* ---------- School Subject ---------- */
 
 export const schoolSubjectSchema = z
-    .object({
-        name: z
-        .string()
-        .min(3, "Subject name must be at least 3 characters"),
+  .object({
+    name: z.string().min(3, 'Subject name must be at least 3 characters'),
 
-        code: z
-        .string()
-        .min(2, "Code is required")
-        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase (A-Z, 0-9, -, _)"),
+    code: z
+      .string()
+      .min(2, 'Code is required')
+      .regex(/^[A-Z0-9-_]+$/, 'Code must be uppercase (A-Z, 0-9, -, _)'),
 
-        className: z
-        .string('Valid class is required')
-        .min(1,"minimum class in 1")
-        .max(2,"Maximum class is 10")
-        ,
+    className: z
+      .string('Valid class is required')
+      .min(1, 'minimum class in 1')
+      .max(2, 'Maximum class is 10'),
+    type: z.enum(['theory', 'practical', 'both'], {
+      message: 'Subject type is required',
+    }),
 
-        type: z.enum(["theory", "practical", "both"], {
-        message: "Subject type is required"}),
+    maxMarks: z.preprocess(
+      emptyToUndefined,
+      z
+        .number()
+        .min(1, 'Max marks must be greater than 0')
+        .max(120, 'Enter a valid Passing marks  default ^ 120'),
+    ),
 
-        maxMarks: z
-        .preprocess(
-            emptyToUndefined, 
-            z.number()
-            .min(1, "Max marks must be greater than 0")
-            .max(120,"Enter a valid Passing marks  default ^ 120")
-        ),
+    passMarks: z
+      .number()
+      .min(10, 'Pass marks must be grater than 10')
+      .max(120, 'Enter a valid Passing marks  default ^ 120')
+      .optional(),
+    credits: z.preprocess(
+      emptyToUndefined,
+      z.number().min(0, 'Credits cannot be negative').optional(),
+    ),
 
-        passMarks: 
-            z.number()
-            .min(10, "Pass marks must be grater than 10")
-            .max(120,"Enter a valid Passing marks  default ^ 120")
-            .optional()
-        ,
+    department: z
+      .string()
+      .min(3, 'Enter a valid Department')
+      .max(20, 'Department name cannot exceed 20 chars')
+      .optional(),
 
-        credits: z
-        .preprocess(
-            emptyToUndefined,
-            z.number().min(0, "Credits cannot be negative").optional()
-        ),
+    // level: z
+    // .enum(
+    //     ["primary", "secondary", "higher-secondary", "degree"],
+    //     {message: "Invalid level" }
+    // )
+    // .optional(),
 
-        department: z
-        .string()
-        .min(3,"Enter a valid Department")
-        .max(20,"Department name cannot exceed 20 chars")
-        .optional(),
+    academicYear: z.string().min(1, 'Academic year is required'),
 
-        // level: z
-        // .enum(
-        //     ["primary", "secondary", "higher-secondary", "degree"],
-        //     {message: "Invalid level" }
-        // )
-        // .optional(),
+    // batchesToFollow: z
+    // .array(z.string())
+    // .min(1, "Select at least one batch"),
 
-        academicYear: z
-        .string()
-        .min(1, "Academic year is required"),
+    description: z.string().min(3, 'Description is required min of 10 words'),
 
-        // batchesToFollow: z
-        // .array(z.string())
-        // .min(1, "Select at least one batch"),
-
-        description: z
-        .string()
-        .min(3,"Description is required min of 10 words"),
-
-        referenceBooks: z
-        .array(
-            z
-            .instanceof(File)
-            .refine(
-                (file) => file.size <= 5 * 1024 * 1024,
-                "File size must be under 5MB"
-            )
-        )
-        .optional()
-    })
-    .refine(
-        (data) =>
-        data.passMarks === undefined ||
-        data.passMarks <= data.maxMarks,
-        {
-        message: "Pass marks cannot exceed max marks",
-        path: ["passMarks"],
-        }
-    );
-
-
+    referenceBooks: z
+      .array(
+        z
+          .instanceof(File)
+          .refine((file) => file.size <= 5 * 1024 * 1024, 'File size must be under 5MB'),
+      )
+      .optional(),
+  })
+  .refine((data) => data.passMarks === undefined || data.passMarks <= data.maxMarks, {
+    message: 'Pass marks cannot exceed max marks',
+    path: ['passMarks'],
+  });
 
 //************ ACADEMIC Course ************//
 
-    /* ---------- schema ---------- */
-export const courseValSchema = z.object({
+/* ---------- schema ---------- */
+export const courseValSchema = z
+  .object({
     /* ---------- core ---------- */
-    name: z
-        .string()
-        .min(2, "Course name must be at least 3 characters"),
+    name: z.string().min(2, 'Course name must be at least 3 characters'),
 
     code: z
-        .string()
-        .min(2, "Course code is required")
-        .regex(/^[A-Z0-9-_]+$/, "Code must be uppercase (A-Z, 0-9, -, _)"),
-    academicYear: z
-        .string("Academic Year is required else Default will be taken"),
+      .string()
+      .min(2, 'Course code is required')
+      .regex(/^[A-Z0-9-_]+$/, 'Code must be uppercase (A-Z, 0-9, -, _)'),
+    academicYear: z.string('Academic Year is required else Default will be taken'),
 
     // level: z
     //     .string()
     //     .min(1, "Course level is required"),
 
     description: z
-        .string()
-        .min(5, "Description must be at least 5 characters")
-        .max(150, "Description must be at max of 150 characters")
-        ,
-
-    status: z.enum(["active", "inactive"]),
+      .string()
+      .min(5, 'Description must be at least 5 characters')
+      .max(150, 'Description must be at max of 150 characters'),
+    status: z.enum(['active', 'inactive']),
 
     /* ---------- duration ---------- */
     duration: z.object({
-        value: z.coerce
-            .number({
-                message: "Duration value is required"
-            })
-            .int("Duration must be a whole number")
-            .positive("Duration must be greater than 0"),
-
-
-        unit: z.enum(["hours", "months", "years"], {
-            message: "Duration unit is required"
+      value: z.coerce
+        .number({
+          message: 'Duration value is required',
         })
-        }),
+        .int('Duration must be a whole number')
+        .positive('Duration must be greater than 0'),
 
+      unit: z.enum(['hours', 'months', 'years'], {
+        message: 'Duration unit is required',
+      }),
+    }),
 
     /* ---------- schedule ---------- */
     schedule: z.object({
-        startDate: z.string("Start Date is required"),
-        endDate: z.string("End Date is required"),
+      startDate: z.string('Start Date is required'),
+      endDate: z.string('End Date is required'),
     }),
 
     /* ---------- capacity ---------- */
-    maxStudents: z
-        .coerce
-        .number()
-        .min(10,"Min required students were 10")
-        .max(150,"Max allowed students is 150")
-    ,
-
+    maxStudents: z.coerce
+      .number()
+      .min(10, 'Min required students were 10')
+      .max(150, 'Max allowed students is 150'),
     enrollmentOpen: z.boolean(),
 
     /* ---------- relations ---------- */
-    subjects: z
-        .array(z.string())
-        .min(1, "Select at least one subject"),
+    subjects: z.array(z.string()).min(1, 'Select at least one subject'),
 
-    classes: z
-        .array(z.string())
-        .min(1, "Select at least one batch"),
+    classes: z.array(z.string()).min(1, 'Select at least one batch'),
 
-    coordinators: z
-        .array(z.string())
-        .optional(),
+    coordinators: z.array(z.string()).optional(),
 
     /* ---------- meta ---------- */
-    eligibilityCriteria: z
-        .string()
-        .optional()
-        .or(z.literal("")),
+    eligibilityCriteria: z.string().optional().or(z.literal('')),
 
-    syllabusUrl: z
-        .string()
-        .url("Invalid syllabus URL")
-        .optional()
-        .or(z.literal("")),
+    syllabusUrl: z.string().url('Invalid syllabus URL').optional().or(z.literal('')),
 
-    modelType:z.string().default("School"),
-    center:z.string('Center is required'),
+    modelType: z.string().default('School'),
+    center: z.string('Center is required'),
 
     attachments: z
-    .array(
+      .array(
         z
-        .instanceof(File)
-        .optional()
-        .refine(
-          (file) => file.size <= 5 * 1024 * 1024,
-            "File size must be under 5MB"
-        )
-    )
-    .optional(),
-}).refine(
+          .instanceof(File)
+          .optional()
+          .refine((file) => file.size <= 5 * 1024 * 1024, 'File size must be under 5MB'),
+      )
+      .optional(),
+  })
+  .refine(
     (data) =>
-        !data.schedule.startDate ||
-        !data.schedule.endDate ||
-        new Date(data.schedule.startDate) <=
-        new Date(data.schedule.endDate),
+      !data.schedule.startDate ||
+      !data.schedule.endDate ||
+      new Date(data.schedule.startDate) <= new Date(data.schedule.endDate),
     {
-        message: "End date must be after start date",
-        path: ["schedule", "endDate"],
-    }
-);
+      message: 'End date must be after start date',
+      path: ['schedule', 'endDate'],
+    },
+  );
 export type courseFormSchema = z.infer<typeof courseValSchema>;
 
-
-
 export const passwordSchema = z
-    .object({
-        pass1: z
-        .string()
-        .min(6, "Password must be at least 6 characters"),
-        pass2: z
-        .string()
-        .min(6, "Confirm password is required"),
-    })
-    .refine((data) => data.pass1 === data.pass2, {
-        message: "Passwords do not match",
-        path: ["password2"], // error shown under confirm password
-    });
-    
-
+  .object({
+    pass1: z.string().min(6, 'Password must be at least 6 characters'),
+    pass2: z.string().min(6, 'Confirm password is required'),
+  })
+  .refine((data) => data.pass1 === data.pass2, {
+    message: 'Passwords do not match',
+    path: ['password2'], // error shown under confirm password
+  });
 
 //************ FEES ************//
 /* -------------AUTO REMINDER-------------------- */
 
 export const autoReminderSchema = z
-    .object({
-        enabled: z.boolean(),
-        daysBeforeDue: z.coerce.number().optional().nullable(),
-    })
-    .superRefine((data, ctx) => {
-        if (data.enabled) {
-        if (data.daysBeforeDue == null) {
-            ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Days before due is required when reminder is enabled",
-            path: ["daysBeforeDue"],
-            });
-            return;
-        }
+  .object({
+    enabled: z.boolean(),
+    daysBeforeDue: z.coerce.number().optional().nullable(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.enabled) {
+      if (data.daysBeforeDue == null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Days before due is required when reminder is enabled',
+          path: ['daysBeforeDue'],
+        });
+        return;
+      }
 
-        if (data.daysBeforeDue < 2) {
-            ctx.addIssue({
-            code: z.ZodIssueCode.too_small,
-            minimum: 2,
-            origin:"number",
-            inclusive: true,
-            type: "number",
-            message: "Min capacity should be 2",
-            path: ["daysBeforeDue"],
-            });
-        }
+      if (data.daysBeforeDue < 2) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_small,
+          minimum: 2,
+          origin: 'number',
+          inclusive: true,
+          type: 'number',
+          message: 'Min capacity should be 2',
+          path: ['daysBeforeDue'],
+        });
+      }
 
-        if (data.daysBeforeDue > 30) {
-            ctx.addIssue({
-            code: z.ZodIssueCode.too_big,
-            maximum: 30,
-            inclusive: true,
-            origin:"number",
-            type: "number",
-            message: "Max capacity should be 30",
-            path: ["daysBeforeDue"],
-            });
-        }
-        }
-    });
+      if (data.daysBeforeDue > 30) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_big,
+          maximum: 30,
+          inclusive: true,
+          origin: 'number',
+          type: 'number',
+          message: 'Max capacity should be 30',
+          path: ['daysBeforeDue'],
+        });
+      }
+    }
+  });
 
 /* ---------------=MAIN FEE SCHEMA--------------------- */
 
 export const feeSchema = z
-    .object({
-        name: z
-        .string()
-        .min(2, "Fee name must be at least 2 characters"),
+  .object({
+    name: z.string().min(2, 'Fee name must be at least 2 characters'),
 
-        code: z
-        .string()
-        .min(2, "Fee code must be at least 2 characters"),
+    code: z.string().min(2, 'Fee code must be at least 2 characters'),
 
-        type: z.string(),
+    type: z.string(),
 
-        appliesTo: z.object({
-        model: z.string(),
-        id: z
-            .string()
-            .min(1, "Please select a valid reference"),
-        }),
+    appliesTo: z.object({
+      model: z.string(),
+      id: z.string().min(1, 'Please select a valid reference'),
+    }),
 
-        status: z
-        .string()
-        .default("ACTIVE"),
+    status: z.string().default('ACTIVE'),
 
-        totalAmount: z.coerce
-        .number({message:"Total capacity value is required"})
-        .max(1000000,"Total amount cannot exceed 1L")
-        .positive("Amount must be greater than 0"),
-        
-        dueDate: z.preprocess(
-        (val) => (val ? new Date(val as string) : undefined),
-            z.date({ error: "Due date is required" })
-        ),
+    totalAmount: z.coerce
+      .number({ message: 'Total capacity value is required' })
+      .max(1000000, 'Total amount cannot exceed 1L')
+      .positive('Amount must be greater than 0'),
 
-        currency: z
-        .string()
-        .min(2, "Currency required (e.g. INR, USD)"),
+    dueDate: z.preprocess(
+      (val) => (val ? new Date(val as string) : undefined),
+      z.date({ error: 'Due date is required' }),
+    ),
 
-        autoReminder: autoReminderSchema,
-    })
+    currency: z.string().min(2, 'Currency required (e.g. INR, USD)'),
 
-    /* ------------TYPE ↔ MODEL VALIDATION--------------- */
+    autoReminder: autoReminderSchema,
+  })
 
-    .refine(
-        (data) => {
-        const mapping = {
-            COURSE: "Course",
-            ANNUAL: "AcademicYear",
-            EXAM: "Exam",
-            CENTER: "Center",
-            OTHER: data.appliesTo.model, // allow flexible
-        };
+  /* ------------TYPE ↔ MODEL VALIDATION--------------- */
 
-        return mapping[data.type] === data.appliesTo.model;
-        },
-        {
-        message: "Invalid appliesTo model for selected fee type",
-        path: ["appliesTo", "model"],
-        }
-    );
+  .refine(
+    (data) => {
+      const mapping = {
+        COURSE: 'Course',
+        ANNUAL: 'AcademicYear',
+        EXAM: 'Exam',
+        CENTER: 'Center',
+        OTHER: data.appliesTo.model, // allow flexible
+      };
+
+      return mapping[data.type] === data.appliesTo.model;
+    },
+    {
+      message: 'Invalid appliesTo model for selected fee type',
+      path: ['appliesTo', 'model'],
+    },
+  );

@@ -9,8 +9,8 @@
 
 //       const formData = new FormData();
 
-//     // text fields      
-//       const fieldsToAvoid=["firstName","lastName","email","phone","gender","qualification"];  
+//     // text fields
+//       const fieldsToAvoid=["firstName","lastName","email","phone","gender","qualification"];
 
 //       for(const field of fieldsToAvoid){
 //         formData.append(field, basicForm[field]);
@@ -20,7 +20,6 @@
 //       if (basicForm.dateOfBirth) {
 //         formData.append("dateOfBirth", new Date(basicForm.dateOfBirth).toISOString());
 //       }
-
 
 //       // numbers → convert to string
 //       formData.append("experience", String(basicForm.experience));
@@ -41,7 +40,6 @@
 //       }
 //     });
 
-
 //         const config:HandleApiOptions<FormData>={
 //           endPoint:"/teacher/bio/create",
 //           method:"post",
@@ -50,7 +48,7 @@
 //         };
 
 //         const res =
-//         await 
+//         await
 //         handleApi<FormData,Partial<ITeacherBio>>(config);
 
 //         if(!res.success){
@@ -60,7 +58,6 @@
 //         }
 //         const teacher=res.data.data;
 
-
 //         //Store the teacher._id at LS=localStorage
 //         //later delete the ._id form the LS;
 //         //after adding teacher_professionalism data.
@@ -69,14 +66,6 @@
 //         toast.success("Updated..")
 //         return res.success;
 //     };
-
-
-
-
-
-
-
-
 
 /*Table
 

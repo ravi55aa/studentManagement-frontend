@@ -1,7 +1,6 @@
 // import { NotificationRoutes } from '@/constants/routes.contants';
 // import { HandleApiOptions, handleApi } from '../global.api';
 
-
 // export class NotificationService {
 //     static async create(form: ICreateNotification) {
 //         const config: HandleApiOptions<ICreateNotification> = {
