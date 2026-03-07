@@ -48,7 +48,7 @@ export class SchoolService {
     return await handleApi<object, null>(config);
   }
 
-  static async deleteSchool(id:string) {
+  static async deleteSchool(id: string) {
     const config: HandleApiOptions<object> = {
       method: 'delete',
       endPoint: `${SchoolRoute.delete}/${id}`,

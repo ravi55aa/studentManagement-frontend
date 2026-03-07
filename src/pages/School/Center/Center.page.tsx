@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 import { deleteSwal } from '@/utils/swal';
 import { Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
-import { TableComponent } from '@/components/Table.compo';
+import { TableComponent } from '@/components/Table.Component';
 import { AddressRoute } from '@/constants/routes.contants';
 import { CenterService } from '@/api/Services/center.service';
 //import { useAppNavigate } from "@/hooks/navigate.hook";

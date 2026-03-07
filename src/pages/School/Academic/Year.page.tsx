@@ -8,7 +8,7 @@ import {
   toggleAcademicLoading,
 } from '@/utils/Redux/Reducer/schoolYearReducer';
 import { Pagination } from '@/components';
-import { TableComponent } from '@/components/Table.compo';
+import { TableComponent } from '@/components/Table.Component';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { AcademicYearService } from '@/api/Services/year.service';
 import { toast } from 'react-toastify';

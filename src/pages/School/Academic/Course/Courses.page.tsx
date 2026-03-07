@@ -10,7 +10,7 @@ import {
 } from '@/utils/Redux/Reducer/courses.reducer';
 import { Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
-import { TableComponent } from '@/components/Table.compo';
+import { TableComponent } from '@/components/Table.Component';
 import { CourseService } from '@/api/Services/course.service';
 import { toast } from 'react-toastify';
 

@@ -8,7 +8,7 @@ import { Pagination, TopBar } from '@/components';
 import { toast } from 'react-toastify';
 import { deleteSwal } from '@/utils/swal';
 import SearchAndFilter from '@/components/SearchAndFilter';
-import { TableComponent } from '@/components/Table.compo';
+import { TableComponent } from '@/components/Table.Component';
 import TypeBadge from '@/components/fee/TypeBadge.c';
 import StatusBadge from '@/components/fee/StatusBadge.c';
 import { FeeService } from '@/api/Services/fee.service';

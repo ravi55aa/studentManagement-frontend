@@ -3,8 +3,32 @@ import { HandleApiOptions, handleApi } from '../global.api';
 import { Teachers } from '@/types/types';
 
 import { IGetAllTeachers, ITeacher, ITeacherBio } from '@/interfaces/ITeacher';
+import { LoginPayloadType } from '@/types/loginType';
 
 export class TeacherService {
+  // { role : Teacher }
+  static async login(formData: LoginPayloadType) {
+    const config: HandleApiOptions<LoginPayloadType> = {
+      endPoint: TeacherRoute.login,
+      method: 'post',
+      payload: formData,
+      headers: { role: 'Teacher' },
+    };
+    return await handleApi<LoginPayloadType, Partial<ITeacherBio>>(config);
+  }
+
+  static async verifyTeacher(email: string) {
+    const config: HandleApiOptions<null> = {
+      endPoint: `${TeacherRoute.verifyTeacher}/${email}`,
+      method: 'get',
+      payload: null,
+      headers: { role: 'Teacher' },
+    };
+    return await handleApi<LoginPayloadType, {id:string}>(config);
+  }
+
+
+  // { role : School }
   static async addBio(formData: FormData) {
     const config: HandleApiOptions<FormData> = {
       endPoint: TeacherRoute.addBio,

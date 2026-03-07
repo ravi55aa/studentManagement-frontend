@@ -9,7 +9,7 @@ import {
 import Swal from 'sweetalert2';
 import { Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
-import { TableComponent } from '@/components/Table.compo';
+import { TableComponent } from '@/components/Table.Component';
 import { SubjectService } from '@/api/Services/subject.service';
 
 const SubjectsPage = () => {

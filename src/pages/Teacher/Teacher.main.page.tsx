@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { storeTeachers } from '@/utils/Redux/Reducer/teacher.reducer';
 import TeacherDetailsModal from './ViewTeacher.page';
 import profileImg from '@/assets/profile_image.jpg';
-import { TableComponent } from '@/components/Table.compo';
+import { TableComponent } from '@/components/Table.Component';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { Pagination } from '@/components';
 import { TeacherService } from '@/api/Services/teacher.service';

@@ -48,11 +48,14 @@ export enum BatchRoute {
 }
 
 export enum TeacherRoute {
+  login='/teacher/login',
+
   getAll = '/teacher/all',
   getAllUnAssigned = '/teacher/all/unAssigned',
   addBio = '/teacher/bio/create',
   addProfessional = '/teacher/create',
   edit = '/teacher/edit',
+  verifyTeacher = '/teacher/verify',
 
   updateBio = '/teacher/bio/update',
   updateProfessional = '/teacher/update',

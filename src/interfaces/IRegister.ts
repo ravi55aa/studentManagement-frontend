@@ -53,7 +53,7 @@ export interface ISchoolFormData {
   reEnter: string | null;
   phone: string | null;
   profile: File | null;
-  _id?:string|null
+  _id?: string | null;
 }
 
 export interface DocumentRowProps {

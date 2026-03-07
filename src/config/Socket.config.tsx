@@ -11,15 +11,21 @@ const SocketProvider = ({ children }) => {
     (() => {
       if (!user?.id) return;
 
-      const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
+      //!update the correct url here
+      const newSocket = io(import.meta.env.VITE_BACKEND_UR, {
         auth: {
           userId: user.id,
           role: user.role,
         },
+        withCredentials:true
       });
 
       newSocket.on('connect', () => {
         console.log('Socket CONNECTED:', newSocket.id);
+      });
+
+      newSocket.on("connect_error", (err) => {
+        console.log("Socket error:", err.message);
       });
 
       newSocket.on('disconnect', (reason) => {
@@ -27,7 +33,11 @@ const SocketProvider = ({ children }) => {
       });
 
       setSocket(newSocket);
-      newSocket.disconnect();
+
+      //clean up when component unmounts
+      return ()=>{
+        newSocket.disconnect();
+      }
     })();
 
     return () => {};

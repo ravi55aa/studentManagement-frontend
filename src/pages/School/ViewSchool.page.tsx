@@ -44,7 +44,7 @@ const SchoolSettingsPage = () => {
    */
   const [showOtp, setShowOtp] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
-  const school=useAppSelector((state)=>state.schoolMDA);
+  const school = useAppSelector((state) => state.schoolMDA);
 
   const [utils, setUtils] = useState({
     error: '',
@@ -71,7 +71,7 @@ const SchoolSettingsPage = () => {
   const [selectedFile, setSelectedFile] = useState<IUploadedDoc | null>(null);
 
   const [openView, setOpenView] = useState(false);
-  const navigate=useAppNavigate();
+  const navigate = useAppNavigate();
 
   /**
    * Redux
@@ -353,12 +353,11 @@ const SchoolSettingsPage = () => {
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it',
     });
-    
 
     if (!deleteSchool.isConfirmed) {
       return;
     }
-    const id=school.meta._id;
+    const id = school.meta._id;
 
     const res = await SchoolService.deleteSchool(id);
 
@@ -367,7 +366,7 @@ const SchoolSettingsPage = () => {
       return res.success;
     }
     localStorage.clear();
-    navigate("/login");
+    navigate('/login');
     return res.success;
   };
 

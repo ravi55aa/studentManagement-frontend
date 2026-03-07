@@ -48,7 +48,7 @@ const ResetPassword = () => {
       setLoading(true);
       setError('');
 
-      const id = JSON.parse(localStorage.getItem('idToResetPassword')!);
+      const id = JSON.parse(localStorage.getItem('  ')!);
 
       const res = await AuthService.updatePassword(id, form.newPassword);
 

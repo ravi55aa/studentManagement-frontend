@@ -14,8 +14,6 @@ export default function AddNotificationPage() {
   const socket = useSocket();
   const { goBack } = useAppNavigate();
 
-  console.log('Socket value:', socket);
-
   useEffect(() => {
     if (!socket) {
       console.log('No-socket');

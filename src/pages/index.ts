@@ -37,6 +37,8 @@ export { default as 'AcademicCoursesEdit' } from './School/Academic/Course/Cours
 export { default as 'AddNotifications' } from '@/components/Notification/writeNotification.page';
 export { default as 'Notifications' } from '@/components/Notification/Notification';
 
+
+export { default as 'TeacherLogin' } from './Auth/Teacher.sign';
 export { default as 'Teachers' } from './Teacher/Teacher.main.page';
 export { default as 'AddTeachers' } from './Teacher/Add.Teacher.page';
 

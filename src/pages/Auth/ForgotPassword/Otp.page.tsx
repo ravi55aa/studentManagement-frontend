@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { handleValidationOF } from '@/validation/validateFormData';
 import { otpVerificationSchema } from '@/validation/otpReset';
 import { AuthService } from '@/api/Services/user.service';
+import { toast } from 'react-toastify';
+import { useSocket } from '@/hooks/useAppContext';
 
 export interface IOtp extends Document {
   _id: string;
@@ -19,6 +21,7 @@ const OtpVerification = () => {
   const [form, setForm] = useState({
     otp: '',
   });
+  const socket=useSocket();
 
   const [error, setError] = useState('');
 
@@ -30,21 +33,33 @@ const OtpVerification = () => {
         const id = JSON.parse(localStorage.getItem('idToResetPassword'));
 
         if (!id) {
-          throw new Error("Reset Password, 'id' not find");
+          toast.error("Can't Find User, kindly verify again");
+          return;
         }
 
         const res = await AuthService.generateOtp(id);
+        //make a socket call here;
+        socket.on('otp:new',(otpMessage)=>{
+          toast.success(otpMessage,{autoClose:false});
+        })
+
         const otp = res.data.data.otp;
+
         localStorage.setItem('generatedOtp', JSON.stringify(otp));
         return true;
       } catch (error) {
         console.error('OTP generation failed:', error);
       }
     };
-
     generateOtp();
-  }, []);
 
+    return ()=>{
+      socket.off('otp:new');
+    }
+  }, [socket]);
+
+
+  /** TIMER **/
   useEffect(() => {
     if (timeLeft <= 0) return;
 
@@ -54,6 +69,7 @@ const OtpVerification = () => {
 
     return () => clearInterval(timer);
   }, [timeLeft]);
+
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);

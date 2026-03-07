@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { schoolSidebarLinks, schoolPath, SidebarItemConfig } from '@/constants/sidebar';
+import { schoolPath, SidebarItemConfig } from '@/constants/sidebar';
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -7,7 +7,7 @@ interface SidebarItemProps {
   item: SidebarItemConfig;
 }
 
-export function Sidebar() {
+export function Sidebar(props:{sidebarFields:SidebarItemConfig[]}) {
   return (
     <aside className="w-64 bg-green-900 text-white flex flex-col">
       {/* Header */}
@@ -18,7 +18,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="mt-6 flex-1 px-4 space-y-2">
-        {schoolSidebarLinks.map((item) => (
+        {props.sidebarFields.map((item) => (
           <SidebarItem key={item.label} item={item} />
         ))}
       </nav>
@@ -32,6 +32,11 @@ export function Sidebar() {
 }
 export default Sidebar;
 
+
+/**
+ * 
+ * SIDEBAR-FIELDS
+ */
 function SidebarItem({ item }: SidebarItemProps) {
   const [open, setOpen] = useState(false);
   const hasChildren = !!item.children?.length;

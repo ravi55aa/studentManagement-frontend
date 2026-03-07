@@ -10,7 +10,7 @@ import AssignTeacherModal from '@/components/Teacher/AssignTeacherModal';
 import { toast } from 'react-toastify';
 import { ActionBtn, Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
-import { TableComponent } from '@/components/Table.compo';
+import { TableComponent } from '@/components/Table.Component';
 
 import { TeacherService } from '@/api/Services/teacher.service';
 import { BatchService } from '@/api/Services/batch.service';

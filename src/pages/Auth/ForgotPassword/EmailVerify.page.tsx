@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { handleValidationOF } from '@/validation/validateFormData';
 import { emailVerificationSchema } from '@/validation/otpReset';
 import { AuthService } from '@/api/Services/user.service';
+import { IResponse } from '@/interfaces/IResponse';
+import { TeacherService } from '@/api/Services/teacher.service';
+import { toast } from 'react-toastify';
 
 const ForgotPasswordEmailVerify = () => {
   const navigate = useNavigate();
+  const location=useLocation();
+  const user=location.state; 
 
+  const [socketCall,setSocketCall]=useState('');
   const [form, setForm] = useState({
     email: '',
   });
@@ -27,26 +33,52 @@ const ForgotPasswordEmailVerify = () => {
 
     setError('');
 
-    const res = await AuthService.verifyEmail(form.email);
+    let res:{ success: boolean; 
+              data?: IResponse<{id:string}>; 
+              error?: { 
+                message?: string; 
+                field?: string; 
+                code?: number; 
+              }; 
+            };
 
-    if (res.success) {
-      localStorage.setItem('idToResetPassword', JSON.stringify(res.data.data._id));
-
-      navigate('/passwordReset/otp');
-      return;
+    if(user.role == 'teacher'){
+      res=await handleTeacherVerifyEmail();
+    } else {
+      res=await handleAdminVerifyEmail();
     }
 
-    setError(res.error.message);
+    if (!res.success) {
+      toast.warn('Email Verification Failed');
+      setError(res.error.message);
+      return res.success;
+    }
+
+    const data=res.data?.data;
+    
+    localStorage.setItem('idToResetPassword', JSON.stringify(data.id));
+
+    navigate('/passwordReset/otp',{state:location.state});
+    return;
+
   };
+
+  async function handleAdminVerifyEmail(){
+    return await AuthService.verifyEmail(form.email,user.role);
+  }
+
+  async function handleTeacherVerifyEmail(){
+    return await TeacherService.verifyTeacher(form.email);
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="text-center w-full max-w-md">
         {/* Heading */}
-        <h1 className="text-3xl font-semibold text-gray-800 mb-2">Verify your email</h1>
+        <h1 className="text-3xl font-semibold text-gray-800 mb-2">Change password</h1>
 
         <p className="text-gray-500 mb-8 text-sm">
-          Enter your registered email to <br /> reset your password
+          Enter your Working Email to <br /> get password
         </p>
 
         {/* Error Message */}

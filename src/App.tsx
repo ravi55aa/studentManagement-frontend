@@ -30,10 +30,13 @@ import {
   AcademicCoursesAdd,
   AcademicCoursesEdit,
   Teachers,
+  TeacherLogin,
   AddTeachers,
   Notifications,
   AddNotifications,
 } from '@/pages/index';
+
+import {TeacherDashboard} from '@/pages/Teacher/index'
 
 import { Routes, Route } from 'react-router-dom';
 
@@ -42,8 +45,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { EmailVerify, OTP, PasswordReset } from '@/pages/Auth';
 import EditTeacherPage from './pages/Teacher/Edit.Teacher.page';
-import CheckoutPage from './components/Stripe.Checkout.page';
-import PaymentSuccess from './components/Success.compo';
+import CheckoutPage from './components/Stripe.checkout.page';
+import PaymentSuccess from './components/Success.Component';
 import { ProtectedRoute, PublicRoute } from './utils/protectedRoutes';
 
 const App = () => {
@@ -51,32 +54,42 @@ const App = () => {
     <div>
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
+
+        {/*.*/}
+        
         <Route path="*" element={<NotFound />} />
         <Route element={<PublicRoute />}>
-          //*admin login
+          {/* admin login */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+          {/* teacher login */}
+          <Route path="/teacher/login" element={<TeacherLogin />} />
+
+
+          {/* password Reset */}
+          <Route path="/passwordReset/emailVerify" element={<EmailVerify />} />
+          <Route path="/passwordReset/otp" element={<OTP />} />
+          <Route path="/passwordReset" element={<PasswordReset />} />
         </Route>
 
-        //*password Reset
-        <Route path="/passwordReset" element={<PasswordReset />} />
-        <Route path="/passwordReset/emailVerify" element={<EmailVerify />} />
-        <Route path="/passwordReset/otp" element={<OTP />} />
-        
-        //*school - login - register
+        {/*.*/}
+        {/*LOGIN-REGISTER*/}
         <Route element={<PublicRoute />}>
-        <Route path="/school/login" element={<SignInSchool />} />
-        <Route path="/school/register" element={<CreateSchool />} />
-        <Route path="/school/register/address" element={<AddAddress />} />
-        <Route path="/school/register/uploadDocuments" element={<DocumentUpload />} />
+          <Route path="/school/login" element={<SignInSchool />} />
+          <Route path="/school/register" element={<CreateSchool />} />
+          <Route path="/school/register/address" element={<AddAddress />} />
+          <Route path="/school/register/uploadDocuments" element={<DocumentUpload />} />
         </Route>
-        
-        //*strip
+
+        {/*.*/}
+        {/*STRIPE*/}
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         
-        //*school - Dashboard
+        {/*.*/}
+        {/* SCHOOL */}
         <Route element={<ProtectedRoute />}>
           <Route path="/school/dashboard" element={<Dashboard />}>
             <Route index element={<DashboardHome />} />
@@ -102,10 +115,12 @@ const App = () => {
             </Route>
             <Route path="settings" element={<ViewSchool />} />
 
-            <Route path="teachers">
+            <Route path="teacher">
               <Route index element={<Teachers />} />
+
               <Route path="add" element={<AddTeachers />} />
               <Route path="edit/:id" element={<EditTeacherPage />} />
+
             </Route>
 
             <Route path="fees">
@@ -121,6 +136,14 @@ const App = () => {
             </Route>
           </Route>
         </Route>
+
+        {/*.*/}
+        {/* TEACHER */}
+        <Route path='teacher/dashboard' element={<TeacherDashboard/>} > 
+          <Route index element={<DashboardHome />} />
+
+        </Route>
+
       </Routes>
     </div>
   );

@@ -3,15 +3,15 @@ import { HandleApiOptions, handleApi } from '../global.api';
 import { forgotPassword } from '@/constants/routes.contants';
 
 export class AuthService {
-  static async verifyEmail(email: string) {
+  static async verifyEmail(email: string,role:string) {
     const config: HandleApiOptions<object> = {
       method: 'post',
       endPoint: forgotPassword.emailVerify,
-      payload: { email: email, model: 'Admin' },
-      headers: { role: 'Admin' },
+      payload: { email: email, model: role },
+      headers: { role: role },
     };
 
-    return await handleApi<object, IOtp>(config);
+    return await handleApi<object, {id:string}>(config);
   }
 
   static async generateOtp(id: string) {
@@ -44,3 +44,4 @@ export class AuthService {
     return await handleApi(config);
   }
 }
+
