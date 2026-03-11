@@ -44,5 +44,5 @@ export const signInSchema = z.object({
   password: z
     .string()
     .min(6, 'Password must be 6+ characters')
-    .max(8, 'Password must not be greater tha 8 characters'),
+    .max(12, 'Password must not be greater tha 12 characters'),
 });

@@ -1,25 +1,77 @@
 import { InputField, Select } from '@/components';
 import FormActions from '@/components/FormAction';
 import { Section } from '@/components/Teacher/Section';
-import { useAppSelector } from '@/hooks/useStoreHooks';
-import React, { useState } from 'react'
+import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
+import React, { useEffect, useState } from 'react'
 import { useAppNavigate } from '@/hooks/useNavigate.hook';
 import { Textarea } from '@/components/textArea';
+import { SubjectService } from '@/api/Services/subject.service';
+import { BatchService } from '@/api/Services/batch.service';
+import { toast } from 'react-toastify';
+import { Roles } from '@/constants/role.enum';
+import { storeBatches } from '@/utils/Redux/Reducer/batchReducer';
+import { storeSchoolAcademicSubjects } from '@/utils/Redux/Reducer/subjectReducer';
+import { handleValidationOF } from '@/validation/validateFormData';
+import { HomeworkSchema } from '@/validation/teacher.validation';
+import { HomeworkService } from '@/api/Services/Teacher/homework.service';
+import { HomeWorkStatus } from '@/types/homework.status';
+import { TeacherService } from '@/api/Services/teacher.service';
+import { unknown } from 'zod';
+
 
 const AddHomework = () => {
-
     const [form, setForm] = useState({
         title: "",
         description: "",
         subjectId: "",
         batchId: "",
-        status: "pending",
-        dueDate: "",
+        status: HomeWorkStatus.pending,
+        dueDate: new Date("1-02-2026"),
         attachments: [],
         });
 
         const subjectStore=useAppSelector((state)=>state.schoolSubject)
         const batchStore=useAppSelector((state)=>state.batch)
+        const dispatch=useAppDispatch();
+
+        useEffect(()=>{
+            //sub & batch
+            const teacher=JSON.parse(localStorage.getItem('sectionB'));
+
+            if(!teacher){
+                toast.warn('teacherNotFound Kindly re-Login');
+                return;
+            }
+
+            const fetchStoreData=async()=>{
+                const resTeacher=await TeacherService.get(teacher._id);
+                const teacherProfile=resTeacher.data?.data;
+
+                const res1=await SubjectService.getAll(Roles.Teacher);
+                const res2=await BatchService.getAllWithQuery(Roles.Teacher,
+                    {center:teacherProfile.teacher.center});
+
+                if(!res1.success){
+                    toast.error(res1.error.message);
+                    return res1.success;
+                }
+
+                if(!res2.success){
+                    toast.error(res2.error.message);
+                    return res2.success;
+                }
+
+                const batches=res2.data.data||[];
+                dispatch(storeBatches(batches));
+
+                const subjects=res1.data.data||[];
+                dispatch(storeSchoolAcademicSubjects(subjects));
+                return true;
+            }
+
+            fetchStoreData();
+
+        },[dispatch]);
 
         const {goBack}=useAppNavigate();
 
@@ -39,7 +91,7 @@ const AddHomework = () => {
 
         setForm((prev) => ({
             ...prev,
-            attachments: [...prev.attachments, ...files],
+            attachments: [...prev?.attachments, ...files],
         }));
         };
 
@@ -51,52 +103,28 @@ const AddHomework = () => {
         };
 
         const handleSubmit = async () => {
-            // dispatch(toggleAcademicLoading(true));
-        
-            // //validate
-            // const payload = {
-            //     ...form,
-            //     maxMarks: Number(form.maxMarks),
-            //     passMarks: Number(form.passMarks),
-            //     credits: Number(form.credits),
-            // };
-        
-            // if (Number(form.className) > 10 || Number(form.className) < 1) {
-            //     const span = document.getElementById('className');
-            //     if (span) {
-            //         span.textContent = 'Enter a valid class(1-10)';
-            //     }
-            //     return false;
-            // }
-        
-            // const validation = handleValidationOF(schoolSubjectSchema, payload);
-        
-            // if (!validation.success) {
-            //   console.log('The validation. Error', validation.error);
-            //   dispatch(toggleAcademicLoading(false));
-            //   return false;
-            // }
-        
-            // setError(null);
-        
-            // //formData.append()
-            // const formData = new FormData();
-        
-            // for (const field in form) {
-            //   if (field == 'referenceBooks') {
-            //     form[field]?.forEach((ele) => formData.append('docs', ele));
-            //   } else {
-            //     formData.append(field, form[field]);
-            //   }
-            // }
-            // const response = await SubjectService.create(formData);
-        
-            // if (!response.success) return response.success;
-        
-            // dispatch(toggleAcademicLoading(false));
-            // toast.success('New Subject Added', { draggable: true });
-            // goBack();
-        
+
+            handleValidationOF(HomeworkSchema,form);
+            
+            const formData=new FormData();
+
+            for(let key in form) {
+                if(key=='attachments') {
+                    form.attachments.forEach(file => {
+                        formData.append("docs", file)
+                    })
+                }
+
+                formData.append(key,form[key])
+            }
+            
+            const res=await HomeworkService.create(formData);
+
+            if(!res.success){
+                toast.error(res.error.message);
+                return res.success;
+            }
+
             goBack();
         };
 
@@ -188,7 +216,7 @@ const AddHomework = () => {
 
                 {form.attachments?.length > 0 && (
                 <div className="space-y-2">
-                    {form.attachments.map((file, index) => (
+                    {form.attachments?.map((file, index) => (
                     <div
                         key={index}
                         className="flex items-center justify-between bg-gray-100 px-3 py-2 rounded"

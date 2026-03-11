@@ -14,47 +14,60 @@ export class BatchService {
     return await handleApi<Partial<IBatches>, IBatches>(config);
   }
 
-  static async getAll() {
+  static async getAll(role:string='School') {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: BatchRoute.get,
       payload: null,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<null, IBatches>(config);
   }
 
-  static async get(id: string) {
+  static async getAllWithQuery(role:string='School',query:Record<string,string|number|boolean>={}) {
+    const config: HandleApiOptions<null> = {
+      method: 'get',
+      endPoint: BatchRoute.get,
+      payload: null,
+      params:query,
+      headers: { role: role },
+    };
+
+    return await handleApi<null, IBatches>(config);
+  }
+
+  static async get(role:string='School',id:string) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: `${BatchRoute.get}/${id}`,
       payload: null,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<null, IBatches>(config);
   }
 
-  static async assignTeacher(batchId: string, teacherId: string) {
+  static async assignTeacher(role:string='School',batchId: string, teacherId: string) {
     const config: HandleApiOptions<{ teacherId: string }> = {
       method: 'patch',
       endPoint: `${BatchRoute.assignTeacher}/${batchId}`,
       payload: { teacherId },
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<{ teacherId: string }, IBatches>(config);
   }
 
-  static async update(id: string, form: object) {
+  static async update(role:string='School',id: string, form: object) {
     const config: HandleApiOptions<object> = {
       method: 'put',
       endPoint: `${BatchRoute.edit}/${id}`,
       payload: form,
-      headers: { role: 'School' }, // fixed casing
+      headers: { role: role },
     };
 
     return await handleApi<object, IBatches>(config);
   }
+
 }

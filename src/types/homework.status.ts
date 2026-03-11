@@ -1,1 +1,5 @@
-export type HomeWorkStatus="pending"|"submitted"|"reviewed";
+export enum HomeWorkStatus{
+    pending="pending",
+    submitted="submitted",
+    reviewed="reviewed"
+};

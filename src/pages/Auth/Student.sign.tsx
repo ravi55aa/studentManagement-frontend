@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { handleAdminSignIn } from '@/api/auth.api';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router';
 import { signInSchema } from '@/validation/register.schema';
 import { handleValidationOF } from '@/validation/validateFormData';
 import Login from '@/components/Auth/Login.component';
+import { TeacherService } from '@/api/Services/teacher.service';
+import { LoginPayloadType } from '@/types/loginType';
 
 const SignIn = () => {
     const navigate = useNavigate();
 
-    const [form, setForm] = useState({
+    const [form, setForm] = useState<LoginPayloadType>({
         email: '',
         password: '',
     });
@@ -30,13 +30,16 @@ const SignIn = () => {
 
         setError('');
 
-        const res = await handleAdminSignIn(form);
-
-        if (res.success) {
-        navigate('/school/login');
+        const res = await TeacherService.login(form);
+        
+        if (!res.success) {
+            setError(res.error?.message);
         }
+        
+        navigate('/teacher/dashboard');
+        const user=JSON.stringify(res.data?.data||{});
+        localStorage.setItem('sectionB',user);
 
-        setError(res.error.message);
         return res.success;
     };
 
@@ -49,9 +52,10 @@ const SignIn = () => {
             emailValue={form.email} 
             passwordValue={form.password}
             error={error}
-            key='adminLogin'
+            key='teacherLogin'
+            user={{role:'teacher'}}
             />
-
+    
         </div>
         </div>
     );

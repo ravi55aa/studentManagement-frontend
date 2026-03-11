@@ -36,7 +36,7 @@ import {
   AddNotifications,
 } from '@/pages/index';
 
-import {TeacherDashboard} from '@/pages/Teacher/index'
+import {TeacherDashboard,HomeworkAdd} from '@/pages/Teacher/index'
 
 import { Routes, Route } from 'react-router-dom';
 
@@ -115,7 +115,7 @@ const App = () => {
             </Route>
             <Route path="settings" element={<ViewSchool />} />
 
-            <Route path="teacher">
+            <Route path="teachers">
               <Route index element={<Teachers />} />
 
               <Route path="add" element={<AddTeachers />} />
@@ -139,9 +139,13 @@ const App = () => {
 
         {/*.*/}
         {/* TEACHER */}
-        <Route path='teacher/dashboard' element={<TeacherDashboard/>} > 
+        <Route path='/teacher/dashboard' element={<TeacherDashboard/>} > 
           <Route index element={<DashboardHome />} />
 
+          <Route path="homework" element={<HomeworkAdd />} >
+            {/* <Route path="add" element={<HomeworkAdd />} /> */}
+          
+          </Route>
         </Route>
 
       </Routes>

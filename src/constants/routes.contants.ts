@@ -40,6 +40,12 @@ export enum SubjectRoute {
   edit = '/school/academic/subjects/edit',
 }
 
+export enum HomeworkRoute {
+  get = '/teacher/homework/getall',
+  add = '/teacher/homework',
+  edit = '/teacher/homework',
+}
+
 export enum BatchRoute {
   get = '/school/batches',
   add = '/school/batches/add',
@@ -92,4 +98,11 @@ export enum NotificationRoutes {
 export enum AdminRouter {
   register = '/auth/admin/register',
   login = '/auth/admin/login',
+  login2 = '/auth/login',
 }
+
+export enum AuthRouter {
+  register = '/auth/register',
+  login = '/auth/login',
+}
+

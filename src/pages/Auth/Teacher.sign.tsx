@@ -31,12 +31,15 @@ const SignIn = () => {
         setError('');
 
         const res = await TeacherService.login(form);
-
-        if (res.success) {
-        navigate('/teacher/dashboard');
+        
+        if (!res.success) {
+            setError(res.error?.message);
         }
+        
+        navigate('/teacher/dashboard');
+        const user=JSON.stringify(res.data?.data||{});
+        localStorage.setItem('sectionB',user);
 
-        setError(res.error.message);
         return res.success;
     };
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import Checkout from './Stripe.checkout.compo';
+import Checkout from './Stripe.checkout.component';
 //import { toast } from "react-toastify";
 
 const pk_strip =

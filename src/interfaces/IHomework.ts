@@ -3,7 +3,7 @@ import { HomeWorkStatus } from "@/types/homework.status";
 export interface IHomework {
     title: string;
     description: string;
-    attachments?: unknown[];
+    attachments?: File[] | {fileName:string,url:string};
     
     subjectId: string;
     batchId: string;

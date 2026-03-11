@@ -1,13 +1,14 @@
 import { Link } from 'react-router';
-import { schoolPath, SidebarItemConfig } from '@/constants/sidebar';
+import { SidebarItemConfig } from '@/constants/sidebar';
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface SidebarItemProps {
   item: SidebarItemConfig;
+  mainPath:string;
 }
 
-export function Sidebar(props:{sidebarFields:SidebarItemConfig[]}) {
+export function Sidebar(props:{sidebarFields:SidebarItemConfig[],mainPath:string}) {
   return (
     <aside className="w-64 bg-green-900 text-white flex flex-col">
       {/* Header */}
@@ -19,7 +20,7 @@ export function Sidebar(props:{sidebarFields:SidebarItemConfig[]}) {
       {/* Navigation */}
       <nav className="mt-6 flex-1 px-4 space-y-2">
         {props.sidebarFields.map((item) => (
-          <SidebarItem key={item.label} item={item} />
+          <SidebarItem key={item.label} mainPath={props.mainPath} item={item} />
         ))}
       </nav>
 
@@ -37,7 +38,7 @@ export default Sidebar;
  * 
  * SIDEBAR-FIELDS
  */
-function SidebarItem({ item }: SidebarItemProps) {
+function SidebarItem({ item,mainPath }: SidebarItemProps) {
   const [open, setOpen] = useState(false);
   const hasChildren = !!item.children?.length;
 
@@ -51,7 +52,7 @@ function SidebarItem({ item }: SidebarItemProps) {
         {hasChildren ? (
           <span className="flex items-center gap-2">{item.label}</span>
         ) : (
-          <Link to={`${schoolPath}${item.path}`} className="w-full">
+          <Link to={`${mainPath}${item.path}`} className="w-full">
             {item.label}
           </Link>
         )}
@@ -65,7 +66,7 @@ function SidebarItem({ item }: SidebarItemProps) {
           {item.children!.map((child) => (
             <Link
               key={child.label}
-              to={`${schoolPath}${item.path}/${child.path}`}
+              to={`${mainPath}${item.path}/${child.path}`}
               className="block px-3 py-1 rounded text-sm hover:bg-green-700"
             >
               &gt; {child.label}

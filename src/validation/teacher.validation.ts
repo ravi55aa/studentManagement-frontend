@@ -104,10 +104,6 @@ export const HomeworkSchema = z.object({
     .string()
     .min(1, "Batch ID is required"),
 
-  teacherId: z
-    .string()
-    .min(1, "Teacher ID is required"),
-
   status: z.enum(["pending", "submitted", "reviewed"]),
 
   dueDate: z.coerce.date({
@@ -119,8 +115,4 @@ export const HomeworkSchema = z.object({
     .nullable()
     .optional(),
 
-  isDelete: z
-    .boolean()
-    .optional()
-    .default(false),
 });

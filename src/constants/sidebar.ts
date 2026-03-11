@@ -4,7 +4,6 @@ export interface SidebarItemConfig {
   children?: SidebarItemConfig[];
 }
 
-export const schoolPath = '/school/dashboard/';
 
 export const schoolSidebarLinks: SidebarItemConfig[] = [
   {

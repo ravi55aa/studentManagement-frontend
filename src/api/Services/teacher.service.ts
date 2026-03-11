@@ -1,4 +1,4 @@
-import { TeacherRoute } from '@/constants/routes.contants';
+import { TeacherRoute,AuthRouter } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '../global.api';
 import { Teachers } from '@/types/types';
 
@@ -9,7 +9,7 @@ export class TeacherService {
   // { role : Teacher }
   static async login(formData: LoginPayloadType) {
     const config: HandleApiOptions<LoginPayloadType> = {
-      endPoint: TeacherRoute.login,
+      endPoint: AuthRouter.login,
       method: 'post',
       payload: formData,
       headers: { role: 'Teacher' },

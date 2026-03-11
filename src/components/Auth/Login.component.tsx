@@ -25,7 +25,7 @@ export const Login = (props:LoginType) => {
             label='Enter Email' 
             name='email' 
             value={props.emailValue}
-            onChange={onchange} 
+            onChange={props.onchange} 
             placeholder='Enter your email' />
 
             <InputField
@@ -33,7 +33,7 @@ export const Login = (props:LoginType) => {
                 label='Enter Password'
                 name="password"
                 value={props.passwordValue}
-                onChange={onchange}
+                onChange={props.onchange}
                 placeholder="Enter Password"
             />
 
