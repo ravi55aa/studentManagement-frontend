@@ -41,7 +41,14 @@ export enum SubjectRoute {
 }
 
 export enum HomeworkRoute {
-  get = '/teacher/homework/getall',
+  getall = '/teacher/homework/getall',
+  get = '/teacher/homework/get',
+  add = '/teacher/homework',
+  edit = '/teacher/homework',
+}
+
+export enum StudentHomeworkRoute {
+  submit = '/student/homework/submit',
   add = '/teacher/homework',
   edit = '/teacher/homework',
 }
@@ -66,6 +73,7 @@ export enum TeacherRoute {
   updateBio = '/teacher/bio/update',
   updateProfessional = '/teacher/update',
 }
+
 
 export enum CenterRoute {
   get = '/school/centers',
@@ -106,3 +114,24 @@ export enum AuthRouter {
   login = '/auth/login',
 }
 
+
+
+
+
+/**************** STUDENT ROUTER ****************/
+
+export enum StudentRouter {
+  login='/student/login',
+
+  add = '/student/create',
+  addAddress = '/student/create/address',
+  addDocuments = '/student/create/document',
+
+  getAll = '/student/all',
+  getAllUnAssigned = '/student/all/unAssigned',
+  edit = '/student/edit',
+  verifyStudent = '/student/verify',
+
+  updateBio = '/student/bio/update',
+  updateProfessional = '/student/update',
+}

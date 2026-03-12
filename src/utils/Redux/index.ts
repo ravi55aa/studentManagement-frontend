@@ -10,3 +10,4 @@ export { default as currentUserSlice } from './Reducer/currentUser.reducer';
 export { default as feeSlice } from './Reducer/fee.reducer';
 export { default as schoolReducer } from './Reducer/allSchool.redcuer';
 export { default as notificationReducer } from './Reducer/notifications';
+export { default as homeworkReducer } from './Reducer/homework.reducer';

@@ -20,6 +20,7 @@ import {
   Batches,
   AddBatches,
   EditBatches,
+  EnrollBatches,
   AcademicYear,
   AcademicAddYear,
   AcademicEditYear,
@@ -34,6 +35,14 @@ import {
   AddTeachers,
   Notifications,
   AddNotifications,
+
+  /*student*/
+  StudentLogin,
+  AddStudent,
+  StudentDashboard,
+  HomeworkList,
+  HomeworkSubmit,
+
 } from '@/pages/index';
 
 import {TeacherDashboard,HomeworkAdd} from '@/pages/Teacher/index'
@@ -45,7 +54,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { EmailVerify, OTP, PasswordReset } from '@/pages/Auth';
 import EditTeacherPage from './pages/Teacher/Edit.Teacher.page';
-import CheckoutPage from './components/Stripe.checkout.page';
+import CheckoutPage from './components/Stripe.Checkout.page'; 
 import PaymentSuccess from './components/Success.Component';
 import { ProtectedRoute, PublicRoute } from './utils/protectedRoutes';
 
@@ -64,8 +73,9 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* teacher login */}
+          {/* AUTH-LOGIN */}
           <Route path="/teacher/login" element={<TeacherLogin />} />
+          <Route path="/student/login" element={<StudentLogin />} />
 
 
           {/* password Reset */}
@@ -90,15 +100,24 @@ const App = () => {
         
         {/*.*/}
         {/* SCHOOL */}
-        <Route element={<ProtectedRoute />}>
+        {/* element={<ProtectedRoute />} */}
+        <Route >
           <Route path="/school/dashboard" element={<Dashboard />}>
             <Route index element={<DashboardHome />} />
             <Route path="centers" element={<Centers />} />
             <Route path="centers/add" element={<AddCenter />} />
             <Route path="centers/edit/:id" element={<EditCenter />} />
-            <Route path="batches" element={<Batches />} />
-            <Route path="batches/add" element={<AddBatches />} />
-            <Route path="batches/edit/:id" element={<EditBatches />} />
+            
+            <Route path="batches"  >
+              <Route index element={<Batches />} />
+              <Route path="add" element={<AddBatches />} />
+              <Route path="edit/:id" element={<EditBatches />} />
+
+              <Route path="enroll/:batchId"  >
+              <Route index element={<EnrollBatches />} />
+              <Route path="addStudents" element={<AddStudent />} />
+              </Route>
+            </Route>
 
             <Route path="academics">
               <Route index element={<AcademicYear />} />
@@ -135,19 +154,27 @@ const App = () => {
               <Route path="add" element={<AddNotifications />} />
             </Route>
           </Route>
+
         </Route>
 
-        {/*.*/}
         {/* TEACHER */}
         <Route path='/teacher/dashboard' element={<TeacherDashboard/>} > 
           <Route index element={<DashboardHome />} />
 
-          <Route path="homework" element={<HomeworkAdd />} >
-            {/* <Route path="add" element={<HomeworkAdd />} /> */}
-          
+          <Route path="homework" element={<HomeworkList />} >{/*TODOThis is a student homeWorkList*/}
+            <Route path="add" element={<HomeworkAdd />} />
           </Route>
         </Route>
 
+        {/* STUDENT */}
+        <Route path='/student/dashboard' element={<StudentDashboard/>}>
+          <Route index element={<DashboardHome/>} />
+          <Route path="homework"  >
+            <Route index element={<HomeworkList />} />
+            <Route path="add/:homeworkId" element={<HomeworkSubmit />} />
+          </Route>
+        </Route>
+        
       </Routes>
     </div>
   );

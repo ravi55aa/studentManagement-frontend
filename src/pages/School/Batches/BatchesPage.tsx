@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Bell } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { storeBatches, toggleBatchLoading } from '@/utils/Redux/Reducer/batchReducer';
@@ -14,10 +14,14 @@ import { TableComponent } from '@/components/Table.Component';
 
 import { TeacherService } from '@/api/Services/teacher.service';
 import { BatchService } from '@/api/Services/batch.service';
+import { Roles } from '@/constants/role.enum';
 
 const BatchesPage = () => {
   const [search, setSearch] = useState('');
+  
   const dispatch = useAppDispatch();
+  const navigate=useNavigate()
+
   const batchReduxStore = useAppSelector((state) => state.batch);
   const [unAssignedTeachers, setUnAssignedTeachers] = useState<ITeacherBio[] | []>([]);
   const teachersStore = useAppSelector((state) => state.teacher);
@@ -87,7 +91,7 @@ const BatchesPage = () => {
   const handleAssignTeacher = async (teacherId: string): Promise<boolean> => {
     dispatch(toggleBatchLoading(true));
 
-    const res = await BatchService.assignTeacher(selectedBatch?._id, teacherId);
+    const res = await BatchService.assignTeacher(Roles.Admin,selectedBatch?._id, teacherId);
     setSearch('');
 
     dispatch(toggleBatchLoading(false));
@@ -146,7 +150,7 @@ const BatchesPage = () => {
             align: 'center',
             render: (batch) => (
               <div className="flex justify-center gap-3">
-                <ActionBtn label="Enroll" path={`edit/:${batch?._id}`} />
+                <ActionBtn label="Enroll" path={`enroll/${batch?._id}`} />
                 <button
                   onClick={() => handleOpenAssign(batch)}
                   className="px-3 py-1 rounded-md bg-gray-200 text-xs hover:bg-gray-300"

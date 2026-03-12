@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { signInSchema } from '@/validation/register.schema';
 import { handleValidationOF } from '@/validation/validateFormData';
 import Login from '@/components/Auth/Login.component';
-import { TeacherService } from '@/api/Services/teacher.service';
 import { LoginPayloadType } from '@/types/loginType';
+import { Roles } from '@/constants/role.enum';
+import { StudentService } from '@/api/Services/Student/student.service';
+import { toast } from 'react-toastify';
 
 const SignIn = () => {
     const navigate = useNavigate();
@@ -30,15 +32,17 @@ const SignIn = () => {
 
         setError('');
 
-        const res = await TeacherService.login(form);
+        const res = await StudentService.login(form);
         
         if (!res.success) {
+            toast.error(`Login:Error ${res.error?.message}`);
             setError(res.error?.message);
+            return false;
         }
         
-        navigate('/teacher/dashboard');
+        navigate('/student/dashboard');
         const user=JSON.stringify(res.data?.data||{});
-        localStorage.setItem('sectionB',user);
+        localStorage.setItem('sectionC',user);
 
         return res.success;
     };
@@ -52,8 +56,8 @@ const SignIn = () => {
             emailValue={form.email} 
             passwordValue={form.password}
             error={error}
-            key='teacherLogin'
-            user={{role:'teacher'}}
+            key='studentLogin'
+            user={{role:Roles.Student}}
             />
     
         </div>

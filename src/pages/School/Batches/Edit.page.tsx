@@ -11,6 +11,7 @@ import { ITeacherBio } from '@/interfaces/ITeacher';
 import FormActions from '@/components/FormAction';
 import { TeacherService } from '@/api/Services/teacher.service';
 import { BatchService } from '@/api/Services/batch.service';
+import { Roles } from '@/constants/role.enum';
 
 const EditBatch = () => {
   const [form, setForm] = useState({
@@ -31,7 +32,7 @@ const EditBatch = () => {
 
   useEffect(() => {
     const fetchBatchById = async () => {
-      const res = await BatchService.get(id);
+      const res = await BatchService.get(Roles.School,id);
 
       const batchData = res?.data?.data;
 
@@ -108,7 +109,7 @@ const EditBatch = () => {
       return isValid.success;
     }
 
-    const res = await BatchService.update(id, form);
+    const res = await BatchService.update(Roles.School,id, form);
 
     if (!res.success) {
       toast.error(res.error.message);

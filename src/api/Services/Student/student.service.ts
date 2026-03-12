@@ -1,12 +1,10 @@
-import { TeacherRoute,AuthRouter } from '@/constants/routes.contants';
+import { StudentRouter,AuthRouter } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '@/api/global.api';
-import { Teachers } from '@/types/types';
-
-import { IGetAllTeachers, ITeacher, ITeacherBio } from '@/interfaces/ITeacher';
 import { LoginPayloadType } from '@/types/loginType';
+import { IStudent } from '@/interfaces/IStudent';
 
 
-export class TeacherService {
+export class StudentService {
   // { role : Student }
     static async login(formData: LoginPayloadType) {
         const config: HandleApiOptions<LoginPayloadType> = {
@@ -16,94 +14,94 @@ export class TeacherService {
         headers: { role: 'Student' },
         };
 
-        return await handleApi<LoginPayloadType, Partial<ITeacherBio>>(config);
+        return await handleApi<LoginPayloadType, Partial<IStudent>>(config);
     }
 
-    static async verifyTeacher(email: string) {
+    static async verifyStudent(email: string) {
         const config: HandleApiOptions<null> = {
-        endPoint: `${TeacherRoute.verifyTeacher}/${email}`,
+        endPoint: `${StudentRouter.verifyStudent}/${email}`,
         method: 'get',
         payload: null,
-        headers: { role: 'Teacher' },
+        headers: { role: 'Student' },
         };
         return await handleApi<LoginPayloadType, {id:string}>(config);
     }
 
 
     // { role : School }
-    static async addBio(formData: FormData) {
+    static async add(formData: FormData,batchId:string) {
         const config: HandleApiOptions<FormData> = {
-        endPoint: TeacherRoute.addBio,
+        endPoint: `${StudentRouter.add}/${batchId}`,
         method: 'post',
         payload: formData,
         headers: { role: 'School' },
         };
-        return await handleApi<FormData, Partial<ITeacherBio>>(config);
+        return await handleApi<FormData, Partial<IStudent>>(config);
     }
 
-    static async addProfessional(teacherId: string, formData: Partial<ITeacher>) {
-        const config: HandleApiOptions<Partial<ITeacher>> = {
-        endPoint: `${TeacherRoute.addProfessional}/${teacherId}`,
-        method: 'post',
-        payload: formData,
-        headers: { role: 'School' },
-        };
+    // static async addProfessional(StudentId: string, formData: Partial<IStudent>) {
+    //     const config: HandleApiOptions<Partial<IStudent>> = {
+    //     endPoint: `${StudentRouter.addProfessional}/${StudentId}`,
+    //     method: 'post',
+    //     payload: formData,
+    //     headers: { role: 'School' },
+    //     };
 
-        return await handleApi<Partial<ITeacher>, Partial<ITeacher>>(config);
-    }
+    //     return await handleApi<Partial<IStudent>, Partial<IStudent>>(config);
+    // }
 
-    static async get(id: string) {
-        const config: HandleApiOptions<null> = {
-        endPoint: `/teacher/${id}`,
-        method: 'get',
-        headers: { role: 'School' },
-        };
+    // static async get(id: string) {
+    //     const config: HandleApiOptions<null> = {
+    //     endPoint: `/Student/${id}`,
+    //     method: 'get',
+    //     headers: { role: 'School' },
+    //     };
 
-        return await handleApi<null, Teachers>(config);
-    }
+    //     return await handleApi<null, Students>(config);
+    // }
 
-    static async getAll() {
-        const config: HandleApiOptions<null> = {
-        method: 'get',
-        endPoint: TeacherRoute.getAll,
-        payload: null,
-        headers: { role: 'School' },
-        };
+    // static async getAll() {
+    //     const config: HandleApiOptions<null> = {
+    //     method: 'get',
+    //     endPoint: StudentRouter.getAll,
+    //     payload: null,
+    //     headers: { role: 'School' },
+    //     };
 
-        return await handleApi<null, IGetAllTeachers>(config);
-    }
+    //     return await handleApi<null, IGetAllStudents>(config);
+    // }
 
-    static async editBio(id: string, formData: FormData) {
-        const config: HandleApiOptions<FormData> = {
-        endPoint: `${TeacherRoute.updateBio}/${id}`,
-        method: 'patch',
-        payload: formData,
-        headers: { role: 'School' },
-        };
+    // static async editBio(id: string, formData: FormData) {
+    //     const config: HandleApiOptions<FormData> = {
+    //     endPoint: `${StudentRouter.updateBio}/${id}`,
+    //     method: 'patch',
+    //     payload: formData,
+    //     headers: { role: 'School' },
+    //     };
 
-        return await handleApi(config);
-    }
+    //     return await handleApi(config);
+    // }
 
-    static async editProfessional(id: string, formData: Partial<ITeacher>) {
-        const config: HandleApiOptions<Partial<ITeacher>> = {
-        endPoint: `${TeacherRoute.updateProfessional}/${id}`,
-        method: 'patch',
-        payload: formData,
-        headers: { role: 'School' },
-        };
+    // static async editProfessional(id: string, formData: Partial<IStudent>) {
+    //     const config: HandleApiOptions<Partial<IStudent>> = {
+    //     endPoint: `${StudentRouter.updateProfessional}/${id}`,
+    //     method: 'patch',
+    //     payload: formData,
+    //     headers: { role: 'School' },
+    //     };
 
-        return await handleApi(config);
-    }
+    //     return await handleApi(config);
+    // }
 
-    static async getAllUnAssigned(center: string) {
-        const config: HandleApiOptions<null> = {
-        method: 'get',
-        endPoint: TeacherRoute.getAllUnAssigned,
-        payload: null,
-        params: { center: center },
-        headers: { role: 'School' },
-        };
+    // static async getAllUnAssigned(center: string) {
+    //     const config: HandleApiOptions<null> = {
+    //     method: 'get',
+    //     endPoint: StudentRouter.getAllUnAssigned,
+    //     payload: null,
+    //     params: { center: center },
+    //     headers: { role: 'School' },
+    //     };
 
-        return await handleApi<null, ITeacherBio[]>(config);
-    }
+    //     return await handleApi<null, IStudentBio[]>(config);
+    // }
 }

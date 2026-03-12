@@ -11,6 +11,7 @@ import { Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
 import { SubjectService } from '@/api/Services/subject.service';
+import { Roles } from '@/constants/role.enum';
 
 const SubjectsPage = () => {
   //const [search, setSearch] = useState("");
@@ -39,7 +40,7 @@ const SubjectsPage = () => {
       return;
     }
 
-    const res = await SubjectService.delete(id);
+    const res = await SubjectService.delete(Roles.School,id);
 
     if (!res.success) {
       Swal.fire('Deleted!', res.error?.message, 'error');

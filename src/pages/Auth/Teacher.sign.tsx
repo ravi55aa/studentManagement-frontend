@@ -5,6 +5,7 @@ import { handleValidationOF } from '@/validation/validateFormData';
 import Login from '@/components/Auth/Login.component';
 import { TeacherService } from '@/api/Services/teacher.service';
 import { LoginPayloadType } from '@/types/loginType';
+import { Roles } from '@/constants/role.enum';
 
 const SignIn = () => {
     const navigate = useNavigate();
@@ -53,7 +54,7 @@ const SignIn = () => {
             passwordValue={form.password}
             error={error}
             key='teacherLogin'
-            user={{role:'teacher'}}
+            user={{role:Roles.Teacher}}
             />
     
         </div>

@@ -16,6 +16,7 @@ import {
   feeSlice,
   schoolReducer,
   notificationReducer,
+  homeworkReducer
 } from '../index';
 
 const rootReducer = combineReducers({
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   fees: feeSlice,
   schools: schoolReducer,
   notifications: notificationReducer,
+  homeworks:homeworkReducer
 });
 
 const persistConfig = {

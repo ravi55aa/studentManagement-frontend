@@ -2,7 +2,7 @@ import * as z from 'zod';
 
 import { EDepartment, EmploymentStatus, Gender_types, TeacherDesignation } from '@/types/enums';
 
-const genderEnum = z.nativeEnum(Gender_types).optional();
+export const genderEnum = z.nativeEnum(Gender_types).optional();
 
 export const teacherBioFormSchema = z.object({
   firstName: z
@@ -81,7 +81,7 @@ export const teacherAssignmentSchema = z
 
 
   /*TEACHER HOMEWORK */
-const uploadedDocSchema = z.object({
+export const uploadedDocSchema = z.object({
   url: z.string().url(),
   fileName: z.string(),
 });
