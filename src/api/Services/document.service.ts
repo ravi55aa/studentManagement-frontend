@@ -1,6 +1,7 @@
 import { DocumentRoute } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '../global.api';
 import { IDocument } from '@/interfaces/IRegister';
+import { Roles } from '@/constants/role.enum';
 
 export class DocumentService {
   static async getAll() {
@@ -14,12 +15,12 @@ export class DocumentService {
     return await handleApi<null, IDocument[]>(config);
   }
 
-  static async get(id: string) {
+  static async get(role:string=Roles.School,id: string) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: `${DocumentRoute.document}/${id}`,
       payload: null,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<null, IDocument>(config);

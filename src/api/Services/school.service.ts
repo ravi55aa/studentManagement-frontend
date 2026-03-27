@@ -2,6 +2,7 @@ import { SchoolRoute } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '../global.api';
 import { ISchoolFormData } from '@/interfaces/IRegister';
 import { ISubjectReducer } from '@/utils/Redux/Reducer/school.reducer';
+import { Roles } from '@/constants/role.enum';
 
 export class SchoolService {
   static async register(formData: ISchoolFormData) {
@@ -37,12 +38,12 @@ export class SchoolService {
     return await handleApi<null, ISubjectReducer>(config);
   }
 
-  static async resetPassword(userId: string, data: object) {
+  static async resetPassword(role:string=Roles.School,userId: string, data: object) {
     const config: HandleApiOptions<object> = {
       method: 'patch',
       endPoint: `${SchoolRoute.resetPassword}/${userId}`,
       payload: data,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<object, null>(config);

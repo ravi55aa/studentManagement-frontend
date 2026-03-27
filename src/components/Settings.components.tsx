@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AddressService } from "@/api/Services/address.service";
-import { useAppDispatch } from "@/hooks/useStoreHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import { IAddress, IDocument, IUploadedDoc } from "@/interfaces/IRegister";
 import { toggleMDALoading } from "@/utils/Redux/Reducer/school.reducer";
 import { school_Register_SchemaFor_Address } from "@/constants/createSchool";
@@ -10,18 +10,20 @@ import { toast } from "react-toastify";
 import { Card, Info, ViewFileModal } from "./School/card";
 import InputField from "./inputField";
 import DocumentRow from "./Document/Documents.row";
-import { FastForward, Trash } from "lucide-react";
 import DocumentUploadModal from "./Document/Document.upload.modal";
 import { DocumentService } from "@/api/Services/document.service";
 import Swal from "sweetalert2";
 import { DocumentRoute } from "@/constants/routes.contants";
 import { handleApi, HandleApiOptions } from "@/api/global.api";
+import { Roles } from "@/constants/role.enum";
 
 
 /******* ADDRESS *******/
 
-export const ProfileAddressComponent=({id,loading,setUtils,utils})=>{
+export const ProfileAddressComponent=({role,loading,setUtils,utils})=>{
     const dispatch=useAppDispatch();
+    const {user}=useAppSelector((state)=>state.currentUser);
+    
     const [form, setForm] = useState<IAddress>({
         city: '',
         street: '',
@@ -32,13 +34,12 @@ export const ProfileAddressComponent=({id,loading,setUtils,utils})=>{
     
 
     useEffect(()=>{
-        if(!id){
+        if(!user.id){
             toast.warn('User id is invalid');
             return;
         }
-
         (async()=>{
-            const res=await AddressService.get(id);
+            const res=await AddressService.get(role,user.id);
             
             if(!res.success){
                 toast.warn(res.error?.message);
@@ -50,7 +51,7 @@ export const ProfileAddressComponent=({id,loading,setUtils,utils})=>{
             return res.success;
         })();
         
-    },[id]);
+    },[user.id]);
 
 
     const handleSubmitEditAddress = async () => {
@@ -64,7 +65,7 @@ export const ProfileAddressComponent=({id,loading,setUtils,utils})=>{
     
         dispatch(toggleMDALoading());
     
-        const res = await AddressService.update(id, form);
+        const res = await AddressService.update(Roles.Student,user.id, form);
     
         dispatch(toggleMDALoading());
         if (!res.success) {
@@ -153,24 +154,25 @@ export const ProfileAddressComponent=({id,loading,setUtils,utils})=>{
 
 
 /***** DOCUMENTS *****/
-export const ProfileDocumentsComponent=({userId,setUtils,utils,loading})=>{
+export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
 
     const [selectedFile, setSelectedFile] = useState<IUploadedDoc | null>(null);
     const [openView, setOpenView] = useState(false);
     const [documentState, setDocuments] = useState<Partial<IDocument>>({
     docs: [],
-    role: 'School',
+    role: role,
     });
     const dispatch=useAppDispatch();
+    const {user}=useAppSelector((state)=>state.currentUser);
     
     useEffect(()=>{
-        if(!userId){
+        if(!user.id){
             toast.warn('User id is invalid');
             return;
         }
 
         (async()=>{
-            const res=await DocumentService.get(userId);
+            const res=await DocumentService.get(role,user.id);
             
             if(!res.success){
                 toast.warn(res.error?.message);
@@ -186,7 +188,7 @@ export const ProfileDocumentsComponent=({userId,setUtils,utils,loading})=>{
             return res.success;
         })();
         
-    },[userId]);
+    },[user.id]);
 
 
 
@@ -207,9 +209,9 @@ export const ProfileDocumentsComponent=({userId,setUtils,utils,loading})=>{
         dispatch(toggleMDALoading());
         const config: HandleApiOptions<Partial<IDocument>> = {
             method: 'put',
-            endPoint: `${DocumentRoute.edit}/${userId}`,
+            endPoint: `${DocumentRoute.edit}/${user.id}`,
             payload: documentState,
-            headers: { role: 'School' },
+            headers: { role: role },
         };
         const res = await handleApi<Partial<IDocument>, IDocument>(config);
 
@@ -240,7 +242,7 @@ export const ProfileDocumentsComponent=({userId,setUtils,utils,loading})=>{
 
     const delete_fileName = documentState.docs[index].fileName;
 
-    const res = await DocumentService.delete(userId, delete_fileName);
+    const res = await DocumentService.delete(user.id, delete_fileName);
 
     dispatch(toggleMDALoading());
     if (!res.success) {
@@ -286,7 +288,7 @@ export const ProfileDocumentsComponent=({userId,setUtils,utils,loading})=>{
 
         dispatch(toggleMDALoading());
 
-        const res = await DocumentService.create(userId, formData);
+        const res = await DocumentService.create(user.id, formData);
 
         dispatch(toggleMDALoading());
         if (!res.success) {

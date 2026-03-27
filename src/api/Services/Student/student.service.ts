@@ -51,11 +51,11 @@ export class StudentService {
     //     return await handleApi<Partial<IStudent>, Partial<IStudent>>(config);
     // }
 
-    static async get(id: string) {
+    static async get(role:string=Roles.Student, id: string) {
         const config: HandleApiOptions<null> = {
-        endPoint: `/Student/${id}`,
+        endPoint: `/Student/bio/${id}`,
         method: 'get',
-        headers: { role: 'School' },
+        headers: { role: role },
         };
 
         return await handleApi<null, Partial<IStudent>>(config);
@@ -74,7 +74,7 @@ export class StudentService {
 
     static async update(role:string=Roles.Student, id: string, formData: FormData) {
         const config: HandleApiOptions<FormData> = {
-        endPoint: `${StudentRouter.updateBio}/${id}`,
+        endPoint: `${StudentRouter.update}/${id}`,
         method: 'patch',
         payload: formData,
         headers: { role: role },

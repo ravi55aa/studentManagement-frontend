@@ -129,6 +129,7 @@ export enum StudentRouter {
   login='/student/login',
 
   add = '/student/create',
+  get = '/student/bio',
   addAddress = '/student/create/address',
   addDocuments = '/student/create/document',
 
@@ -137,7 +138,7 @@ export enum StudentRouter {
   edit = '/student/edit',
   verifyStudent = '/student/verify',
 
-  updateBio = '/student/bio/update',
+  update = '/student/update',
   updateProfessional = '/student/update',
   
   //Attendance
