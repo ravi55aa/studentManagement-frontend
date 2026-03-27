@@ -31,7 +31,8 @@ const CourseListPage = () => {
         const res = await CourseService.getAll();
 
         if (!res.success) {
-          throw new Error(res.error.message);
+          toast.error(res.error.message);
+          return ;
         }
 
         const { courses, courses_meta } = res.data.data;

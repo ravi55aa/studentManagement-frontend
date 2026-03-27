@@ -1,5 +1,7 @@
 /* ===================== TYPES ===================== */
 
+import { IAttachment } from "@/components/HomeworkCard";
+
 export type CourseStatus = 'active' | 'inactive';
 export type DurationUnit = 'hours' | 'months' | 'years';
 
@@ -30,7 +32,7 @@ export interface ICourseForm {
 
   eligibilityCriteria: string;
   syllabusUrl: string;
-  attachments: File[];
+  attachments: File[] | IAttachment[];
   modelType: string;
   center: string;
 }

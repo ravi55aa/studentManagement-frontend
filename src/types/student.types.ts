@@ -4,3 +4,5 @@ export enum Student_Status{
     Graduated='graduated', 
     Suspended='suspended'
 }
+
+export type AttendanceStatus='present'|'absent'|'leave'|'late'|'';

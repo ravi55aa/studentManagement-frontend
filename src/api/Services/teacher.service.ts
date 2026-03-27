@@ -4,6 +4,7 @@ import { Teachers } from '@/types/types';
 
 import { IGetAllTeachers, ITeacher, ITeacherBio } from '@/interfaces/ITeacher';
 import { LoginPayloadType } from '@/types/loginType';
+import { Roles } from '@/constants/role.enum';
 
 export class TeacherService {
   // { role : Teacher }
@@ -50,11 +51,11 @@ export class TeacherService {
     return await handleApi<Partial<ITeacher>, Partial<ITeacher>>(config);
   }
 
-  static async get(id: string) {
+  static async get(role:string=Roles.Teacher, id: string) {
     const config: HandleApiOptions<null> = {
       endPoint: `/teacher/${id}`,
       method: 'get',
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<null, Teachers>(config);

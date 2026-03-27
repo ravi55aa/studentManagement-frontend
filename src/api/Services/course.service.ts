@@ -2,6 +2,7 @@ import { CourseRoute } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '../global.api';
 import { ICourseForm } from '@/interfaces/ICourseForm';
 import { IGetAllArrayOfCourses, IGetAllCourse } from '@/types/tcourse';
+import { Roles } from '@/constants/role.enum';
 
 export class CourseService {
   static async create(formData: FormData) {
@@ -15,23 +16,23 @@ export class CourseService {
     return await handleApi<FormData, ICourseForm>(config);
   }
 
-  static async getAll() {
+  static async getAll(role:string=Roles.School) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: CourseRoute.get,
       payload: null,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<null, IGetAllArrayOfCourses>(config);
   }
 
-  static async get(id: string) {
+  static async get(role:string=Roles.School,id: string) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: `${CourseRoute.get}/${id}`,
       payload: null,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<null, IGetAllCourse>(config);

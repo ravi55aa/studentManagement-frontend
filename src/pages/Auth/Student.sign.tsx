@@ -7,6 +7,8 @@ import { LoginPayloadType } from '@/types/loginType';
 import { Roles } from '@/constants/role.enum';
 import { StudentService } from '@/api/Services/Student/student.service';
 import { toast } from 'react-toastify';
+import { storeCurrentUser } from '@/utils/Redux/Reducer/currentUser.reducer';
+import { useAppDispatch } from '@/hooks/useStoreHooks';
 
 const SignIn = () => {
     const navigate = useNavigate();
@@ -17,6 +19,7 @@ const SignIn = () => {
     });
 
     const [error, setError] = useState('');
+    const dispatch=useAppDispatch();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         document.getElementById(e.target.name).textContent = '';
@@ -41,8 +44,12 @@ const SignIn = () => {
         }
         
         navigate('/student/dashboard');
-        const user=JSON.stringify(res.data?.data||{});
-        localStorage.setItem('sectionC',user);
+        const user=res.data.data;
+        const userLocalStore=JSON.stringify(user||{});
+        localStorage.setItem('sectionC',userLocalStore);
+
+        const userStore = { id: user._id, role: Roles.Student };
+        dispatch(storeCurrentUser(userStore));
 
         return res.success;
     };

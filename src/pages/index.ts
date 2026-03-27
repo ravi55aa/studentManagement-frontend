@@ -1,3 +1,4 @@
+/*************** SCHOOL ****************/
 export { default as 'HomePage' } from './HomePage';
 export { default as 'NotFound' } from './NotFound';
 
@@ -39,15 +40,22 @@ export { default as 'AcademicCoursesEdit' } from './School/Academic/Course/Cours
 export { default as 'AddNotifications' } from '@/components/Notification/writeNotification.page';
 export { default as 'Notifications' } from '@/components/Notification/Notification';
 
-
-export { default as 'TeacherLogin' } from './Auth/Teacher.sign';
-export { default as 'Teachers' } from './Teacher/Teacher.main.page';
-export { default as 'AddTeachers' } from './Teacher/Add.Teacher.page';
-
 export { default as 'Fees' } from './School/Fees/Fees';
 export { default as 'AddFees' } from './School/Fees/Fees.Add';
 export { default as 'EditFees' } from './School/Fees/Fees.Edit';
 export { default as 'FeesStudentsList' } from './School/Fees/fee.students';
+
+
+/*************** TEACHER ****************/
+export { default as 'TeacherLogin' } from './Auth/Teacher.sign';
+export { default as 'Teachers' } from './Teacher/Teacher.main.page';
+export { default as 'AddTeachers' } from './Teacher/Add.Teacher.page';
+export { default as 'TeacherHomeworks' } from './Teacher/Homework/List.Homework.tsx';
+export { default as 'VerifyHomeworkSubmissions' } from './Teacher/Homework/VerifyHomeworkSubmissions.tsx';
+export { default as 'TeacherSettingsPage' } from './Teacher/Profile.Teacher.tsx';
+export { default as 'ListBatches' } from './Teacher/Attendance/ListBatches.tsx';
+export { default as 'MarkAttendance' } from './Teacher/Attendance/Attendance.tsx';
+
 
 
 
@@ -57,3 +65,7 @@ export {default as "AddStudent"} from "./Student/Add.Student";
 export {default as 'StudentDashboard'} from "./Student/Student.Dashboard"
 export {default as 'HomeworkList'} from "./Student/Homework/Homework.List.tsx"
 export {default as 'HomeworkSubmit'} from "./Student/Homework/Homework.Submit.tsx"
+export {default as 'StudentSettingsPage'} from "./Student/Profile.Student"
+export {default as 'StudentAttendance'} from "./Student/Attendance/Attendance.tsx"
+export {default as 'StudentFee'} from "./Student/Fee/Fee.Student.tsx"
+export {default as 'StudentCourse'} from "./Student/Course/Course.Page.tsx"

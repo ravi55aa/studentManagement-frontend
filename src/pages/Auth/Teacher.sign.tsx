@@ -6,6 +6,8 @@ import Login from '@/components/Auth/Login.component';
 import { TeacherService } from '@/api/Services/teacher.service';
 import { LoginPayloadType } from '@/types/loginType';
 import { Roles } from '@/constants/role.enum';
+import { storeCurrentUser } from '@/utils/Redux/Reducer/currentUser.reducer';
+import { useAppDispatch } from '@/hooks/useStoreHooks';
 
 const SignIn = () => {
     const navigate = useNavigate();
@@ -16,6 +18,7 @@ const SignIn = () => {
     });
 
     const [error, setError] = useState('');
+    const dispatch=useAppDispatch();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         document.getElementById(e.target.name).textContent = '';
@@ -37,10 +40,14 @@ const SignIn = () => {
             setError(res.error?.message);
         }
         
+        const user=res.data.data;
+        const userLocalStore=JSON.stringify(user||{});
+        localStorage.setItem('sectionB',userLocalStore);
+        
+        const userStore = { id: user._id, role: Roles.Teacher };
+        dispatch(storeCurrentUser(userStore));
+        
         navigate('/teacher/dashboard');
-        const user=JSON.stringify(res.data?.data||{});
-        localStorage.setItem('sectionB',user);
-
         return res.success;
     };
 

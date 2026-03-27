@@ -48,9 +48,12 @@ export enum HomeworkRoute {
 }
 
 export enum StudentHomeworkRoute {
+  get = '/student/homework/get',
+  getall = '/student/homework/getall',
+  getallSubmissions = '/student/homework/getall/submission',
   submit = '/student/homework/submit',
-  add = '/teacher/homework',
-  edit = '/teacher/homework',
+  add = '/student/homework',
+  edit = '/student/homework',
 }
 
 export enum BatchRoute {
@@ -114,8 +117,10 @@ export enum AuthRouter {
   login = '/auth/login',
 }
 
-
-
+export enum StripeRouter {
+  pay = '/stripe/create-payment-intent',
+  webhook = '/stripe/webhook',
+}
 
 
 /**************** STUDENT ROUTER ****************/
@@ -127,11 +132,19 @@ export enum StudentRouter {
   addAddress = '/student/create/address',
   addDocuments = '/student/create/document',
 
-  getAll = '/student/all',
+  getAll = '/student/getall',
   getAllUnAssigned = '/student/all/unAssigned',
   edit = '/student/edit',
   verifyStudent = '/student/verify',
 
   updateBio = '/student/bio/update',
   updateProfessional = '/student/update',
+  
+  //Attendance
+  updateAttendance = '/student/attendance/update',
+  getallAttendances = '/student/attendance/getall',
+  getAStudentList = '/student/attendance/getOne',
+  
+  //studentFee
+  studentPaidFeeDetails = '/student/fee/details',
 }

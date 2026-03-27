@@ -13,10 +13,13 @@ import {
   school_MDA_Reducer,
   teacherReducer,
   currentUserSlice,
+  currentUserSliceProfile,
   feeSlice,
   schoolReducer,
   notificationReducer,
-  homeworkReducer
+  homeworkReducer,
+  studentHomeworkReducer,
+  studentsReducer
 } from '../index';
 
 const rootReducer = combineReducers({
@@ -29,10 +32,13 @@ const rootReducer = combineReducers({
   schoolMDA: school_MDA_Reducer,
   teacher: teacherReducer,
   currentUser: currentUserSlice,
+  currentUserProfile: currentUserSliceProfile,
   fees: feeSlice,
   schools: schoolReducer,
   notifications: notificationReducer,
-  homeworks:homeworkReducer
+  homeworks:homeworkReducer,
+  studentsHomeworks:studentHomeworkReducer,
+  students:studentsReducer,
 });
 
 const persistConfig = {

@@ -9,11 +9,14 @@ export function useAppNavigate() {
   const goToLogin = () => navigate('/login');
   const goBack = () => navigate(-1);
 
+  const goStudentFee = () => navigate('/student/dashboard/fee');
+
   return {
     goToDashboard,
     goToCenter,
     goToSubject,
     goToLogin,
     goBack,
+    goStudentFee,
   };
 }

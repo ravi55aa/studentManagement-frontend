@@ -2,6 +2,7 @@ import { StudentRouter,AuthRouter } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '@/api/global.api';
 import { LoginPayloadType } from '@/types/loginType';
 import { IStudent } from '@/interfaces/IStudent';
+import { Roles } from '@/constants/role.enum';
 
 
 export class StudentService {
@@ -50,15 +51,15 @@ export class StudentService {
     //     return await handleApi<Partial<IStudent>, Partial<IStudent>>(config);
     // }
 
-    // static async get(id: string) {
-    //     const config: HandleApiOptions<null> = {
-    //     endPoint: `/Student/${id}`,
-    //     method: 'get',
-    //     headers: { role: 'School' },
-    //     };
+    static async get(id: string) {
+        const config: HandleApiOptions<null> = {
+        endPoint: `/Student/${id}`,
+        method: 'get',
+        headers: { role: 'School' },
+        };
 
-    //     return await handleApi<null, Students>(config);
-    // }
+        return await handleApi<null, Partial<IStudent>>(config);
+    }
 
     // static async getAll() {
     //     const config: HandleApiOptions<null> = {
@@ -71,16 +72,16 @@ export class StudentService {
     //     return await handleApi<null, IGetAllStudents>(config);
     // }
 
-    // static async editBio(id: string, formData: FormData) {
-    //     const config: HandleApiOptions<FormData> = {
-    //     endPoint: `${StudentRouter.updateBio}/${id}`,
-    //     method: 'patch',
-    //     payload: formData,
-    //     headers: { role: 'School' },
-    //     };
+    static async update(role:string=Roles.Student, id: string, formData: FormData) {
+        const config: HandleApiOptions<FormData> = {
+        endPoint: `${StudentRouter.updateBio}/${id}`,
+        method: 'patch',
+        payload: formData,
+        headers: { role: role },
+        };
 
-    //     return await handleApi(config);
-    // }
+        return await handleApi(config);
+    }
 
     // static async editProfessional(id: string, formData: Partial<IStudent>) {
     //     const config: HandleApiOptions<Partial<IStudent>> = {
@@ -93,15 +94,15 @@ export class StudentService {
     //     return await handleApi(config);
     // }
 
-    // static async getAllUnAssigned(center: string) {
-    //     const config: HandleApiOptions<null> = {
-    //     method: 'get',
-    //     endPoint: StudentRouter.getAllUnAssigned,
-    //     payload: null,
-    //     params: { center: center },
-    //     headers: { role: 'School' },
-    //     };
+    static async getALLWithQuery(role:string=Roles.Student,query:Record<string,string|number|boolean>={}) {
+        const config: HandleApiOptions<null> = {
+        method: 'get',
+        endPoint: StudentRouter.getAll,
+        payload: null,
+        params: query,
+        headers: { role: role },
+        };
 
-    //     return await handleApi<null, IStudentBio[]>(config);
-    // }
+        return await handleApi<null, IStudent[]>(config);
+    }
 }

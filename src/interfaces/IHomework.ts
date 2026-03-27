@@ -1,5 +1,7 @@
 import { HomeWorkStatus } from "@/types/homework.status";
 import { IAcademicSubject } from "./ISchool";
+import { IUploadedDoc } from "./IRegister";
+import { IStudent } from "./IStudent";
 
 export interface IHomework {
     _id?:string;
@@ -22,4 +24,19 @@ export interface IHomework {
 export interface Attachment {
     file: File;
     type: string;
+}
+
+
+export type HomeworkSubmitStatus="pending"| "verified" |"repeat" |"submitted";
+
+export interface IHomeworkSubmission {
+    _id?:string;
+    studentId: string|IStudent;
+    homeworkId: string;
+    note?: string;
+    remark?: string;
+    attachments?: Attachment[] |IUploadedDoc[] ;
+    links?: string[];
+    status: HomeworkSubmitStatus;
+    submittedAt: Date;
 }

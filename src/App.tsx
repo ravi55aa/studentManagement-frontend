@@ -30,11 +30,18 @@ import {
   AcademicCourses,
   AcademicCoursesAdd,
   AcademicCoursesEdit,
+  AddNotifications,
+  Notifications,
+  
+  /*teacher*/
   Teachers,
   TeacherLogin,
   AddTeachers,
-  Notifications,
-  AddNotifications,
+  TeacherHomeworks,
+  VerifyHomeworkSubmissions,
+  ListBatches,
+  MarkAttendance,
+  TeacherSettingsPage,
 
   /*student*/
   StudentLogin,
@@ -42,6 +49,10 @@ import {
   StudentDashboard,
   HomeworkList,
   HomeworkSubmit,
+  StudentSettingsPage,
+  StudentAttendance,
+  StudentFee,
+  StudentCourse,
 
 } from '@/pages/index';
 
@@ -82,11 +93,10 @@ const App = () => {
           <Route path="/passwordReset/emailVerify" element={<EmailVerify />} />
           <Route path="/passwordReset/otp" element={<OTP />} />
           <Route path="/passwordReset" element={<PasswordReset />} />
-        </Route>
+
 
         {/*.*/}
         {/*LOGIN-REGISTER*/}
-        <Route element={<PublicRoute />}>
           <Route path="/school/login" element={<SignInSchool />} />
           <Route path="/school/register" element={<CreateSchool />} />
           <Route path="/school/register/address" element={<AddAddress />} />
@@ -96,7 +106,7 @@ const App = () => {
         {/*.*/}
         {/*STRIPE*/}
         <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-status" element={<PaymentSuccess />} />
         
         {/*.*/}
         {/* SCHOOL */}
@@ -161,9 +171,16 @@ const App = () => {
         <Route path='/teacher/dashboard' element={<TeacherDashboard/>} > 
           <Route index element={<DashboardHome />} />
 
-          <Route path="homework" element={<HomeworkList />} >{/*TODOThis is a student homeWorkList*/}
+          <Route path="homework" >
+            <Route index element={<TeacherHomeworks />} />
             <Route path="add" element={<HomeworkAdd />} />
+            <Route path="view/submissions/:homeworkId" element={<VerifyHomeworkSubmissions />} />
           </Route>
+          <Route path="batches" >
+            <Route index element={<ListBatches />} />
+            <Route path=":batchId/markAttendance" element={<MarkAttendance />} />
+          </Route>
+          <Route path="setting" element={<TeacherSettingsPage />} />
         </Route>
 
         {/* STUDENT */}
@@ -173,6 +190,10 @@ const App = () => {
             <Route index element={<HomeworkList />} />
             <Route path="add/:homeworkId" element={<HomeworkSubmit />} />
           </Route>
+          <Route path="attendance" element={<StudentAttendance />} />
+          <Route path="courses" element={<StudentCourse />} />
+          <Route path="fee" element={<StudentFee />} />
+          <Route path="setting" element={<StudentSettingsPage />} />
         </Route>
         
       </Routes>

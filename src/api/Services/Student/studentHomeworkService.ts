@@ -1,7 +1,7 @@
 import { handleApi,HandleApiOptions } from '@/api/global.api';
 import { Roles } from '@/constants/role.enum';
 import { HomeworkRoute, StudentHomeworkRoute, SubjectRoute } from '@/constants/routes.contants';
-import { IHomework } from '@/interfaces/IHomework';
+import { IHomework, IHomeworkSubmission } from '@/interfaces/IHomework';
 
 
 export class StudentHomeworkService {
@@ -19,7 +19,7 @@ export class StudentHomeworkService {
     static async getAll(role:string='Teacher') {
         const config: HandleApiOptions<null> = {
         method: 'get',
-        endPoint: StudentHomeworkRoute.add,
+        endPoint: StudentHomeworkRoute.getall,
         payload: null,
         headers: { role: role },
         };
@@ -27,16 +27,28 @@ export class StudentHomeworkService {
         return await handleApi<null, IHomework[]>(config);
     }
 
-    static async getAllWithQuery(role:string='Teacher',query:Record<string,string|number|boolean>={}) {
+    static async getAllWithQuery(role:string=Roles.Student,query:Record<string,string|number|boolean>={}) {
         const config: HandleApiOptions<null> = {
         method: 'get',
-        endPoint: StudentHomeworkRoute.add,
+        endPoint: StudentHomeworkRoute.getall,
         payload: null,
         params:query,
         headers: { role: role },
         };
 
         return await handleApi<null, IHomework[]>(config);
+    }
+    
+    static async getAllSubmissions(role:string=Roles.Student,query:Record<string,string|number|boolean>={}) {
+        const config: HandleApiOptions<null> = {
+        method: 'get',
+        endPoint: StudentHomeworkRoute.getall,
+        payload: null,
+        params:query,
+        headers: { role: role },
+        };
+
+        return await handleApi<null, IHomeworkSubmission[]>(config);
     }
 
     static async get(role:string='Teacher',id: string) {

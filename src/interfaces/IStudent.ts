@@ -14,3 +14,12 @@ export interface IStudent {
     profile: string | File | null;
     _id?: string | null;
 }
+
+
+export interface IStudentFee {
+    studentId: string;
+    feeId: string;
+    status: 'paid' | 'pending';
+    amountPaid?: number;
+    paidAt?: Date;
+}

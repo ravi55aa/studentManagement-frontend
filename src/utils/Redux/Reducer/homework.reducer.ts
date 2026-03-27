@@ -13,7 +13,7 @@ const initialSubState: IHomeworkReducer = {
     error: null,
 };
 
-const courseSlice = createSlice({
+const homeworkSlice = createSlice({
     name: 'homeworks',
     initialState: initialSubState,
     reducers: {
@@ -30,6 +30,6 @@ const courseSlice = createSlice({
 export const {
     storeHomeworks,
     toggleHomeworkLoading,
-} = courseSlice.actions;
+} = homeworkSlice.actions;
 
-export default courseSlice.reducer;
+export default homeworkSlice.reducer;

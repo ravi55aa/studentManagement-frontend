@@ -14,6 +14,7 @@ import { schoolSignInSchema } from '@/validation/school.validator';
 import { handleSchoolSignIn } from '@/api/school.api';
 import { useAppDispatch } from '@/hooks/useStoreHooks';
 import { storeCurrentUser } from '@/utils/Redux/Reducer/currentUser.reducer';
+import { Roles } from '@/constants/role.enum';
 
 const SignInSchool = () => {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ const SignInSchool = () => {
       setError(res.error.message);
     }
 
-    const user = { id: res.data.data.userId, role: 'Admin' };
+    const user = { id: res.data.data.userId, role: Roles.School };
     dispatch(storeCurrentUser(user));
 
     navigate('/school/dashboard');

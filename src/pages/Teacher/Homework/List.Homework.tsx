@@ -1,104 +1,92 @@
+import { IHomework } from "@/interfaces/IHomework";
+import React from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Eye, PencilLine, Trash } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
-import { storeFees, toggleFeeLoading } from '@/utils/Redux/Reducer/fee.reducer';
-import { Pagination, TopBar } from '@/components';
+import { Pagination } from '@/components';
 import { toast } from 'react-toastify';
-import { deleteSwal } from '@/utils/swal';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
-import TypeBadge from '@/components/fee/TypeBadge.c';
 import StatusBadge from '@/components/fee/StatusBadge.c';
-import { FeeService } from '@/api/Services/fee.service';
+import { HomeworkService } from '@/api/Services/Teacher/homework.service';
+import { storeHomeworks } from '@/utils/Redux/Reducer/homework.reducer';
+import { Roles } from '@/constants/role.enum';
+import { IAcademicSubject } from '@/interfaces/ISchool';
 
-export default function FeeListPage() {
-    const dispatch = useAppDispatch();
-    const feeStore = useAppSelector((state) => state.fees);
+// const statusColors = {
+//     pending: "bg-gray-200 text-gray-700",
+//     active: "bg-green-100 text-green-700",
+//     completed: "bg-green-200 text-green-800",
+// };
+
+const TeacherHomeworkTable = () => {
     const navigate = useNavigate();
-
-    const handleGetAllFess = async () => {
-        dispatch(toggleFeeLoading(true));
-
-        const res = await FeeService.getAll();
-
-        if (!res.success) {
-        toast.error(res.error.message);
-        return res.success;
-        }
-        dispatch(toggleFeeLoading(false));
-        dispatch(storeFees(res.data?.data.reverse()));
-    };
+    const dispatch = useAppDispatch();
+    const homeworks = useAppSelector((state) =>state.homeworks);
 
     useEffect(() => {
         (async () => {
-        handleGetAllFess();
+            const user=JSON.parse(localStorage.getItem('sectionC'));
+            
+            if(!user){
+                toast.warn('Kindly log in,Auth failed');
+                return false;
+            }
+
+            const res = await HomeworkService.getAllWithQuery(Roles.Student,{batch:user.batchId});
+
+            if (!res.success) {
+                toast.error(res.error.message);
+            return res.success;
+            }
+
+            const homeworksArray=res.data.data;
+            dispatch(storeHomeworks(homeworksArray));
         })();
-    }, []);
+    }, [dispatch]);
 
-    const handleDelete = async (id: string) => {
-        const result = await deleteSwal();
-        if (!result.isConfirmed) return result.isConfirmed;
-
-        dispatch(toggleFeeLoading(true));
-
-        const res = await FeeService.delete(id);
-
-        if (!res.success) {
-        toast.warn(res.error.message);
-        return res.success;
-        }
-
-        dispatch(toggleFeeLoading(false));
-
-        await handleGetAllFess();
-        toast.success('Fee Deleted Successfully');
-        return res.success;
+    const handleEdit = (homeworkId?: string) => {
+        if (!homeworkId) return;
+        navigate(`/teacher/homework/edit/${homeworkId}`);
     };
 
     return (
         <div className="p-8 bg-white-100 min-h-screen">
         
-        <TopBar to="add" />
         <SearchAndFilter />
 
         <TableComponent
-            data={feeStore?.fees ?? []}
+            data={homeworks?.homeworks ?? []}
             keyField="_id"
-            loading={feeStore?.loading}
-            emptyMessage="No teachers found"
+            loading={homeworks?.loading}
+            emptyMessage="No Homeworks found"
             columns={[
-            {
-                header: 'Name',
-                accessor: 'name',
-            },
-            { header: 'Code', accessor: 'code' },
-            { header: 'Type', accessor: 'type', render: (row) => <TypeBadge type={row?.type} /> },
+            { header: 'Title',accessor: 'title',},
+            { header: 'Subject', accessor: 'subjectId',
+                format:(value:IAcademicSubject)=>value?.name },
 
-            {
-                header: 'Total Amount',
-                accessor: 'totalAmount',
-                format: (value: string) => value + ' ₹',
+            { header: 'Status', accessor: 'status',
+                render: (row) => <StatusBadge status={row?.status} />
             },
-            {
-                header: 'Status',
-                accessor: 'status',
-                render: (row) => <StatusBadge status={row?.status} />,
-            },
-            {
-                header: 'Actions',
-                align: 'center',
-                render: (fee) => (
+            { header: 'Actions', align: 'center',
+                render: (homework) => (
                 <div className="flex justify-center gap-3">
-                    <Link to={`/school/dashboard/fees/edit/${fee?._id}`}>
-                    <Pencil className="w-4 h-4 text-green-600 hover:text-green-800 hover:underline cursor-pointer" />
+                    <Link to={`view/submissions/${homework?._id}`}>
+                    <Eye className="w-4 h-4 text-green-600 hover:text-green-800 hover:underline cursor-pointer" />
+                    </Link>
+                    
+                    <Link to={`view/submissions`}>
+                    <Trash 
+                    className="w-4 h-4 text-red-600 hover:text-red-800  hover:underline cursor-pointer"
+                    onClick={() => handleEdit(homework?._id)}
+                    />
                     </Link>
 
-                    <Trash2
-                    className="w-4 h-4 text-red-600 hover:text-red-800  hover:underline cursor-pointer"
-                    onClick={() => handleDelete(fee?._id)}
-                    />
+                    <Link to={`view/submissions`}>
+                    <PencilLine className="w-4 h-4 text-blue-600 hover:text-blue-800 hover:underline cursor-pointer" />
+                    </Link>
                 </div>
                 ),
             },
@@ -108,4 +96,6 @@ export default function FeeListPage() {
         <Pagination />
         </div>
     );
-}
+};
+
+export default TeacherHomeworkTable;
