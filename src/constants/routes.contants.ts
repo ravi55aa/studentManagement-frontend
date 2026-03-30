@@ -43,6 +43,7 @@ export enum SubjectRoute {
 export enum HomeworkRoute {
   getall = '/teacher/homework/getall',
   get = '/teacher/homework/get',
+  delete = '/teacher/homework/delete',
   add = '/teacher/homework',
   edit = '/teacher/homework',
 }
@@ -54,6 +55,8 @@ export enum StudentHomeworkRoute {
   submit = '/student/homework/submit',
   add = '/student/homework',
   edit = '/student/homework',
+  update = '/student/homework/update',
+  updateMany = '/student/homework/updateMany',
 }
 
 export enum BatchRoute {
@@ -145,6 +148,7 @@ export enum StudentRouter {
   updateAttendance = '/student/attendance/update',
   getallAttendances = '/student/attendance/getall',
   getAStudentList = '/student/attendance/getOne',
+  getBatchAttendance = '/student/attendance/batch',
   
   //studentFee
   studentPaidFeeDetails = '/student/fee/details',

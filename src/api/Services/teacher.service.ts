@@ -8,44 +8,44 @@ import { Roles } from '@/constants/role.enum';
 
 export class TeacherService {
   // { role : Teacher }
-  static async login(formData: LoginPayloadType) {
+  static async login(role:string=Roles.Teacher,formData: LoginPayloadType) {
     const config: HandleApiOptions<LoginPayloadType> = {
       endPoint: AuthRouter.login,
       method: 'post',
       payload: formData,
-      headers: { role: 'Teacher' },
+      headers: { role: role },
     };
     return await handleApi<LoginPayloadType, Partial<ITeacherBio>>(config);
   }
 
-  static async verifyTeacher(email: string) {
+  static async verifyTeacher(role:string=Roles.Teacher,email: string) {
     const config: HandleApiOptions<null> = {
       endPoint: `${TeacherRoute.verifyTeacher}/${email}`,
       method: 'get',
       payload: null,
-      headers: { role: 'Teacher' },
+      headers: { role: role },
     };
     return await handleApi<LoginPayloadType, {id:string}>(config);
   }
 
 
   // { role : School }
-  static async addBio(formData: FormData) {
+  static async addBio(role:string=Roles.Teacher,formData: FormData) {
     const config: HandleApiOptions<FormData> = {
       endPoint: TeacherRoute.addBio,
       method: 'post',
       payload: formData,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
     return await handleApi<FormData, Partial<ITeacherBio>>(config);
   }
 
-  static async addProfessional(teacherId: string, formData: Partial<ITeacher>) {
+  static async addProfessional(role:string=Roles.Teacher,teacherId: string, formData: Partial<ITeacher>) {
     const config: HandleApiOptions<Partial<ITeacher>> = {
       endPoint: `${TeacherRoute.addProfessional}/${teacherId}`,
       method: 'post',
       payload: formData,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<Partial<ITeacher>, Partial<ITeacher>>(config);
@@ -66,41 +66,41 @@ export class TeacherService {
       method: 'get',
       endPoint: TeacherRoute.getAll,
       payload: null,
-      headers: { role: 'School' },
+      headers: { role: Roles.Teacher },
     };
 
     return await handleApi<null, IGetAllTeachers>(config);
   }
 
-  static async editBio(id: string, formData: FormData) {
+  static async editBio(role:string=Roles.Teacher,id: string, formData: FormData) {
     const config: HandleApiOptions<FormData> = {
       endPoint: `${TeacherRoute.updateBio}/${id}`,
       method: 'patch',
       payload: formData,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi(config);
   }
 
-  static async editProfessional(id: string, formData: Partial<ITeacher>) {
+  static async editProfessional(role:string=Roles.Teacher,id: string, formData: Partial<ITeacher>) {
     const config: HandleApiOptions<Partial<ITeacher>> = {
       endPoint: `${TeacherRoute.updateProfessional}/${id}`,
       method: 'patch',
       payload: formData,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi(config);
   }
 
-  static async getAllUnAssigned(center: string) {
+  static async getAllUnAssigned(role:string=Roles.Teacher,center: string) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: TeacherRoute.getAllUnAssigned,
       payload: null,
       params: { center: center },
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<null, ITeacherBio[]>(config);

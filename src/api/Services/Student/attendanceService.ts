@@ -18,8 +18,20 @@ export class AttendanceService {
         return await handleApi<IStudentAttendance[], Partial<IStudent>>(config);
     }
 
+    
+    static async getAStudentList(role:string=Roles.Teacher,data:{studentId:string,year:number,month:number}) {
+        const config: HandleApiOptions<{studentId:string,year:number,month:number}> = {
+            endPoint: StudentRouter.getAStudentList,
+            method: 'get',
+            params: data,
+            headers: { role: role },
+        };
+        
+        return await handleApi<{studentId:string,year:number,month:number}, Record<number,string>>(config);
+    }
+
     static async getAllWithQuery(role:string=Roles.Teacher,query:Record<string,string|number>={}) {
-        const config: HandleApiOptions<IStudentAttendance[]> = {
+        const config: HandleApiOptions<null> = {
         endPoint: StudentRouter.getallAttendances,
         method: 'get',
         payload: null,
@@ -27,14 +39,26 @@ export class AttendanceService {
         headers: { role: role },
         };
 
-        return await handleApi<IStudentAttendance[], Partial<IStudentAttendanceMain[]>>(config);
+        return await handleApi<null, Partial<IStudentAttendanceMain[]>>(config);
     }
 
-    static async getAStudentList(role:string=Roles.Teacher,data:{studentId:string,year:number,month:number}) {
+    static async getAttendanceOfBatch(role:string=Roles.Teacher,query:Record<string,string|number>={}) {
+        const config: HandleApiOptions<null> = {
+        endPoint: StudentRouter.getBatchAttendance,
+        method: 'get',
+        payload: null,
+        params:query,
+        headers: { role: role },
+        };
+
+        return await handleApi<null, Partial<IStudentAttendanceMain|null>>(config);
+    }
+    
+    static async get(role:string=Roles.Teacher,query:Record<string,string|number>={}) {
         const config: HandleApiOptions<{studentId:string,year:number,month:number}> = {
         endPoint: StudentRouter.getAStudentList,
         method: 'get',
-        params: data,
+        params: query,
         headers: { role: role },
         };
 

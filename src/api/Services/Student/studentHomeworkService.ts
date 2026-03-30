@@ -73,14 +73,25 @@ export class StudentHomeworkService {
         return await handleApi<null, { message: string }>(config);
     }
 
-    static async update(id: string, formData: FormData) {
-        const config: HandleApiOptions<FormData> = {
-        method: 'post', // (better use PATCH if backend supports it)
-        endPoint: `${SubjectRoute.edit}/v1/${id}`,
+    static async update(role:string=Roles.Teacher,id: string, formData: IHomeworkSubmission) {
+        const config: HandleApiOptions<IHomeworkSubmission> = {
+        method: 'put', // (better use PATCH if backend supports it)
+        endPoint: `${StudentHomeworkRoute.update}/${id}`,
         payload: formData,
-        headers: { role: 'Teacher' },
+        headers: { role: role },
         };
 
-        return await handleApi<FormData, IHomework>(config);
+        return await handleApi<IHomeworkSubmission, IHomeworkSubmission>(config);
+    }
+
+    static async updateMany(role:string=Roles.Student,homeworkId: string, formData: IHomeworkSubmission[]) {
+        const config: HandleApiOptions<IHomeworkSubmission[]> = {
+        method: 'put', // (better use PATCH if backend supports it)
+        endPoint: `${StudentHomeworkService.updateMany}/${homeworkId}`,
+        payload: formData,
+        headers: { role: role },
+        };
+
+        return await handleApi<IHomeworkSubmission[], IHomeworkSubmission[]>(config);
     }
 }

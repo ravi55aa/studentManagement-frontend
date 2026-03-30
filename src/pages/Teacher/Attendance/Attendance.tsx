@@ -15,6 +15,7 @@ import { Bell } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { data, Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { date } from 'zod';
 
 const Attendance = () => {
 
@@ -28,11 +29,15 @@ const Attendance = () => {
     const [viewModal, setViewModal] = useState(false);
     const [currentStudentId, setCurrentStudentId] = useState<string | null>(null);
     const [remarkText, setRemarkText] = useState("");
+    const [selectedDate, setSelectedDate] = useState(
+        new Date().toISOString().split("T")[0]
+    );
 
     const dispatch = useAppDispatch();
     const navigate=useNavigate();
     const {batchId}=useParams();
 
+    //Get all Students from BatchId
     useEffect(() => {
         if(!batchId){
             toast.warn('No batchId, kindly re-login');
@@ -52,6 +57,7 @@ const Attendance = () => {
     })();
     }, [dispatch, studentsStore.loading]);
 
+    //Get All Attendances of the above all Students 
     useEffect(() => {
         if(!batchId){
             toast.warn('No batchId, kindly re-login');
@@ -59,15 +65,21 @@ const Attendance = () => {
         }
 
     (async () => {
-        const res = await AttendanceService.getAllWithQuery(Roles.Teacher,{batchId:batchId});
+        //Get AttendanceList of particular day
+        const res = await AttendanceService.getAttendanceOfBatch(Roles.Teacher,{batchId:batchId,date:selectedDate});
 
-        const studentsAttendanceList = res.data?.data[0];
+
+        //Batch Attendance report with date;
+        const BatchAttendanceReport = res.data?.data;
+        
+        console.log('@Attendance BatchAttendanceReport',BatchAttendanceReport);
+        
         
         const initial: IStudentAttendance[] = studentsStore.students?.map((student) => {
-            const existing = studentsAttendanceList?.students?.find(
+            
+            const existing = BatchAttendanceReport?.students?.find(
                 (element: IStudentAttendance) => element.studentId === student._id
             );
-
 
             if (existing) {
                 return {
@@ -92,6 +104,7 @@ const Attendance = () => {
 
     // Update status
     function handleStatusChange(studentId: string, status: AttendanceStatus)  {
+        
         setAttendanceList((prev) =>
             prev.map((item) =>
             item.studentId === studentId ? { ...item, status } : item
@@ -160,7 +173,21 @@ const Attendance = () => {
             <Bell className="text-green-700 w-5 h-5" />
         </div>
 
-        <SearchAndFilter />
+        <div className="flex flex-col md:flex-row gap-3 mb-6">
+            <select className="border px-3 py-2 rounded-md text-sm w-40">
+                <option>Add Filter</option>
+                <option>Male</option>
+                <option>Female</option>
+            </select>
+
+            <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="flex-1 border px-4 py-2 rounded-md text-sm focus:ring-2 focus:ring-green-700 outline-none"
+            />
+        </div>
+        
 
         <TableComponent
             data={studentsStore?.students ?? []}
@@ -273,3 +300,9 @@ const Attendance = () => {
 }
 
 export default Attendance
+
+
+
+//Show the attendance of that particular day
+//by using the date query
+//fetch the particular attendance details, if not found, by default value will be applied

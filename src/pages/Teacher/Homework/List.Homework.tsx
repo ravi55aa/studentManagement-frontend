@@ -1,7 +1,5 @@
-import { IHomework } from "@/interfaces/IHomework";
-import React from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, PencilLine, Trash } from 'lucide-react';
+import { Bell, Eye, PencilLine, Trash } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
@@ -11,9 +9,10 @@ import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
 import StatusBadge from '@/components/fee/StatusBadge.c';
 import { HomeworkService } from '@/api/Services/Teacher/homework.service';
-import { storeHomeworks } from '@/utils/Redux/Reducer/homework.reducer';
+import { storeHomeworks,toggleHomeworkLoading } from '@/utils/Redux/Reducer/homework.reducer';
 import { Roles } from '@/constants/role.enum';
 import { IAcademicSubject } from '@/interfaces/ISchool';
+import Swal from "sweetalert2";
 
 // const statusColors = {
 //     pending: "bg-gray-200 text-gray-700",
@@ -29,8 +28,6 @@ const TeacherHomeworkTable = () => {
 
     useEffect(() => {
         (async () => {
-            
-            
             if(!user){
                 toast.warn('Kindly log in,Auth failed');
                 return false;
@@ -38,7 +35,7 @@ const TeacherHomeworkTable = () => {
 
             const res = await HomeworkService.getAllWithQuery(
                 Roles.Teacher,
-                {batch:user.batchId}
+                {teacherId:user.id}
             );
 
             if (!res.success) {
@@ -51,13 +48,56 @@ const TeacherHomeworkTable = () => {
         })();
     }, [dispatch]);
 
+    const handleDelete = async (id: string) => { //have to reload page
+
+        dispatch(toggleHomeworkLoading(true));
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action cannot be undone!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it',
+        });
+    
+        if (!result.isConfirmed) {
+            dispatch(toggleHomeworkLoading(false));
+            return;
+        }
+    
+        const res = await HomeworkService.delete(Roles.School,id);
+        
+        dispatch(toggleHomeworkLoading(false));
+        if (!res.success) {
+            Swal.fire('Deleted!', res.error?.message, 'error');
+            return res.success;
+        }
+
+        Swal.fire('Deleted!', 'Item deleted successfully', 'success');
+        
+        return true;
+    };
+
+
     const handleEdit = (homeworkId?: string) => {
         if (!homeworkId) return;
-        navigate(`/teacher/homework/edit/${homeworkId}`);
+        navigate(`/teacher/dashboard/homework/edit/${homeworkId}`);
     };
+
+
 
     return (
         <div className="p-8 bg-white-100 min-h-screen">
+
+        <div className="flex justify-between items-center mb-6">
+            <div className="flex gap-3">
+            
+            <button className="bg-green-700 text-white px-4 py-2 rounded-md text-sm hover:bg-green-800">
+                <Link to="add">Add Homework</Link>
+            </button>
+            </div>
+
+            <Bell className="text-green-700 w-5 h-5" />
+        </div>
         
         <SearchAndFilter />
 
@@ -81,16 +121,15 @@ const TeacherHomeworkTable = () => {
                     <Eye className="w-4 h-4 text-green-600 hover:text-green-800 hover:underline cursor-pointer" />
                     </Link>
                     
-                    <Link to={`view/submissions`}>
-                    <Trash 
+                    
+                    <Trash
                     className="w-4 h-4 text-red-600 hover:text-red-800  hover:underline cursor-pointer"
-                    onClick={() => handleEdit(homework?._id)}
+                    onClick={() => handleDelete(homework?._id)}
                     />
-                    </Link>
 
-                    <Link to={`view/submissions`}>
-                    <PencilLine className="w-4 h-4 text-blue-600 hover:text-blue-800 hover:underline cursor-pointer" />
-                    </Link>
+                    
+                    <PencilLine onClick={()=>handleEdit(homework._id)} className="w-4 h-4 text-blue-600 hover:text-blue-800 hover:underline cursor-pointer" />
+                    
                 </div>
                 ),
             },

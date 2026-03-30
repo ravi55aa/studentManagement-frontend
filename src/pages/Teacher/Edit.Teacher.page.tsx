@@ -20,6 +20,7 @@ import { department_obj } from '@/constants/deparment';
 import { Teachers } from '@/types/types';
 import { employmentStatusOptions, teacherDesignationOptions } from '@/constants/teacher';
 import { TeacherService } from '@/api/Services/teacher.service';
+import { Roles } from '@/constants/role.enum';
 /* ------------------------------------------------ */
 
 const EditTeacherPage = () => {
@@ -35,7 +36,7 @@ const EditTeacherPage = () => {
     const fetchTeacher = async () => {
       setLoading(true);
 
-      const res = await TeacherService.get(id);
+      const res = await TeacherService.get(Roles.Teacher, id);
 
       if (!res.success) {
         toast.error('Failed to fetch teacher');

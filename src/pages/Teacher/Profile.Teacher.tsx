@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import { Lock, Trash } from 'lucide-react';
-import  { useEffect, useState } from 'react';
+import  React, { ChangeEvent, useEffect, useState } from 'react';
 import { IResetPassword } from '@/interfaces/ISchool';
 
 import { handleValidationOF } from '@/validation/validateFormData';
@@ -16,7 +16,11 @@ import { useNavigate } from 'react-router-dom';
 import { StudentService } from '@/api/Services/Student/student.service';
 import { IUserProfile, storeCurrentUserProfile,toggleCurrentUserProfileLoading } from '@/utils/Redux/Reducer/currentUserProfile.reducer';
 import { Roles } from '@/constants/role.enum';
+import { AddressService } from '@/api/Services/address.service';
+import { DocumentService } from '@/api/Services/document.service';
+import { IAddress, IDocument } from '@/interfaces/IRegister';
 import { TeacherService } from '@/api/Services/teacher.service';
+import { ITeacherBio } from '@/interfaces/ITeacher';
 
 const TeacherSettingsPage = () => {
     /**
@@ -24,7 +28,10 @@ const TeacherSettingsPage = () => {
      */
     const [showOtp, setShowOtp] = useState(false);
     const [showResetModal, setShowResetModal] = useState(false);
+
     const currentUser = useAppSelector((state) => state.currentUser);
+    const [userInfo,setUserInfo] = useState<{address:IAddress|{},documents:IDocument[]|{}}>({address:{},documents:{}});
+
     const {user,loading} = useAppSelector((state) => state.currentUserProfile);
 
     const [utils, setUtils] = useState({
@@ -53,32 +60,42 @@ const TeacherSettingsPage = () => {
      */
     useEffect(() => {
         const user=currentUser.user;
-        if(user.id){
+        
+        if(!user.id){
             toast.warn('No user, Kindly re-login');
             return;
         }
         
         (async () => {
         
-        const res = await TeacherService.get(user.id);
-
-        if (!res.success) {
+        const res = await TeacherService.get(Roles.Teacher,user.id);
+        
+        const resAddress = await AddressService.get(Roles.Teacher,user.id);
+        const resDocument = await DocumentService.get(Roles.Teacher,user.id);
+        
+        if (!res.success ) {
             toast.warn(res.error?.message);
             return res.success;
         }
 
-        const profile = res.data.data.teacherBio;
-        const _userProfile:IUserProfile={
-            email:profile.email,
-            name:profile.firstName,
-            profile:typeof profile.profilePhoto=='string' && profile.profilePhoto,
-            id:profile._id,
+
+        const {teacherBio} = res.data?.data;
+        const _userProfile={
+            email:teacherBio.email,
+            name:teacherBio.firstName,
+            profile:typeof teacherBio.profilePhoto=='string' && teacherBio.profilePhoto,
+            id:teacherBio._id,
             role:Roles.Teacher
         }
 
+        const address=resAddress?.data?.data;
+        const documents=resDocument?.data?.data;
+
+        setUserInfo({address,documents});
+
         dispatch(storeCurrentUserProfile(_userProfile));
 
-        return true;
+        return res.success;
         })();
     }, [dispatch]);
 
@@ -101,7 +118,7 @@ const TeacherSettingsPage = () => {
         const formData = new FormData();
         formData.append('profile', image.file);
 
-        const res = await TeacherService.editBio(id, formData);
+        const res = await TeacherService.editBio(Roles.Teacher,id, formData);
         dispatch(toggleCurrentUserProfileLoading());
 
         if (!res.success) {
@@ -135,7 +152,7 @@ const TeacherSettingsPage = () => {
 
         setShowOtp(false);
 
-        const res = await SchoolService.resetPassword(userId, data);
+        const res = await SchoolService.resetPassword(Roles.Teacher,userId, data);
 
         setShowResetModal(false);
         if (!res.success) {
@@ -149,7 +166,7 @@ const TeacherSettingsPage = () => {
 
 
     //delete school
-    const handleDeleteSchool = async () => {
+    const handleDeleteStudent = async () => {
         // const deleteSchool = await Swal.fire({
         // title: 'Are you sure?',
         // text: 'This action cannot be undone!',
@@ -184,11 +201,11 @@ const TeacherSettingsPage = () => {
             {/* Logo */}
             <div className="relative">
                 <img
-                src={image.preview !== '/school/profile_image.jpg' ? image?.preview : user?.profile}
+                src={image.preview !== '/school/profile_image.jpg' ?  image?.preview:user?.profile?user?.profile:'/school/profile_image.jpg' }
                 className="w-24 h-24 rounded-full border object-cover"
                 />
                 <input
-                type="file"
+                type="file"  
                 onChange={(e) => handleImageChange(e)}
                 placeholder="change"
                 className="absolute w-20 text-center h-7 text-sm bottom-0 right-0 bg-green-700 p-1 rounded-full text-white"
@@ -247,14 +264,14 @@ const TeacherSettingsPage = () => {
 
         {/* ================= ADDRESS ================= */}
         <ProfileAddressComponent 
-            id={user?.id} 
+            role={Roles.Teacher} 
             loading={loading} 
             utils={utils} setUtils={setUtils}  
         />
 
         {/* ================= DOCUMENTS ================= */}
         <ProfileDocumentsComponent 
-            userId={user?.id} 
+            role={Roles.Teacher} 
             loading={loading} 
             utils={utils} setUtils={setUtils}  
         />

@@ -50,6 +50,7 @@ export { default as 'FeesStudentsList' } from './School/Fees/fee.students';
 export { default as 'TeacherLogin' } from './Auth/Teacher.sign';
 export { default as 'Teachers' } from './Teacher/Teacher.main.page';
 export { default as 'AddTeachers' } from './Teacher/Add.Teacher.page';
+export { default as 'TeachersSubjects' } from './Teacher/Subject/ListSubjects.tsx';
 export { default as 'TeacherHomeworks' } from './Teacher/Homework/List.Homework.tsx';
 export { default as 'VerifyHomeworkSubmissions' } from './Teacher/Homework/VerifyHomeworkSubmissions.tsx';
 export { default as 'TeacherSettingsPage' } from './Teacher/Profile.Teacher.tsx';

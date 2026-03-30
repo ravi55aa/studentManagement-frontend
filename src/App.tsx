@@ -42,6 +42,7 @@ import {
   ListBatches,
   MarkAttendance,
   TeacherSettingsPage,
+  TeachersSubjects,
 
   /*student*/
   StudentLogin,
@@ -176,6 +177,7 @@ const App = () => {
             <Route path="add" element={<HomeworkAdd />} />
             <Route path="view/submissions/:homeworkId" element={<VerifyHomeworkSubmissions />} />
           </Route>
+          <Route path='subject' element={<TeachersSubjects/>} />
           <Route path="batches" >
             <Route index element={<ListBatches />} />
             <Route path=":batchId/markAttendance" element={<MarkAttendance />} />

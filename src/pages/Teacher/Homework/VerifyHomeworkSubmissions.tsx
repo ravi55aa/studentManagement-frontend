@@ -1,12 +1,13 @@
 import { StudentHomeworkService } from "@/api/Services/Student/studentHomeworkService";
 import { Roles } from "@/constants/role.enum";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
-import { HomeworkSubmitStatus, IHomeworkSubmission } from "@/interfaces/IHomework";
+import { HomeworkSubmitStatus, IHomework, IHomeworkSubmission } from "@/interfaces/IHomework";
 import { storeStudentsHomeworks } from "@/utils/Redux/Reducer/studentHomework.submissions.reducer";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import { IStudent } from "@/interfaces/IStudent";
+import { toast } from "react-toastify"; 
+import HomeworkCard from "@/components/HomeworkCard";
+import { HomeworkService } from "@/api/Services/Teacher/homework.service";
 
 
 const statusColors: Record<HomeworkSubmitStatus, string> = {
@@ -21,10 +22,27 @@ const VerifyHomeworkSubmissions = () => {
     const [selected, setSelected] = useState<IHomeworkSubmission>(null);
     const [status, setStatus] = useState<HomeworkSubmitStatus>("pending");
     const [remark, setRemark] = useState("");
+    const [homework,setHomework]=useState<IHomework>();
 
     const dispatch=useAppDispatch();
     const {homeworkId}=useParams();
     const studentsHomeworks = useAppSelector((state) =>state.studentsHomeworks);
+    
+    const fetchData = async () => {
+        const res = await StudentHomeworkService.getAllSubmissions(
+            Roles.Teacher,{ homeworkId });
+
+            if (!res.success) {
+                toast.error(res.error.message);
+                dispatch(storeStudentsHomeworks([]));
+                return;
+            }
+        const submissions=res.data?.data||[];
+
+        setData(submissions);
+
+        dispatch(storeStudentsHomeworks(submissions));
+    };
 
     useEffect(() => {
         if (!homeworkId) {
@@ -32,21 +50,17 @@ const VerifyHomeworkSubmissions = () => {
             return;
         }
 
-        const fetchData = async () => {
-            const res = await StudentHomeworkService.getAllSubmissions(
-            Roles.Teacher,
-            { homeworkId }
-            );
-
-            if (!res.success) {
-            toast.error(res.error.message);
-            dispatch(storeStudentsHomeworks([]));
-            return;
+        const fetchHomeWork=async()=>{
+            const res=await HomeworkService.get(Roles.Teacher,homeworkId);
+            if(!res.success){
+                toast.error(res.error.message);
+                return res.success;
             }
-
-            dispatch(storeStudentsHomeworks(res.data.data));
-        };
-
+            const hw=res.data?.data;
+            setHomework(hw);
+        }
+            
+        fetchHomeWork()
         fetchData();
     }, [homeworkId]); 
 
@@ -61,22 +75,86 @@ const VerifyHomeworkSubmissions = () => {
     };
 
     
-    const handleUpdate = () => {
+    const handleUpdate = async() => {
         if (!selected) return;
-
-        const updated = data.map((d) =>
-        d._id === selected._id ? { ...d, status, remark } : d);
         
+        const updated = data.map((d) =>
+            d._id === selected._id ? { ...d, status, remark } : d);
 
+        const updateHomework=updated.find((d)=>d._id==selected._id);
+        
         setData(updated);
+
+        const res=await StudentHomeworkService.update(Roles.Teacher,selected._id,updateHomework);
+
+        if(!res.success){
+            toast.error(res.error.message);
+            return res.success;
+        };
+        
         handleClose();
+
+        await fetchData();
+        return res.success;
     };
+
+    const handleUpdateAll=async()=>{
+        //:status and :remark are update with homeworkId, method:put
+
+        const res=await StudentHomeworkService.updateMany(Roles.Teacher,homeworkId,data);
+        
+        if(!res.success){
+            toast.error(res.error?.message);
+            return res.success;
+        } //res.data update to studentHomeworkSubmission redux store;
+
+        dispatch(storeStudentsHomeworks(res.data.data));
+
+        return res.success;
+    }
 
     return (
         <div className="max-w-6xl mx-auto mt-10 bg-white p-6 rounded-xl shadow">
-        <h2 className="text-2xl font-semibold text-green-700 mb-6">
-            Homework Submissions
-        </h2>
+            {/* 
+                
+                Homework Details 
+
+            */}
+        <h1 className="text-2xl font-semibold mb-6">
+            Homework Details
+        </h1>
+        
+        <HomeworkCard
+                title={homework?.title}
+                description={homework?.description}
+
+                attachments={homework?.attachments}
+
+                links={[]}
+            />
+        <br /><hr className="border border-green-700" /><br />  
+
+
+
+            {/* 
+                
+                Homework Submission 
+
+            */}
+            
+        <div className="flex justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-green-700 ">
+                Homework Submissions
+            </h2>
+            <button
+                type='button' onClick={handleUpdateAll}
+                className="bg-green-700 text-white px-4 py-2 rounded-md text-sm hover:bg-green-800 "
+                >
+                Update All
+            </button>
+        </div>
+
+
 
         {/* TABLE */}
         <table className="w-full border rounded-lg overflow-hidden">
@@ -106,8 +184,9 @@ const VerifyHomeworkSubmissions = () => {
                     onClick={() => handleView(item)}
                     className="text-green-700 hover:underline font-medium"
                     >
-                    View
+                    View and update
                     </button>
+
                 </td>
                 </tr>
             ))}
@@ -119,7 +198,7 @@ const VerifyHomeworkSubmissions = () => {
             <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
             <div className="bg-white w-full max-w-xl p-6 rounded-xl shadow-lg">
                 <h3 className="text-xl font-semibold text-green-700 mb-4">
-                {selected.studentId.name}'s Submission
+                {selected.studentId?.name}'s Submission
                 </h3>
 
                 {/* NOTE */}

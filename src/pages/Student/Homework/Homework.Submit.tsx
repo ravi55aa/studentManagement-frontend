@@ -105,10 +105,8 @@ const HomeworkSubmissionPage = () => {
 
                     attachments={homework?.attachments}
 
-                    links={[
-                        
-                    ]}
-                    />
+                    links={[]}
+            />
         <br />
         <hr className="border border-green-700" />
         <br />  

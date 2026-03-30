@@ -52,7 +52,7 @@ export class HomeworkService {
     static async delete(role:string='Teacher',id: string) {
         const config: HandleApiOptions<null> = {
         method: 'delete',
-        endPoint: `${SubjectRoute.get}/${id}`,
+        endPoint: `${HomeworkRoute.delete}/${id}`,
         payload: null,
         headers: { role: role },
         };
