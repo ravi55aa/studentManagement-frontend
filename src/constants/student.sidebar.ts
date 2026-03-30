@@ -8,6 +8,5 @@ export const studentSidebarLinks: SidebarItemConfig[] = [
     { label: 'Courses', path: 'courses' },
     { label: 'Fee', path: 'fee' },
     { label: 'Chat', path: 'chat' },
-    { label: 'Notification', path: 'notification' },
     { label: 'Setting', path: 'setting' },
 ];

@@ -25,21 +25,25 @@ const TeacherHomeworkTable = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const homeworks = useAppSelector((state) =>state.homeworks);
+    const {user}=useAppSelector((state)=>state.currentUser);
 
     useEffect(() => {
         (async () => {
-            const user=JSON.parse(localStorage.getItem('sectionC'));
+            
             
             if(!user){
                 toast.warn('Kindly log in,Auth failed');
                 return false;
             }
 
-            const res = await HomeworkService.getAllWithQuery(Roles.Student,{batch:user.batchId});
+            const res = await HomeworkService.getAllWithQuery(
+                Roles.Teacher,
+                {batch:user.batchId}
+            );
 
             if (!res.success) {
                 toast.error(res.error.message);
-            return res.success;
+                return res.success;
             }
 
             const homeworksArray=res.data.data;
