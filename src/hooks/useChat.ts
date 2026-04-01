@@ -8,16 +8,20 @@ import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { useSocket } from "./useAppContext";
 import { SocketMessages } from "@/constants/messages";
+import { ChatService } from "@/api/Services/other/chat.service";
+import { Roles } from "@/constants/role.enum";
+import { toast } from "react-toastify";
+import { useAppSelector } from "./useStoreHooks";
 
-let socket: Socket;
 
 export const useChat = (userId: string) => {
     const [messages, setMessages] = useState<any[]>([]);
     const [currentRoom, setCurrentRoom] = useState<string>("");
     const socket=useSocket();
+    const {user}=useAppSelector((state)=>state.currentUser);
 
     useEffect(() => {
-        if(!socket.id) {
+        if(!socket?.id) {
             console.log(SocketMessages.SocketNotConnected);
             return;
         }
@@ -31,13 +35,29 @@ export const useChat = (userId: string) => {
         };
     }, [userId]);
 
-    const joinRoom = (roomId: string) => {
+
+    const loadMessages = async (roomId: string) => {
+    const res = await ChatService.getMessages(user.role,roomId);
+    
+    if(!res.success){
+        toast.warn(res.error.message);
+        return res.success;
+    }
+
+    const messages=res.data.data.reverse();
+
+    setMessages(messages);
+    };
+
+    const joinRoom = async(roomId: string)  => {
         socket.emit("joinRoom", roomId);
         setCurrentRoom(roomId);
         setMessages([]);
+
+        await loadMessages('69ccdf7183f2647087607827');//roomId
     };
 
-    const sendMessage = (message: string) => {
+    const sendMessage = async(message: string) => {
         if (!message.trim()) return;
 
         const data = {
@@ -45,8 +65,10 @@ export const useChat = (userId: string) => {
         message,
         senderId: userId,
         };
+        
 
-        socket.emit("sendMessage", data);
+        await ChatService.sendMessage(user.role,'69ccdf7183f2647087607827',message)
+        await loadMessages('69ccdf7183f2647087607827');
     };
 
     return {

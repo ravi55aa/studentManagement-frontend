@@ -54,7 +54,7 @@ import {
   StudentAttendance,
   StudentFee,
   StudentCourse,
-
+  StudentChat
 } from '@/pages/index';
 
 import {TeacherDashboard,HomeworkAdd} from '@/pages/Teacher/index'
@@ -195,6 +195,7 @@ const App = () => {
           <Route path="attendance" element={<StudentAttendance />} />
           <Route path="courses" element={<StudentCourse />} />
           <Route path="fee" element={<StudentFee />} />
+          <Route path="chat" element={<StudentChat />} />
           <Route path="setting" element={<StudentSettingsPage />} />
         </Route>
         

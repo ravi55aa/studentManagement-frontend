@@ -125,6 +125,17 @@ export enum StripeRouter {
   webhook = '/stripe/webhook',
 }
 
+//Chat Router
+export enum ChatRouter {
+  createDirectChat = "/chat/direct",
+  getUserChats = "/chat/:userId",
+  sendMessage = "/chat/message",
+  getMessages = "/chat/messages/:chatRoomId",
+
+  markAsRead = "/chat/read/:chatRoomId",
+  unreadCount = "/chat/unread/:chatRoomId",
+}
+
 
 /**************** STUDENT ROUTER ****************/
 

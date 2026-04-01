@@ -1,14 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useChat } from "@/hooks/useChat"; 
 import {ChatHeader,ChatInput,ChatMessages,ChatSidebar} from "./index";
+import { ChatService } from "@/api/Services/other/chat.service";
+import { toast } from "react-toastify";
 
 const ChatPage = ({ userId, role }: Record<string,string>) => {
     const [activeTab, setActiveTab] = useState("direct");
 
+    useEffect(()=>{
+        console.log('The active tab is ',activeTab);
+        const switchTab=async()=>{
+            const user2='69a7be8389eb375748ed3b91'; //'hardCodeValue'
+            if(activeTab=='direct'){
+                //call direct activeTab api call;
+                
+                const res=await ChatService.createDirectChat(role,userId,user2);
+
+                if(!res.success){
+                    toast.info(res.error.message);
+                    return res.success;
+                }
+
+            } else {
+                await ChatService.createDirectChat(role,userId,user2);
+                //call other center or batch tabs;
+            }
+        }
+        switchTab();
+    },[activeTab]);
+
     const { messages, joinRoom, sendMessage } = useChat(userId);
 
     const rooms = [
-        { id: "room1", name: "Room 1" },
+        { id: "Student-69b174a03bf2747aa6e99173", name: "Room 1" },
         { id: "room2", name: "Room 2" },
     ];
 
@@ -34,7 +58,7 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
             {/* Center restriction */}
             <ChatInput
             onSend={sendMessage}
-            disabled={activeTab === "center" && role === "student"}
+            disabled={activeTab === "center" && role === "Student"}
             />
         </div>
         </div>
