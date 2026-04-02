@@ -14,7 +14,7 @@ export class ChatService {
         headers: { role: role }, // adjust if dynamic
         };
 
-        return await handleApi(config);
+        return await handleApi<{ user1: string; user2: string },IChatRoom>(config);
     }
 
     //  Get User Chats

@@ -61,12 +61,12 @@ export class TeacherService {
     return await handleApi<null, Teachers>(config);
   }
 
-  static async getAll() {
+  static async getAll(role:string=Roles.Teacher) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: TeacherRoute.getAll,
       payload: null,
-      headers: { role: Roles.Teacher },
+      headers: { role: role },
     };
 
     return await handleApi<null, IGetAllTeachers>(config);

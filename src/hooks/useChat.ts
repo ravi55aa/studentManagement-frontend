@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import { useAppSelector } from "./useStoreHooks";
 
 
-export const useChat = (userId: string) => {
+export const useChat = (userId: string,roomId:string) => {
     const [messages, setMessages] = useState<any[]>([]);
     const [currentRoom, setCurrentRoom] = useState<string>("");
     const socket=useSocket();
@@ -30,45 +30,60 @@ export const useChat = (userId: string) => {
         setMessages((prev) => [...prev, data]);
         });
 
+        const handleLoadMessages=async()=>{
+            await loadMessages(roomId);
+        }
+        handleLoadMessages();
+
         return () => {
         socket.disconnect();
-        };
+        };//!receive message is not working
     }, [userId]);
 
+    useEffect(()=>{
 
-    const loadMessages = async (roomId: string) => {
-    const res = await ChatService.getMessages(user.role,roomId);
+        if(!socket){
+            return;
+        }
+
+        const fetchMessages=async()=>{ //setCurrentRoom
+            socket.emit("joinRoom", roomId);
+            setCurrentRoom(roomId);
+            setMessages([]);
     
-    if(!res.success){
-        toast.warn(res.error.message);
-        return res.success;
-    }
+            await loadMessages(roomId);//roomId
+        }
+        fetchMessages();
+    },[roomId]);
 
-    const messages=res.data.data.reverse();
 
-    setMessages(messages);
+    async function loadMessages(roomId: string) {
+        const res = await ChatService.getMessages(user.role,roomId);
+        
+        if(!res.success){
+            toast.warn(res.error.message);
+            return res.success;
+        }
+        const messages=res.data.data.reverse();
+
+        setMessages(messages);
     };
 
-    const joinRoom = async(roomId: string)  => {
-        socket.emit("joinRoom", roomId);
-        setCurrentRoom(roomId);
-        setMessages([]);
-
-        await loadMessages('69ccdf7183f2647087607827');//roomId
+    const joinRoom = async(RoomId: string=roomId)  => {
+        console.log('hi',RoomId);
     };
 
     const sendMessage = async(message: string) => {
         if (!message.trim()) return;
 
-        const data = {
-        roomId: currentRoom,
-        message,
-        senderId: userId,
-        };
-        
+        // const data = {
+        // roomId: currentRoom,
+        // message,
+        // senderId: userId,
+        // };
 
-        await ChatService.sendMessage(user.role,'69ccdf7183f2647087607827',message)
-        await loadMessages('69ccdf7183f2647087607827');
+        await ChatService.sendMessage(user.role,roomId,message);
+        await loadMessages(roomId);//roomId
     };
 
     return {

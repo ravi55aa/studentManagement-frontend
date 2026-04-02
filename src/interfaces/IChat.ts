@@ -18,6 +18,7 @@ export interface IMessage {
 }
 
 export interface IChatRoom  {
+    _id: string;
     type: ChatRoomType;
 
     name?: string; // batch / center name
