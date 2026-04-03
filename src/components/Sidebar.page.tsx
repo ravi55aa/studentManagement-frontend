@@ -2,34 +2,49 @@ import { Link } from 'react-router';
 import { SidebarItemConfig } from '@/constants/sidebar';
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import {useCommonMethods} from "@/hooks/useMethods"; 
+import '@/assets/css/sidebar.css'
 
 interface SidebarItemProps {
   item: SidebarItemConfig;
   mainPath:string;
 }
 
-export function Sidebar(props:{sidebarFields:SidebarItemConfig[],mainPath:string}) {
-  return (
-    <aside className="w-64 bg-green-900 text-white flex flex-col">
-      {/* Header */}
-      <div className="p-6 border-b border-green-800">
-        <h1 className="text-xl font-semibold">MyEdu</h1>
-        <p className="text-sm opacity-80 mt-1">Read About MyEdu</p>
-      </div>
+export function Sidebar(props:{sidebarFields:SidebarItemConfig[],mainPath:string,logoutInto:string}) {
 
-      {/* Navigation */}
-      <nav className="mt-6 flex-1 px-4 space-y-2">
-        {props.sidebarFields.map((item) => (
-          <SidebarItem key={item.label} mainPath={props.mainPath} item={item} />
-        ))}
-      </nav>
+  const {useHandleLogout}=useCommonMethods();
+  
+return (
+  <aside className="w-64 min-w-64 h-screen sticky top-0 bg-green-900 text-white flex flex-col shrink-0">
+    {/* Header */}
+    <div className="p-6 border-b border-green-800">
+      <h1 className="text-xl font-semibold break-words">MyEdu</h1>
+      <p className="text-sm opacity-80 mt-1 break-words">Read About MyEdu</p>
+    </div>
 
-      {/* Logout */}
-      <div className="p-4">
-        <button className="w-full bg-green-800 hover:bg-green-700 py-3 rounded-lg">Log out</button>
-      </div>
-    </aside>
-  );
+    {/* Navigation */}
+      <nav className="mt-6 flex-1 px-4 space-y-2 overflow-y-auto sidebar-scroll">
+      {props.sidebarFields.map((item) => (
+        <SidebarItem
+          key={item.label}
+          mainPath={props.mainPath}
+          item={item}
+        />
+      ))}
+    </nav>
+
+    {/* Logout */}
+    <div className="p-4 border-t border-green-800">
+      <button
+        onClick={() => useHandleLogout(props.logoutInto)}
+        type="button"
+        className="w-full bg-green-800 hover:bg-green-700 py-3 rounded-lg"
+      >
+        Log out
+      </button>
+    </div>
+  </aside>
+);
 }
 export default Sidebar;
 

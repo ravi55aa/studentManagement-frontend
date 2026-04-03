@@ -8,6 +8,7 @@ import { LoginPayloadType } from '@/types/loginType';
 import { Roles } from '@/constants/role.enum';
 import { storeCurrentUser } from '@/utils/Redux/Reducer/currentUser.reducer';
 import { useAppDispatch } from '@/hooks/useStoreHooks';
+import { toast } from 'react-toastify';
 
 const SignIn = () => {
     const navigate = useNavigate();
@@ -34,13 +35,15 @@ const SignIn = () => {
 
         setError('');
 
-        const res = await TeacherService.login(form);
+        const res = await TeacherService.login(Roles.Teacher,form);
         
         if (!res.success) {
+            toast.error(res.error.message);
             setError(res.error?.message);
+            return res.success;
         }
         
-        const user=res.data.data;
+        const user=res.data?.data;
         const userLocalStore=JSON.stringify(user||{});
         localStorage.setItem('sectionB',userLocalStore);
         

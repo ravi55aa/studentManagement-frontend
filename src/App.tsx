@@ -177,11 +177,16 @@ const App = () => {
             <Route path="add" element={<HomeworkAdd />} />
             <Route path="view/submissions/:homeworkId" element={<VerifyHomeworkSubmissions />} />
           </Route>
+
           <Route path='subject' element={<TeachersSubjects/>} />
+
           <Route path="batches" >
             <Route index element={<ListBatches />} />
             <Route path=":batchId/markAttendance" element={<MarkAttendance />} />
           </Route>
+          
+          <Route path="chat" element={<StudentChat />} />
+
           <Route path="setting" element={<TeacherSettingsPage />} />
         </Route>
 

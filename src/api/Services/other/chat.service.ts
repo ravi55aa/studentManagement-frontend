@@ -17,6 +17,17 @@ export class ChatService {
         return await handleApi<{ user1: string; user2: string },IChatRoom>(config);
     }
 
+    static async createBatchChat(role:string=Roles.Student,batchId: string) {
+        const config: HandleApiOptions<{ batchId: string; }> = {
+        method: "post",
+        endPoint: ChatRouter.createBatchChat,
+        payload: { batchId },
+        headers: { role: role }, // adjust if dynamic
+        };
+
+        return await handleApi<{ batchId: string; },IChatRoom>(config);
+    }
+
     //  Get User Chats
     static async getUserChats(role:string=Roles.Student,userId: string) {
         const config: HandleApiOptions<null> = {

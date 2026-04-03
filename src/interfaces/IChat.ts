@@ -15,6 +15,7 @@ export interface IMessage {
     readBy: string;
 
     isBroadcast?: boolean; // for center messages
+    updateAT?: string; // for center messages
 }
 
 export interface IChatRoom  {

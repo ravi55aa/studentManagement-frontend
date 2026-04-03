@@ -22,16 +22,16 @@ export const schoolSidebarLinks: SidebarItemConfig[] = [
     label: 'Batches',
     path: 'batches',
   },
-  {
-    label: 'Exams',
-    path: 'exams',
-    children: [
-      { label: 'Exams', path: 'exams' },
-      { label: 'Results', path: 'results' },
-      { label: 'Schedule Exam', path: 'schedule-exam' },
-      { label: 'Exam Structure', path: 'exam-structure' },
-    ],
-  },
+  // {
+  //   label: 'Exams',
+  //   path: 'exams',
+  //   children: [
+  //     { label: 'Exams', path: 'exams' },
+  //     { label: 'Results', path: 'results' },
+  //     { label: 'Schedule Exam', path: 'schedule-exam' },
+  //     { label: 'Exam Structure', path: 'exam-structure' },
+  //   ],
+  // },
   {
     label: 'Academics',
     path: 'academics',

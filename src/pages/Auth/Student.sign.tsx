@@ -44,7 +44,7 @@ const SignIn = () => {
         }
         
         navigate('/student/dashboard');
-        const user=res.data.data;
+        const user=res.data?.data;
         const userLocalStore=JSON.stringify(user||{});
         localStorage.setItem('sectionC',userLocalStore);
 

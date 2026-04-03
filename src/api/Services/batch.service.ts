@@ -34,7 +34,7 @@ export class BatchService {
       headers: { role: role },
     };
 
-    return await handleApi<null, IBatches>(config);
+    return await handleApi<null, IBatches[]>(config);
   }
 
   static async get(role:string='School',id:string) {

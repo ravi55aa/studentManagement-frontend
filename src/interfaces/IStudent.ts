@@ -12,6 +12,7 @@ export interface IStudent {
     parentPhone:string|null;
     status: Student_Status;
     profile: string | File | null;
+    batch: string |null;
     _id?: string | null;
 }
 

@@ -1,5 +1,8 @@
+import { StudentService } from "@/api/Services/Student/student.service";
 import { TeacherService } from "@/api/Services/teacher.service";
 import { Roles } from "@/constants/role.enum";
+import { useAppSelector } from "@/hooks/useStoreHooks";
+import { IStudent } from "@/interfaces/IStudent";
 import { ITeacherBio } from "@/interfaces/ITeacher";
 import { useEffect, useState } from "react";
 
@@ -10,25 +13,57 @@ const ChatSidebar = ({
     onSelectRoom,
     onStartDirectChat, 
     }: any) => {
-    const [teachers, setTeachers] = useState<ITeacherBio[]>([]);
+    const [directChatUsers, setUsers] = useState<{teachers:ITeacherBio[]|null,students:IStudent[]|null}>({teachers:null,students:null});
+
+    const {user}=useAppSelector((state)=>state.currentUser);
 
     // Fetch teachers when Direct tab is active
     useEffect(() => {
         if (activeTab === "direct") {
-        fetchTeachers();
+            Roles.Student==user.role 
+            ? fetchTeachers() 
+            : fetchStudents();
         }
     }, [activeTab]);
 
     const fetchTeachers = async () => {
+        
         try {
-        //  replace with your API
-        const res = await TeacherService.getAll(Roles.Student);
-        const {teacherBio} = res.data.data;
-        setTeachers(teacherBio); //only fetch teachers from same centerId;
+        
+            const res = await TeacherService.getAll(Roles.Student);
+
+            const {teacherBio} = res.data.data;
+
+            setUsers({teachers:teacherBio,students:null}); 
+
+            //only fetch teachers from same centerId;
+
         } catch (err) {
             console.error("Error fetching teachers", err);
         }
     };
+
+
+    const fetchStudents = async () => {
+        
+        try {
+            const res = await StudentService.getALLWithQuery(Roles.Student);
+            
+            if(!res.success) {
+
+                return res.success;
+            }
+
+            const students:IStudent[] = res.data?.data;
+
+            setUsers({students,teachers:null}); //only fetch teachers from same centerId;
+
+        } catch (err) {
+
+            console.error("Error fetching Students", err.message);
+        }
+    };
+
 
     return (
         <div className="w-64 border-r bg-white p-4">
@@ -57,35 +92,50 @@ const ChatSidebar = ({
         {activeTab === "direct" && (
             <div className="mt-6 space-y-2">
             <p className="text-sm font-medium text-gray-500 mb-2">
-                Select a Teacher
+                Select a {user.role=='Teacher'?'Student':'Teacher'}
             </p>
 
-            {teachers.map((teacher: ITeacherBio) => (
-                <div
-                key={teacher?._id}
-                onClick={() => onStartDirectChat(teacher)}
-                className="p-2 rounded-md border hover:bg-green-50 cursor-pointer text-sm"
-                >
-                {teacher?.firstName.toUpperCase()}
-                </div>
-            ))}
+            {   
+            user.role==Roles.Student 
+                ?
+                (directChatUsers?.teachers?.map((teacher: ITeacherBio) => (
+                    <div
+                    key={teacher?._id}
+                    onClick={() => onStartDirectChat(teacher)}
+                    className="p-2 rounded-md border hover:bg-green-50 cursor-pointer text-sm"
+                    >
+                    {teacher?.firstName.toUpperCase()}
+                    </div>
+                )))
+                :
+                (directChatUsers.students?.map((student: IStudent) => (
+                    <div
+                    key={student?.dateOfBirth}
+                    onClick={() => onStartDirectChat(student)}
+                    className="p-2 rounded-md border hover:bg-green-50 cursor-pointer text-sm"
+                    >
+                    {student?.name.toUpperCase()}
+                    </div>
+                )))
+            }
+
             </div>
         )}
 
         {/*  OTHER TABS → Show Rooms */}
-        {activeTab !== "direct" && (
+        {/* {activeTab !== "direct" && (
             <div className="mt-6 space-y-2">
             {rooms.map((room: any) => (
                 <div
-                key={room._id}
-                onClick={() => onSelectRoom(room._id)}
+                key={room?._id}
+                onClick={() => onSelectRoom(room?._id)}
                 className="p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm"
                 >
-                {room.name || "Chat"}
+                {room?.name || "Chat"}
                 </div>
             ))}
             </div>
-        )}
+        )} */}
         </div>
     );
 };

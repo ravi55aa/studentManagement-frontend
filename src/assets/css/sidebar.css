@@ -1,0 +1,26 @@
+/* Sidebar Scrollbar */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 10px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    margin: 8px 0;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #1beea17d, #017b54);
+    border-radius: 999px;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+    transition: all 0.3s ease;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #6ee7b7, #10b981);
+    box-shadow: 0 0 10px rgba(2, 41, 28, 0.9);
+}
+
+.sidebar-scroll {
+    scroll-behavior: smooth; 
+}

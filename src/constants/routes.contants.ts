@@ -128,6 +128,8 @@ export enum StripeRouter {
 //Chat Router
 export enum ChatRouter {
   createDirectChat = "/chat/direct",
+  createBatchChat = "/chat/batch",
+  
   getUserChats = "/chat/:userId",
   sendMessage = "/chat/message",
   getMessages = "/chat/messages/:chatRoomId",
