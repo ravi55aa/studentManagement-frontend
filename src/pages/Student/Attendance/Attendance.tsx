@@ -5,6 +5,9 @@ import { StudentService } from "@/api/Services/Student/student.service";
 import { toast } from "react-toastify";
 import { AttendanceService } from "@/api/Services/Student/attendanceService";
 import { Roles } from "@/constants/role.enum";
+import { ILeaveDocument } from "@/interfaces/IAttendance";
+import { handleValidationOF } from "@/validation/validateFormData";
+import { leaveSchema } from "@/validation/student.validation";
 
 const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -17,18 +20,22 @@ const StudentAttendance = () => {
     const {user}=useAppSelector((state)=>state.currentUser);
 
     const [leaveModal, setLeaveModal] = useState(false);
-    const [leaveData, setLeaveData] = useState({
-        subject: "",
+    const [leaveData, setLeaveData] = useState<ILeaveDocument>({
+        reason: "",
         body: "",
         attachment: null as File | null,
+        date:null,
     });
     const [attendanceMap,setAttendanceMap]=useState({});
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const days = getDaysInMonth(year, month);
     
     useEffect(()=>{
         const fetchStudentAttendance=async()=>{
 
             //fetchAttendance
-            const res=await AttendanceService.getAStudentList(Roles.Student,{studentId:user.id,year:2026,month:3});
+            const res=await AttendanceService.getAStudentList(Roles.Student,{studentId:user.id,year,month});
 
             if(!res.success){
                 toast.error(res.error.message);
@@ -42,12 +49,8 @@ const StudentAttendance = () => {
 
         }
         fetchStudentAttendance();
-    },[]);
+    },[month]);
 
-
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const days = getDaysInMonth(year, month);
 
     // Month Change
     const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,13 +76,25 @@ const StudentAttendance = () => {
         }
     };
 
-    const handleSubmitLeave = () => {
-        console.log("Leave Data:", leaveData);
+    const handleSubmitLeave = async():Promise<boolean> => {
+        // then do validation on leaveData;
+        const isValidation=handleValidationOF(leaveSchema,leaveData);
 
-        // TODO: API call
+        if(!isValidation.success){
+            return isValidation.success;
+        }
 
+        const res=await AttendanceService.applyLeave(Roles.Student,leaveData,user.id);
+
+        if(!res.success){
+            toast.warn(res.error.message);
+            return res.success;
+        }
+
+        toast.success(res.data.message);
         setLeaveModal(false);
-        setLeaveData({ subject: "", body: "", attachment: null });
+        setLeaveData({ reason: "", body: "", attachment: null,date:null });
+        res.success;
     };
 
     // Status Color
@@ -96,6 +111,7 @@ const StudentAttendance = () => {
 
     return (
         <div className="p-6 bg-white min-h-screen">
+        
         {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
             <button
@@ -153,8 +169,8 @@ const StudentAttendance = () => {
                 </h3>
 
                 <input
-                name="subject"
-                value={leaveData.subject}
+                name="reason"
+                value={leaveData.reason}
                 onChange={handleLeaveChange}
                 placeholder="Subject"
                 className="w-full border p-2 rounded mb-3"

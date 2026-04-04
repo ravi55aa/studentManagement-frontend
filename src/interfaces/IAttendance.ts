@@ -12,3 +12,10 @@ export interface IStudentAttendanceMain{
     teacherId: string;
     students: IStudentAttendance[];
 }
+
+export interface ILeaveDocument {
+    reason: string;
+    body: string;
+    attachment?: File|string;
+    date: Date|null|undefined;
+}

@@ -2,7 +2,7 @@ import { StudentRouter } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '@/api/global.api';
 import { IStudent } from '@/interfaces/IStudent';
 import { Roles } from '@/constants/role.enum';
-import { IStudentAttendance,IStudentAttendanceMain } from '@/interfaces/IAttendance';
+import { ILeaveDocument, IStudentAttendance,IStudentAttendanceMain } from '@/interfaces/IAttendance';
 
 
 export class AttendanceService {
@@ -63,5 +63,27 @@ export class AttendanceService {
         };
 
         return await handleApi<{studentId:string,year:number,month:number}, Record<number,string>>(config);
+    }
+
+    static async applyLeave(role:string=Roles.Student,data:ILeaveDocument,studentId:string) {
+        const config: HandleApiOptions<ILeaveDocument> = {
+        endPoint: `${StudentRouter.applyLeave}/${studentId}`,
+        method: 'post',
+        payload: data,
+        headers: { role: role },
+        };
+
+        return await handleApi<ILeaveDocument, null>(config);
+    }
+
+    static async getLeaveHistory(role:string=Roles.Student,studentId:string) {
+        const config: HandleApiOptions<null> = {
+        endPoint: `${StudentRouter.getLeaveHistory}/${studentId}`,
+        method: 'get',
+        payload: null,
+        headers: { role: role },
+        };
+
+        return await handleApi<null,ILeaveDocument>(config);
     }
 }

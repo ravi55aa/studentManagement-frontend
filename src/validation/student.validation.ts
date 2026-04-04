@@ -65,3 +65,28 @@ export const createStudentSchema = z.object({
         .enum(["active", "inactive", "graduated", "suspended"])
         .optional(),
 });
+
+export const leaveSchema = z.object({
+    reason: z
+        .string()
+        .trim()
+        .min(5, "Reason is required"),
+
+    body: z
+        .string()
+        .trim()
+        .min(10, "Body is required"),
+
+    attachment: z
+        .union([
+        z.instanceof(File).nullable(),
+        , // for file upload
+        z.string().url("Attachment must be a valid URL"),
+        ])
+        .optional(),
+
+    date: z
+        .date()
+        .nullable()
+        .optional(),
+});

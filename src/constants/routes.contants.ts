@@ -162,6 +162,9 @@ export enum StudentRouter {
   getallAttendances = '/student/attendance/getall',
   getAStudentList = '/student/attendance/getOne',
   getBatchAttendance = '/student/attendance/batch',
+
+  applyLeave = '/student/applyLeave',
+  getLeaveHistory = '/student/applyLeave',
   
   //studentFee
   studentPaidFeeDetails = '/student/fee/details',
