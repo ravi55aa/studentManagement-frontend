@@ -5,7 +5,10 @@ interface PublicRouteProps {
   redirectPath?: string;
 }
 
-const PublicRoute = ({ redirectPath = '/school/dashboard' }: PublicRouteProps) => {
+const path=window.location.pathname;
+const parentPath=path.split('/')[1];
+
+const PublicRoute = ({ redirectPath = `/${parentPath}/dashboard` }: PublicRouteProps) => {
   const { user } = useAppSelector((state) => state.currentUser);
 
   if (user) {

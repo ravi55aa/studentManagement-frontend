@@ -26,26 +26,26 @@ export class DocumentService {
     return await handleApi<null, IDocument>(config);
   }
 
-  static async create(userId: string, formData: FormData) {
+  static async create(role:string=Roles.School,userId: string, formData: FormData) {
     const config: HandleApiOptions<FormData> = {
       method: 'put',
       endPoint: `${DocumentRoute.document}/${userId}`,
       payload: formData,
-      headers: { role: 'School' },
+      headers: { role: role },
     };
 
     return await handleApi<FormData, IDocument>(config);
   }
 
-  static async update(id: string, formData: FormData) {
-    const config: HandleApiOptions<FormData> = {
-      method: 'patch',
-      endPoint: `${DocumentRoute.edit}${id}`,
-      payload: formData,
-      headers: { role: 'School' },
-    };
+  static async update(role:string=Roles.School,userId: string, formData: Partial<IDocument>) {
+      const config: HandleApiOptions<Partial<IDocument>> = {
+            method: 'put',
+            endPoint: `${DocumentRoute.document}/${userId}`,
+            payload: formData,
+            headers: { role: role },
+        };
 
-    return await handleApi<FormData, IDocument>(config);
+      return await handleApi<Partial<IDocument>, IDocument>(config);
   }
 
   static async delete(id: string, fileName: string) {

@@ -17,7 +17,7 @@ export class StudentFeeService {
 
     static async getAllStudentFeeDetails(role:string=Roles.Student,userId:string) {
         const config: HandleApiOptions<object> = {
-        method: 'post',
+        method: 'get',
         endPoint: `${StudentRouter.studentPaidFeeDetails}/${userId}`,
         payload: null,
         headers: { role: role },

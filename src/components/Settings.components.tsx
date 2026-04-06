@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AddressService } from "@/api/Services/address.service";
 import { useAppDispatch, useAppSelector } from "@/hooks/useStoreHooks";
 import { IAddress, IDocument, IUploadedDoc } from "@/interfaces/IRegister";
@@ -6,16 +6,14 @@ import { toggleMDALoading } from "@/utils/Redux/Reducer/school.reducer";
 import { school_Register_SchemaFor_Address } from "@/constants/createSchool";
 import { addressValidate } from "@/validation/school.validator";
 import { handleValidationOF } from "@/validation/validateFormData";
-import { toast } from "react-toastify";
 import { Card, Info, ViewFileModal } from "./School/card";
-import InputField from "./inputField";
-import DocumentRow from "./Document/Documents.row";
 import DocumentUploadModal from "./Document/Document.upload.modal";
 import { DocumentService } from "@/api/Services/document.service";
-import Swal from "sweetalert2";
-import { DocumentRoute } from "@/constants/routes.contants";
-import { handleApi, HandleApiOptions } from "@/api/global.api";
+import DocumentRow from "./Document/Documents.row";
 import { Roles } from "@/constants/role.enum";
+import InputField from "./inputField";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 
 /******* ADDRESS *******/
@@ -165,30 +163,31 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
     const dispatch=useAppDispatch();
     const {user}=useAppSelector((state)=>state.currentUser);
     
+    const handleDocumentsFetch=useCallback(async()=>{
+        const res=await DocumentService.get(role,user.id);
+        
+        if(!res.success){
+            toast.warn(res.error?.message);
+            return res.success;
+        }
+
+        const documents=res.data.data;
+        // console.log("@settigns.component documents",documents);
+        if(documents){
+            setDocuments(documents);
+        }
+        
+        return res.success;
+    },[user.id]);
+
     useEffect(()=>{
         if(!user.id){
             toast.warn('User id is invalid');
             return;
         }
 
-        (async()=>{
-            const res=await DocumentService.get(role,user.id);
-            
-            if(!res.success){
-                toast.warn(res.error?.message);
-                return res.success;
-            }
-
-            const documents=res.data.data;
-            // console.log("@settigns.component documents",documents);
-            if(documents){
-                setDocuments(documents);
-            }
-            
-            return res.success;
-        })();
-        
-    },[user.id]);
+        handleDocumentsFetch();
+    },[user.id,dispatch,loading]);
 
 
 
@@ -204,54 +203,53 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
     };
 
     const handleSubmitEditDocument = async () => {
-        //id,form
 
         dispatch(toggleMDALoading());
-        const config: HandleApiOptions<Partial<IDocument>> = {
-            method: 'put',
-            endPoint: `${DocumentRoute.edit}/${user.id}`,
-            payload: documentState,
-            headers: { role: role },
-        };
-        const res = await handleApi<Partial<IDocument>, IDocument>(config);
+
+        const res = await DocumentService.update(role,user.id,documentState)
 
         if (!res.success) {
             toast.error(res.error.message);
             return res.success;
         }
-
+        
         toast.success(res.data.message);
+        await handleDocumentsFetch()
         setUtils((prev) => ({ ...prev, isOpen: false }));
         //need to refreshThePage
         return res.success;
     };
     
-    const removeAFile = async (index: number): Promise<boolean> => {
-    const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'This action cannot be undone!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it',
-    });
+    const handleRemoveAFile = async (index: number): Promise<boolean> => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action cannot be undone!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it',
+        });
 
-    if (!result.isConfirmed) {
-        return;
-    }
-    dispatch(toggleMDALoading());
+        if (!result.isConfirmed) {
+            return;
+        }
+        dispatch(toggleMDALoading());
 
-    const delete_fileName = documentState.docs[index].fileName;
+        const delete_fileName = documentState.docs[index]?.fileName;
 
-    const res = await DocumentService.delete(user.id, delete_fileName);
+        const res = await DocumentService.delete(user.id, delete_fileName);
 
-    dispatch(toggleMDALoading());
-    if (!res.success) {
-        toast.error(`Error 500: ${res.data.error}`);
+        dispatch(toggleMDALoading());
+
+        if (!res.success) {
+            toast.error(res?.error?.message);
+            return res.success;
+        }
+
+        toast.success(res.data.message);
+        
+        await handleDocumentsFetch();
+
         return res.success;
-    }
-
-    toast.success('File Removed successfully 200');
-    return res.success;
     };
     
     const handleView = (index: number) => {
@@ -288,15 +286,18 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
 
         dispatch(toggleMDALoading());
 
-        const res = await DocumentService.create(user.id, formData);
+        const res = await DocumentService.create(role,user.id, formData);
 
         dispatch(toggleMDALoading());
+        
         if (!res.success) {
-        toast.error(`Error 500: ${res.data.error}`);
-        return res.success;
+            toast.error(res.error.message);
+            return res.success;
         }
 
-        toast.success('Documents uploaded successfully');
+        toast.success(res.data.message);
+
+        await handleDocumentsFetch()
 
         setUtils((prev) => ({ ...prev, isOpenUploadDocument: false }));
     } catch (error) {
@@ -332,11 +333,10 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
     
                 <div className="overflow-y-auto max-h-60">
                     {!loading && documentState.docs?.length > 0 ? (
-                    documentState.docs.map((file: IUploadedDoc, index: number) => (
+                    documentState?.docs?.map((file: IUploadedDoc, index: number) => (
                         <DocumentRow
                         file={file}
-                        removeAFile={removeAFile}
-                        editFile={handleView}
+                        removeAFile={handleRemoveAFile}
                         key={index}
                         index={index}
                         />

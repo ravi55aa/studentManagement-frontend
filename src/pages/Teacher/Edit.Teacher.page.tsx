@@ -21,6 +21,8 @@ import { Teachers } from '@/types/types';
 import { employmentStatusOptions, teacherDesignationOptions } from '@/constants/teacher';
 import { TeacherService } from '@/api/Services/teacher.service';
 import { Roles } from '@/constants/role.enum';
+import { ICenter } from '@/interfaces/ICenter';
+
 /* ------------------------------------------------ */
 
 const EditTeacherPage = () => {
@@ -67,6 +69,7 @@ export default EditTeacherPage;
  * TEACHER-BIO-DATA
  * */
 const EditTeacherBio = ({ teacher }: { teacher: Partial<ITeacherBio> }) => {
+  
   const [form, setForm] = useState<Partial<ITeacherBio>>({
     firstName: teacher.firstName,
     lastName: teacher.lastName,
@@ -115,7 +118,7 @@ const EditTeacherBio = ({ teacher }: { teacher: Partial<ITeacherBio> }) => {
       }
     });
 
-    const res = await TeacherService.editBio(teacher._id, formData);
+    const res = await TeacherService.editBio(Roles.School,teacher._id, formData);
 
     if (!res.success) {
       toast.error('Failed to update bio');
@@ -160,6 +163,9 @@ const EditTeacherProfessional = ({
   teacher: Partial<ITeacher>;
   goBack: () => void;
 }) => {
+
+  const centerStore=useAppSelector((state)=>state.center);
+
   const [professionalForm, setForm] = useState<Partial<ITeacher>>({
     employmentStatus: teacher.employmentStatus,
     designation: teacher.designation,
@@ -168,9 +174,31 @@ const EditTeacherProfessional = ({
     department: teacher.department || [],
     dateOfJoining: teacher.dateOfJoining?.split('T')[0],
     dateOfLeaving: teacher.dateOfLeaving?.split('T')[0],
-    center: teacher.center?._id,
+    center: teacher.center,
     modelType: teacher.modelType,
   });
+
+  useEffect(()=>{
+    //subject
+    const subjectCodes=teacher.assignedSubjects.map((subject)=>subject?.code);
+    
+    setForm((prev)=>({...prev,assignedSubjects:subjectCodes}));
+    
+    //center
+    const teacherCenter=centerStore.centers.find((center:ICenter)=>teacher.center==center._id);
+    
+    if(!teacherCenter){
+      setForm((prev)=>({...prev,center:'School'}));
+    }
+
+    //department
+    // teacher.department.map((depart:string)=>{
+    //   if(department[depart]==){
+
+    //   }
+    // })
+
+  },[teacher]);
 
   const subjectStore = useAppSelector((state) => state.schoolSubject);
   const centersReduxStore = useAppSelector((state) => state.center);
@@ -209,11 +237,13 @@ const EditTeacherProfessional = ({
       setForm((prev) => ({ ...prev, modelType: 'Centers' }));
     }
 
+    console.log('@Edit.teacher professionalForm',professionalForm);
+    
     const isValid = handleValidationOF(teacherAssignmentSchema, professionalForm);
 
     if (!isValid.success) return;
 
-    const res = await TeacherService.editProfessional(teacher.teacherId, professionalForm);
+    const res = await TeacherService.editProfessional(Roles.School,teacher.teacherId, professionalForm);
 
     if (!res.success) {
       toast.error(res.error.message);
@@ -274,8 +304,8 @@ const EditTeacherProfessional = ({
           >
             <option value="">Select center</option>
             <option value="School">School</option>
-            {centersReduxStore.centers?.map((batch) => {
-              return <option value={batch?._id}>{batch?.name}</option>;
+            {centersReduxStore.centers?.map((center:ICenter) => {
+              return (<option value={center?._id}>{center?.name}</option>);
             })}
           </select>
           <span id="centerId" className="text-red-500 errorDisplay"></span>
@@ -287,7 +317,7 @@ const EditTeacherProfessional = ({
           items={yearStore.years}
           type="radio"
           name="academicYear"
-          selected={professionalForm.academicYearId}
+          selected={professionalForm?.academicYearId}
           displayKey="year"
           onChange={(code) =>
             setForm((prev) => ({
@@ -324,7 +354,7 @@ const EditTeacherProfessional = ({
           items={department_obj}
           name="department"
           onChange={handleDepartmentToggle}
-          form={professionalForm.department}
+          //form={professionalForm?.department}
         />
       </Section>
 

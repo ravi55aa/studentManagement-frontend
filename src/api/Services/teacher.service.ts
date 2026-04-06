@@ -84,6 +84,7 @@ export class TeacherService {
   }
 
   static async editProfessional(role:string=Roles.Teacher,id: string, formData: Partial<ITeacher>) {
+    
     const config: HandleApiOptions<Partial<ITeacher>> = {
       endPoint: `${TeacherRoute.updateProfessional}/${id}`,
       method: 'patch',

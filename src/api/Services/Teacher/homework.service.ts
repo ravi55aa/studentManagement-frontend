@@ -1,4 +1,5 @@
 import { handleApi,HandleApiOptions } from '@/api/global.api';
+import { Roles } from '@/constants/role.enum';
 import { HomeworkRoute, SubjectRoute } from '@/constants/routes.contants';
 import { IHomework } from '@/interfaces/IHomework';
 
@@ -60,12 +61,12 @@ export class HomeworkService {
         return await handleApi<null, { message: string }>(config);
     }
 
-    static async update(id: string, formData: FormData) {
+    static async update(role:string=Roles.Teacher,id: string, formData: FormData) {
         const config: HandleApiOptions<FormData> = {
-        method: 'post', // (better use PATCH if backend supports it)
-        endPoint: `${SubjectRoute.edit}/v1/${id}`,
+        method: 'patch', // (better use PATCH if backend supports it)
+        endPoint: `${HomeworkRoute.edit}/${id}`,
         payload: formData,
-        headers: { role: 'Teacher' },
+        headers: { role: role },
         };
 
         return await handleApi<FormData, IHomework>(config);

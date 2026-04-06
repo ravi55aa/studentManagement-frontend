@@ -2,12 +2,13 @@ import { HomeWorkStatus } from "@/types/homework.status";
 import { IAcademicSubject } from "./ISchool";
 import { IUploadedDoc } from "./IRegister";
 import { IStudent } from "./IStudent";
+import { IAttachment } from "@/components/HomeworkCard";
 
 export interface IHomework {
     _id?:string;
     title: string;
     description: string;
-    attachments?: File[] | {fileName:string,url:string};
+    attachments?: File[] | IAttachment[];
     
     subjectId: string|IAcademicSubject;
     batchId: string;

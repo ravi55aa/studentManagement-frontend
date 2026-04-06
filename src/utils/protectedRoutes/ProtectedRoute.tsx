@@ -5,10 +5,13 @@ interface ProtectedRouteProps {
   redirectPath?: string;
 }
 
-const ProtectedRoute = ({ redirectPath = '/login' }: ProtectedRouteProps) => {
+const path=window.location.pathname;
+const parentPath=path.split('/')[1];
+
+const ProtectedRoute = ({ redirectPath = `/${parentPath}/login` }: ProtectedRouteProps) => {
   const { user } = useAppSelector((state) => state.currentUser);
 
-  if (!user) {
+  if (!user || Object.keys(user).length<=0) {
     return <Navigate to={redirectPath} replace />;
   }
 

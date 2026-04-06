@@ -12,18 +12,23 @@ import TypeBadge from '@/components/fee/TypeBadge.c';
 import { FeeService } from '@/api/Services/fee.service';
 import { StudentFeeService } from '@/api/Services/Student/studentFee.service';
 import { Roles } from '@/constants/role.enum';
+import { IFee } from '@/interfaces/IFee';
+import { IStudentFee } from '@/interfaces/IStudent';
 
 export default function StudentFeeListPage() {
     const dispatch = useAppDispatch();
     const feeStore = useAppSelector((state) => state.fees);
     const {user} = useAppSelector((state) => state.currentUser);
-    const [studentFeeDetails,SetStudentFeeDetails]=useState([]);
+    const [studentFeeDetails, setStudentFeeDetails] = useState<IStudentFee[]>([]);
+    const [mergedFees, setMergedFees] = useState<IFee[]>([]);
     const navigate = useNavigate();
 
     const handleGetStudentFees = async () => {
         dispatch(toggleFeeLoading(true));
 
-        //  You can change this API later to student-specific
+        //  Make sure to update into
+        //  filtering the query, by the there are specific
+        //  center, course may vary.  
         const res = await FeeService.getAll(); 
 
         if (!res.success) {
@@ -43,21 +48,37 @@ export default function StudentFeeListPage() {
             return;
         }
 
-        const feeData=res.data.data;
+        const feeData=res.data?.data;
 
-        SetStudentFeeDetails(feeData);
+        setStudentFeeDetails(feeData);
     }
 
     useEffect(() => {
-        handleGetStudentFees();
-        handleGetStudentPaidFeeDetail();
-    }, [dispatch]);
+            handleGetStudentFees();
+            handleGetStudentPaidFeeDetail();
+    }, []);
 
     const handlePay = (feeId: string) => {
         const locationState={'amount':1000,'studentFeeId':feeId,'userId':user.id,'role':Roles.Student};
 
         navigate('/checkout',{state:locationState});
     };
+
+    useEffect(() => {
+        if (!feeStore.fees || studentFeeDetails.length === 0) return;
+
+        const feeDetails = feeStore.fees.map((fee: IFee) => {
+            const matched = studentFeeDetails.find(
+            (sFee) => sFee.feeId === fee._id.toString()
+            );
+
+            return matched
+            ? { ...fee, status: matched.status }
+            : { ...fee, status: "pending" };
+        });
+
+        setMergedFees(feeDetails);
+    }, [feeStore.fees, studentFeeDetails]);
 
     return (
         <div className="p-8 bg-white-100 min-h-screen">
@@ -66,7 +87,7 @@ export default function StudentFeeListPage() {
         <SearchAndFilter />
 
         <TableComponent
-            data={feeStore?.fees ?? []}
+            data={mergedFees ?? []}
             keyField="_id"
             loading={feeStore?.loading}
             emptyMessage="No fees available"
@@ -100,16 +121,16 @@ export default function StudentFeeListPage() {
                 render: (fee) => (
                 <div className="flex justify-center">
                     <button
-                    disabled={fee?.status === 'PAID'}
+                    disabled={fee?.status === 'paid'}
                     onClick={() => handlePay(fee?._id)}
                     className={`px-3 py-1 text-sm rounded-md text-white 
                         ${
-                        fee?.status === 'PAID'
+                        fee?.status === 'paid'
                             ? 'bg-gray-400 cursor-not-allowed'
                             : 'bg-blue-600 hover:bg-blue-700'
                         }`}
                     >
-                    {fee?.status === 'PAID' ? 'Paid' : 'Pay'}
+                    {fee?.status === 'paid' ? 'Paid' : 'Pay'}
                     </button>
                 </div>
                 ),

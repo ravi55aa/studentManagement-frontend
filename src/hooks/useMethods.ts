@@ -19,10 +19,10 @@ export function useCommonMethods () {
         }
 
         localStorage.clear();
+        window.location.reload();
 
         navigate(`/${to}/login`);
     }
-
 
     return {
         useHandleLogout

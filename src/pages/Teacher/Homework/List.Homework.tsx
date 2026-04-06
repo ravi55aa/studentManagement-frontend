@@ -82,8 +82,7 @@ const TeacherHomeworkTable = () => {
         if (!homeworkId) return;
         navigate(`/teacher/dashboard/homework/edit/${homeworkId}`);
     };
-
-
+    
 
     return (
         <div className="p-8 bg-white-100 min-h-screen">
@@ -128,7 +127,7 @@ const TeacherHomeworkTable = () => {
                     />
 
                     
-                    <PencilLine onClick={()=>handleEdit(homework._id)} className="w-4 h-4 text-blue-600 hover:text-blue-800 hover:underline cursor-pointer" />
+                    <PencilLine onClick={()=>handleEdit(homework?._id)} className="w-4 h-4 text-blue-600 hover:text-blue-800 hover:underline cursor-pointer" />
                     
                 </div>
                 ),

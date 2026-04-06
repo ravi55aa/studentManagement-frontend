@@ -44,8 +44,8 @@ export enum HomeworkRoute {
   getall = '/teacher/homework/getall',
   get = '/teacher/homework/get',
   delete = '/teacher/homework/delete',
-  add = '/teacher/homework',
-  edit = '/teacher/homework',
+  add = '/teacher/homework/add',
+  edit = '/teacher/homework/edit',
 }
 
 export enum StudentHomeworkRoute {
@@ -77,7 +77,7 @@ export enum TeacherRoute {
   verifyTeacher = '/teacher/verify',
 
   updateBio = '/teacher/bio/update',
-  updateProfessional = '/teacher/update',
+  updateProfessional = '/teacher/professional/update',
 }
 
 

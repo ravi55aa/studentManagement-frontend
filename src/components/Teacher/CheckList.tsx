@@ -14,7 +14,7 @@ export default function CheckboxList({ label, items, name, onChange }: CheckboxL
       <div className="grid grid-cols-2 gap-2">
         {Object.keys(items)?.map((item, index) => (
           <label key={index} htmlFor={label} className="flex gap-2 text-sm">
-            <input onChange={onChange} name={item} type="checkbox" />
+            <input onChange={onChange} value={items?.[item]} name={item} type="checkbox" />
             {item}
           </label>
         ))}

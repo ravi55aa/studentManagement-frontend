@@ -111,8 +111,7 @@ const App = () => {
         
         {/*.*/}
         {/* SCHOOL */}
-        {/* element={<ProtectedRoute />} */}
-        <Route >
+        <Route element={<ProtectedRoute />} >
           <Route path="/school/dashboard" element={<Dashboard />}>
             <Route index element={<DashboardHome />} />
             <Route path="centers" element={<Centers />} />
@@ -166,15 +165,18 @@ const App = () => {
             </Route>
           </Route>
 
-        </Route>
+        
 
         {/* TEACHER */}
+
+        
         <Route path='/teacher/dashboard' element={<TeacherDashboard/>} > 
           <Route index element={<DashboardHome />} />
 
           <Route path="homework" >
             <Route index element={<TeacherHomeworks />} />
             <Route path="add" element={<HomeworkAdd />} />
+            <Route path="edit/:homeworkId" element={<HomeworkAdd />} />
             <Route path="view/submissions/:homeworkId" element={<VerifyHomeworkSubmissions />} />
           </Route>
 
@@ -191,6 +193,7 @@ const App = () => {
         </Route>
 
         {/* STUDENT */}
+        
         <Route path='/student/dashboard' element={<StudentDashboard/>}>
           <Route index element={<DashboardHome/>} />
           <Route path="homework"  >
@@ -202,6 +205,7 @@ const App = () => {
           <Route path="fee" element={<StudentFee />} />
           <Route path="chat" element={<StudentChat />} />
           <Route path="setting" element={<StudentSettingsPage />} />
+        </Route>
         </Route>
         
       </Routes>

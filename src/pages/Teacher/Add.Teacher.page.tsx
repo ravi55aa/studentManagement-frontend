@@ -19,7 +19,8 @@ import { basicTeacherFields } from '@/constants/teacher.Fields';
 import { ActionBar, FileUpload, Grid } from '@/components/Teacher/ActionBar';
 import { Section } from '@/components/Teacher/Section';
 import { TeacherService } from '@/api/Services/teacher.service';
-/* ------------------------------------------------ */
+import { Roles } from '@/constants/role.enum';
+/* ---------------------- -------------------------- */
 
 const AddTeacherPage = () => {
   const [teacherId, setTeacherId] = useState<string | null>('safsdfsdfsf');
@@ -162,7 +163,7 @@ const AddTeacherPage = () => {
       }
     });
 
-    const res = await TeacherService.addBio(formData);
+    const res = await TeacherService.addBio(Roles.School,formData);
 
     if (!res.success) {
       toast.error(res.error?.message);
@@ -196,7 +197,7 @@ const AddTeacherPage = () => {
       return isValid.success;
     }
 
-    const res = await TeacherService.addProfessional(teacherId, professionalForm);
+    const res = await TeacherService.addProfessional(Roles.School,teacherId, professionalForm);
 
     if (!res.success) {
       toast.error(res.error.message);

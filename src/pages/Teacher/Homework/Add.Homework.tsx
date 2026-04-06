@@ -16,10 +16,13 @@ import { HomeworkSchema } from '@/validation/teacher.validation';
 import { HomeworkService } from '@/api/Services/Teacher/homework.service';
 import { HomeWorkStatus } from '@/types/homework.status';
 import { TeacherService } from '@/api/Services/teacher.service';
-import { unknown } from 'zod';
-
+import { useParams } from 'react-router-dom';
+import { IAttachment } from '@/components/HomeworkCard';
 
 const AddHomework = () => {
+    
+    const {homeworkId}=useParams();//while Edit homework
+
     const [form, setForm] = useState({
         title: "",
         description: "",
@@ -30,21 +33,25 @@ const AddHomework = () => {
         attachments: [],
         });
 
+        const [existingDocs,setExistingDocs]=useState<IAttachment[]|File[]>([]);
+        const [loading,setLoading]=useState<boolean>(false);
+        //Only used for edit
+
         const subjectStore=useAppSelector((state)=>state.schoolSubject)
         const batchStore=useAppSelector((state)=>state.batch)
+        const {user}=useAppSelector((state)=>state.currentUser);
         const dispatch=useAppDispatch();
 
         useEffect(()=>{
             //sub & batch
-            const teacher=JSON.parse(localStorage.getItem('sectionB'));
 
-            if(!teacher){
+            if(!user.id){
                 toast.warn('teacherNotFound Kindly re-Login');
                 return;
             }
 
             const fetchStoreData=async()=>{
-                const resTeacher=await TeacherService.get(teacher._id);
+                const resTeacher=await TeacherService.get(Roles.Teacher,user.id);
                 const teacherProfile=resTeacher.data?.data;
 
                 const res1=await SubjectService.getAll(Roles.Teacher);
@@ -73,6 +80,38 @@ const AddHomework = () => {
 
         },[dispatch]);
 
+        //UseEffect for edit data
+        useEffect(()=>{
+            if(!homeworkId){
+                return;
+            }
+
+            const fetchHomework=async()=>{
+                const res = await HomeworkService.get(Roles.Teacher,homeworkId);
+
+                if(!res.success){
+                    toast.error(res.error.message);
+                    return res.success;
+                }
+
+                const homework=res.data.data;
+                
+                const homeworkData={
+                    title:homework.title,
+                    description:homework.description,
+                    subjectId:homework.subjectId as string,
+                    batchId:homework.batchId,
+                    status:homework.status,
+                    dueDate:homework.dueDate?.split('T')[0],
+                    attachments:homework.attachments
+                }
+                
+                setExistingDocs(homework?.attachments);
+                setForm(homeworkData);
+            };
+            fetchHomework();
+        },[homeworkId]);
+
         const {goBack}=useAppNavigate();
 
         const handleChange = (e:React.ChangeEvent<HTMLInputElement 
@@ -87,26 +126,32 @@ const AddHomework = () => {
         };
 
         const handleFileUpload = (e:React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(e.target.files);
+            const files = Array.from(e.target.files);
 
-        setForm((prev) => ({
-            ...prev,
-            attachments: [...prev?.attachments, ...files],
-        }));
+            setForm((prev) => ({
+                ...prev,
+                attachments: [...prev?.attachments, ...files],
+            }));
         };
 
         const removeAttachment = (index:number) => {
-        setForm((prev) => ({
-            ...prev,
-            attachments: prev.attachments.filter((_, i) => i !== index),
-        }));
+            setForm((prev) => ({
+                ...prev,
+                attachments: prev.attachments.filter((_, i) => i !== index),
+            }));
         };
 
         const handleSubmit = async () => {
 
             handleValidationOF(HomeworkSchema,form);
+            setLoading(true)
             
             const formData=new FormData();
+            
+            
+            formData.append('existingDocs',JSON.stringify(existingDocs));
+
+            console.log('@addHomework existingDocs',existingDocs);
 
             for(let key in form) {
                 if(key=='attachments') {
@@ -117,8 +162,11 @@ const AddHomework = () => {
 
                 formData.append(key,form[key])
             }
+
             
             const res=await HomeworkService.create(formData);
+            
+            setLoading(true)
 
             if(!res.success){
                 toast.error(res.error.message);
@@ -126,6 +174,39 @@ const AddHomework = () => {
             }
 
             goBack();
+            toast.success(res.data.message);
+            return res.success;
+        };
+
+        const handleEditSubmit = async () => {
+
+            handleValidationOF(HomeworkSchema,form);
+            setLoading(true)
+            
+            const formData=new FormData();
+
+            for(let key in form) {
+                if(key=='attachments') {
+                    form.attachments.forEach(file => {
+                            formData.append("docs", file)
+                    })
+                }
+
+                formData.append(key,form[key]);
+            }
+            
+            const res=await HomeworkService.update(Roles.Teacher,homeworkId,formData);
+
+            setLoading(true)
+
+            if(!res.success){
+                toast.error(res.error.message);
+                return res.success;
+            }
+
+            goBack();
+            toast.success(res.data.message);
+            return res.success;
         };
 
 
@@ -146,7 +227,7 @@ const AddHomework = () => {
                 <Select
                 label="Subject"
                 name="subjectId"
-                value={form.subjectId}
+                value={form?.subjectId}
                 onChange={handleChange}
                 options={[
                     { label: "Select Subject", value: "" },
@@ -221,7 +302,17 @@ const AddHomework = () => {
                         key={index}
                         className="flex items-center justify-between bg-gray-100 px-3 py-2 rounded"
                     >
-                        <span className="text-sm">{file.name}</span>
+                        {file?.name ? 
+                        <span className="text-sm">{file?.name}</span>
+                        :
+                        <a 
+                            href={file?.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            >
+                            <span className="text-sm">{file?.fileName}</span>
+                            </a>
+                        }
 
                         <button
                         type="button"
@@ -241,12 +332,24 @@ const AddHomework = () => {
         </Section>
 
         {/* Form Actions */}
+        {homeworkId
+        ? 
+        <FormActions
+        submitLabel="Edit Homework"
+        submitType="button"
+        onCancel={goBack}
+        onSubmit={handleEditSubmit}
+        loading={loading}
+        />
+        :
         <FormActions
         submitLabel="Add Homework"
         submitType="button"
         onCancel={goBack}
         onSubmit={handleSubmit}
+        loading={loading}
         />
+        }
     </div>
     );
 }
