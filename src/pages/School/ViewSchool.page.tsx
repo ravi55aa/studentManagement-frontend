@@ -18,6 +18,7 @@ import { SchoolService } from '@/api/Services/school.service';
 import { Card, PasswordResetModal} from '@/components/School/card';
 import { ProfileAddressComponent, ProfileDocumentsComponent } from '@/components/Settings.components';
 import { useNavigate } from 'react-router-dom';
+import { Roles } from '@/constants/role.enum';
 
 const SchoolSettingsPage = () => {
   /**
@@ -127,7 +128,7 @@ const SchoolSettingsPage = () => {
 
     setShowOtp(false);
 
-    const res = await SchoolService.resetPassword(userId, data);
+    const res = await SchoolService.resetPassword(Roles.School,userId, data);
 
     setShowResetModal(false);
     if (!res.success) {

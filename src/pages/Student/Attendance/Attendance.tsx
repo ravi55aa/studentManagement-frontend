@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 import { useAppSelector } from "@/hooks/useStoreHooks";
-import { StudentService } from "@/api/Services/Student/student.service";
 import { toast } from "react-toastify";
 import { AttendanceService } from "@/api/Services/Student/attendanceService";
 import { Roles } from "@/constants/role.enum";
 import { ILeaveDocument } from "@/interfaces/IAttendance";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { leaveSchema } from "@/validation/student.validation";
+import NotificationModal from "@/components/Notification/component/NotificationModal";
+import { IUserNotification } from "@/interfaces/INotification";
+import { NotificationService } from "@/api/Services/notification.service";
 
 const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -15,6 +17,21 @@ const getDaysInMonth = (year: number, month: number) => {
 
 
 const StudentAttendance = () => {
+
+    //Notification
+    const [open, setOpen] = useState(false);
+
+    const [notifications, setNotifications] = useState<IUserNotification[]>([]);
+
+    const handleMarkAsRead = (id: string) => {
+    setNotifications((prev) =>
+        prev.map((n) =>
+            n.userId === id ? { ...n, isRead: true } : n
+        )
+        );
+    };
+
+
     const today = new Date();
     const [currentDate, setCurrentDate] = useState(today);
     const {user}=useAppSelector((state)=>state.currentUser);
@@ -50,6 +67,24 @@ const StudentAttendance = () => {
         }
         fetchStudentAttendance();
     },[month]);
+
+    //call notification page
+    useEffect(()=>{
+        const fetchNotifications=async()=>{
+            const res=await NotificationService.getUserNotifications(user.role,user.id);
+
+            if(!res.success){
+                toast.warn(res.error.message);
+                return res.success;
+            }
+
+            const data=res.data?.data || [];
+            setNotifications(data);
+
+            return res.success;
+        }
+        fetchNotifications();
+    },[user]);
 
 
     // Month Change
@@ -121,8 +156,16 @@ const StudentAttendance = () => {
             Apply for Leave
             </button>
 
-            <Bell className="text-green-700" />
+            <Bell className="text-green-700 cursor-pointer" 
+            onClick={() => setOpen(true)} />
         </div>
+
+        <NotificationModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            notifications={notifications}
+            onMarkAsRead={handleMarkAsRead}
+        />
 
         {/* TITLE + FILTER */}
         <div className="flex justify-between items-center mb-4">

@@ -107,6 +107,10 @@ export enum YearRoute {
 export enum NotificationRoutes {
   getAll = '/notification/getAll',
   newAdd = '/notification/new',
+
+  //userNotifications
+  getUserNotification='/notification/getAll/user',
+  markAsRead='/notification/read'
 }
 
 export enum AdminRouter {
