@@ -7,15 +7,11 @@ import { toast } from "react-toastify";
 type Props = {
     isOpen: boolean;
     onClose: () => void;
-    notifications: IUserNotification[];
-    onMarkAsRead: (id: string) => void;
 };
 
 export default function NotificationModal({
     isOpen,
-    onClose,
-    notifications,
-    onMarkAsRead,
+    onClose
     }: Props) {
     const {user}=useAppSelector((state)=>state.currentUser);
     const [notifies, setNotifications] = useState<IUserNotification[]>([]);
@@ -70,22 +66,22 @@ export default function NotificationModal({
 
             {/* Tabs */}
             <div className="flex border-b mb-4">
-            <button
-                className={`flex-1 py-2 ${
-                activeTab === "unread" ? "border-b-2 border-green-700 font-semibold" : ""
-                }`}
-                onClick={() => setActiveTab("unread")}
-            >
-                Unread ({unread.length})
-            </button>
-            <button
-                className={`flex-1 py-2 ${
-                activeTab === "read" ? "border-b-2 border-green-700 font-semibold" : ""
-                }`}
-                onClick={() => setActiveTab("read")}
-            >
-                Read ({read.length})
-            </button>
+                <button
+                    className={`flex-1 py-2 ${
+                    activeTab === "unread" ? "border-b-2 border-green-700 font-semibold" : ""
+                    }`}
+                    onClick={() => setActiveTab("unread")}
+                >
+                    Unread ({unread.length})
+                </button>
+                <button
+                    className={`flex-1 py-2 ${
+                    activeTab === "read" ? "border-b-2 border-green-700 font-semibold" : ""
+                    }`}
+                    onClick={() => setActiveTab("read")}
+                >
+                    Read ({read.length})
+                </button>
             </div>
 
             {/* Content */}

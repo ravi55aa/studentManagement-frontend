@@ -9,7 +9,6 @@ import { handleValidationOF } from "@/validation/validateFormData";
 import { leaveSchema } from "@/validation/student.validation";
 import NotificationModal from "@/components/Notification/component/NotificationModal";
 import { IUserNotification } from "@/interfaces/INotification";
-import { NotificationService } from "@/api/Services/notification.service";
 
 const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -20,17 +19,6 @@ const StudentAttendance = () => {
 
     //Notification
     const [open, setOpen] = useState(false);
-
-    const [notifications, setNotifications] = useState<IUserNotification[]>([]);
-
-    const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) =>
-        prev.map((n) =>
-            n.userId === id ? { ...n, isRead: true } : n
-        )
-        );
-    };
-
 
     const today = new Date();
     const [currentDate, setCurrentDate] = useState(today);
@@ -67,24 +55,6 @@ const StudentAttendance = () => {
         }
         fetchStudentAttendance();
     },[month]);
-
-    //call notification page
-    useEffect(()=>{
-        const fetchNotifications=async()=>{
-            const res=await NotificationService.getUserNotifications(user.role,user.id);
-
-            if(!res.success){
-                toast.warn(res.error.message);
-                return res.success;
-            }
-
-            const data=res.data?.data || [];
-            setNotifications(data);
-
-            return res.success;
-        }
-        fetchNotifications();
-    },[user]);
 
 
     // Month Change
@@ -163,8 +133,6 @@ const StudentAttendance = () => {
         <NotificationModal
             isOpen={open}
             onClose={() => setOpen(false)}
-            notifications={notifications}
-            onMarkAsRead={handleMarkAsRead}
         />
 
         {/* TITLE + FILTER */}

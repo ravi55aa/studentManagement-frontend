@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { SendHorizontal , Eye } from 'lucide-react';
-import { useEffect } from 'react';
+import { SendHorizontal , Eye, Bell } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
 import { Pagination, TopBar } from '@/components';
@@ -12,11 +12,14 @@ import { HomeworkService } from '@/api/Services/Teacher/homework.service';
 import { storeHomeworks } from '@/utils/Redux/Reducer/homework.reducer';
 import { Roles } from '@/constants/role.enum';
 import { IAcademicSubject } from '@/interfaces/ISchool';
+import NotificationModal from '@/components/Notification/component/NotificationModal';
 
 export default function FeeListPage() {
     const dispatch = useAppDispatch();
     const homeworks = useAppSelector((state) => state.homeworks);
-    const navigate = useNavigate();
+    
+    //notification
+    const [open, setOpen] = useState(false);
     
 
     useEffect(() => {
@@ -48,6 +51,18 @@ export default function FeeListPage() {
     return (
         <div className="p-8 bg-white-100 min-h-screen">
         
+        {/* NotificationBar */}
+        <div className="flex justify-between items-center mb-6">
+        <span></span>
+            <Bell className="text-green-700 cursor-pointer" 
+            onClick={() => setOpen(true)} />
+        </div>
+
+        <NotificationModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+        />
+
         <SearchAndFilter />
 
         <TableComponent

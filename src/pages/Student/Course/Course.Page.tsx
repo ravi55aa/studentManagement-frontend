@@ -12,12 +12,16 @@ import { Link } from 'react-router-dom';
 import { ICourseForm } from '@/interfaces/ICourseForm';
 import { IUploadedDoc } from '@/interfaces/IRegister';
 import CourseViewModal from '@/components/ViewCourse.component';
+import NotificationModal from '@/components/Notification/component/NotificationModal';
 
 const StudentCourse = () => {
     const dispatch = useAppDispatch();
     const { courses, loading } = useAppSelector((state) => state.courses);
     const [ viewCourse, setViewCourse ] = useState<ICourseForm>();
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    //Notification
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -81,14 +85,17 @@ const StudentCourse = () => {
     <div className="p-6 bg-white min-h-screen">
       {/* Top Bar */}
         <div className="flex justify-between items-center mb-4">
-            <Link to="add">
-            <button className="bg-green-700 text-white px-4 py-2 rounded-md text-sm hover:bg-green-800">
-                Add New
-            </button>
-            </Link>
+            <span></span>
 
-            <Bell className="w-5 h-5 text-green-700 cursor-pointer" />
+            <Bell className="text-green-700 cursor-pointer" 
+            onClick={() => setOpen(true)} />
         </div>
+
+        
+        <NotificationModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+        />
 
         <SearchAndFilter />
 

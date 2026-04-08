@@ -14,6 +14,8 @@ import { StudentFeeService } from '@/api/Services/Student/studentFee.service';
 import { Roles } from '@/constants/role.enum';
 import { IFee } from '@/interfaces/IFee';
 import { IStudentFee } from '@/interfaces/IStudent';
+import { Bell } from 'lucide-react';
+import NotificationModal from '@/components/Notification/component/NotificationModal';
 
 export default function StudentFeeListPage() {
     const dispatch = useAppDispatch();
@@ -22,6 +24,9 @@ export default function StudentFeeListPage() {
     const [studentFeeDetails, setStudentFeeDetails] = useState<IStudentFee[]>([]);
     const [mergedFees, setMergedFees] = useState<IFee[]>([]);
     const navigate = useNavigate();
+
+    //Notification
+    const [open, setOpen] = useState(false);
 
     const handleGetStudentFees = async () => {
         dispatch(toggleFeeLoading(true));
@@ -82,7 +87,20 @@ export default function StudentFeeListPage() {
 
     return (
         <div className="p-8 bg-white-100 min-h-screen">
-        <h1 className="text-xl font-semibold mb-4">My Fees</h1>
+        
+        <div className="flex justify-between items-center mb-6">
+
+            <h1 className="text-xl font-semibold mb-4">My Fees</h1>
+
+            <Bell className="text-green-700 cursor-pointer" 
+            onClick={() => setOpen(true)} />
+
+        </div>
+
+        <NotificationModal
+                    isOpen={open}
+                    onClose={() => setOpen(false)}
+                />
 
         <SearchAndFilter />
 
