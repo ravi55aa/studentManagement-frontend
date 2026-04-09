@@ -168,7 +168,6 @@ const App = () => {
         
 
         {/* TEACHER */}
-
         
         <Route path='/teacher/dashboard' element={<TeacherDashboard/>} > 
           <Route index element={<DashboardHome />} />
@@ -192,8 +191,10 @@ const App = () => {
           <Route path="setting" element={<TeacherSettingsPage />} />
         </Route>
 
+
+
         {/* STUDENT */}
-        
+
         <Route path='/student/dashboard' element={<StudentDashboard/>}>
           <Route index element={<DashboardHome/>} />
           <Route path="homework"  >

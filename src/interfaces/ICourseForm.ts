@@ -67,5 +67,5 @@ export const initialForm: ICourseForm = {
 
   eligibilityCriteria: '',
   syllabusUrl: '',
-  attachments: [],
+  attachments: [] as File[],
 };

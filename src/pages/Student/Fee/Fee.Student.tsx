@@ -63,14 +63,19 @@ export default function StudentFeeListPage() {
             handleGetStudentPaidFeeDetail();
     }, []);
 
-    const handlePay = (feeId: string) => {
-        const locationState={'amount':1000,'studentFeeId':feeId,'userId':user.id,'role':Roles.Student};
+    const handlePay = (feeAmount: number,feeId: string) => {
+        const locationState={
+            'amount':feeAmount,
+            'studentFeeId':feeId,
+            'userId':user.id,
+            'role':Roles.Student
+        };
 
         navigate('/checkout',{state:locationState});
     };
 
     useEffect(() => {
-        if (!feeStore.fees || studentFeeDetails.length === 0) return;
+        if (!feeStore.fees) return;
 
         const feeDetails = feeStore.fees.map((fee: IFee) => {
             const matched = studentFeeDetails.find(
@@ -140,7 +145,7 @@ export default function StudentFeeListPage() {
                 <div className="flex justify-center">
                     <button
                     disabled={fee?.status === 'paid'}
-                    onClick={() => handlePay(fee?._id)}
+                    onClick={() => handlePay(fee?.totalAmount,fee?._id)}
                     className={`px-3 py-1 text-sm rounded-md text-white 
                         ${
                         fee?.status === 'paid'

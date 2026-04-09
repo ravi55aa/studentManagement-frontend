@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { SendHorizontal , Eye, Bell } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
 import { Pagination, TopBar } from '@/components';
@@ -13,14 +13,17 @@ import { storeHomeworks } from '@/utils/Redux/Reducer/homework.reducer';
 import { Roles } from '@/constants/role.enum';
 import { IAcademicSubject } from '@/interfaces/ISchool';
 import NotificationModal from '@/components/Notification/component/NotificationModal';
+import { StudentHomeworkService } from '@/api/Services/Student/studentHomeworkService';
+import { IHomework, IHomeworkSubmission } from '@/interfaces/IHomework';
 
 export default function FeeListPage() {
     const dispatch = useAppDispatch();
     const homeworks = useAppSelector((state) => state.homeworks);
-    
+    const [submissions,setSubmissions]=useState<IHomeworkSubmission[]>([]);
+
     //notification
     const [open, setOpen] = useState(false);
-    
+    const [mergedHomeworks,setMergedHomeworks]=useState([]);
 
     useEffect(() => {
         (async () => {
@@ -42,6 +45,44 @@ export default function FeeListPage() {
             dispatch(storeHomeworks(homeworksArray));
         })();
     }, [dispatch]);
+
+    useEffect(()=>{
+
+        const fetchStudentHomeworkDetails=async()=>{
+            const result=[];
+            
+            for(let homework of homeworks.homeworks){
+            
+                const res=await StudentHomeworkService.get(Roles.Student,homework._id);
+
+                if(res.success){
+                    const studentHomework=res.data?.data;
+                    result.push(studentHomework);
+                }
+
+            }
+            setSubmissions(result);
+        }
+
+        fetchStudentHomeworkDetails();
+    },[homeworks?.homeworks])
+
+    useEffect(()=> {
+        if (!homeworks.homeworks) return;
+
+        const homeworkDetails = homeworks.homeworks.map((homework: IHomework) => {
+            const matched = submissions.find(
+            (sHomework) => sHomework.homeworkId === homework._id.toString()
+            );
+
+            return matched
+            ? { ...homework, status: matched.status }
+            : {...homework};
+        });
+
+        setMergedHomeworks(homeworkDetails);
+    }, [homeworks.homeworks, submissions]);
+
 
     const handleSubmit = async (id: string) => {
         console.log('submit');
@@ -66,7 +107,7 @@ export default function FeeListPage() {
         <SearchAndFilter />
 
         <TableComponent
-            data={homeworks?.homeworks ?? []}
+            data={mergedHomeworks ?? []}
             keyField="_id"
             loading={homeworks?.loading}
             emptyMessage="No Homeworks found"

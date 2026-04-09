@@ -54,24 +54,24 @@ export const ProfileAddressComponent=({role,loading,setUtils,utils})=>{
 
     const handleSubmitEditAddress = async () => {
         
+        dispatch(toggleMDALoading());
         //validation
         const isValid = handleValidationOF(addressValidate, form);
-    
+
         if (!isValid.success) {
+            dispatch(toggleMDALoading());
             return isValid.success;
         }
-    
-        dispatch(toggleMDALoading());
-    
+
         const res = await AddressService.update(Roles.Student,user.id, form);
-    
+
         dispatch(toggleMDALoading());
         if (!res.success) {
             return res.success;
         }
-    
+
         toast.success('Edited the address successfully');
-        setUtils((prev) => ({ ...prev, isOpen: false }));
+        setUtils((prev) => ({ ...prev, isOpen: false,loading:false }));
         return res.success;
     };
 

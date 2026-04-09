@@ -10,6 +10,7 @@ import { ICourseForm, initialForm } from '@/interfaces/ICourseForm';
 import { Textarea } from '@/components/textArea';
 import { CheckList } from '@/components/Teacher';
 import { CourseService } from '@/api/Services/course.service';
+import { Roles } from '@/constants/role.enum';
 
 const CourseAddPage = () => {
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ const CourseAddPage = () => {
     e.preventDefault();
     setError(null);
 
-    if (form.center !== 'School') {
+    if (form.center != Roles.School) {
       setForm((prev) => ({ ...prev, modelType: 'Centers' }));
     }
 
@@ -97,6 +98,7 @@ const CourseAddPage = () => {
 
     try {
       setLoading(true);
+      console.log('@courseAdd.page form',form);
 
       const formData = new FormData();
 

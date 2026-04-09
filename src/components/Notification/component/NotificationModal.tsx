@@ -1,7 +1,7 @@
 import { NotificationService } from "@/api/Services/notification.service";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { IUserNotification } from "@/interfaces/INotification";
-import { useCallback, useEffect, useState } from "react";;
+import { useEffect, useState } from "react";;
 import { toast } from "react-toastify";
 
 type Props = {

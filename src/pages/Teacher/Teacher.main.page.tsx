@@ -45,9 +45,6 @@ const TeachersListPage = () => {
       {/* ===== Top Bar ===== */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-3">
-          <button className="border px-4 py-2 rounded-md text-sm hover:bg-gray-100">
-            Export CSV
-          </button>
 
           <Link
             to="add"
@@ -57,7 +54,7 @@ const TeachersListPage = () => {
           </Link>
         </div>
 
-        <Bell className="w-5 h-5 text-green-700 cursor-pointer" />
+        {/* <Bell className="w-5 h-5 text-green-700 cursor-pointer" /> */}
       </div>
 
       <SearchAndFilter />

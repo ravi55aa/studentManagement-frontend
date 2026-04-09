@@ -9,6 +9,8 @@ import { HomeworkService } from "@/api/Services/Teacher/homework.service";
 import { Roles } from "@/constants/role.enum";
 import HomeworkCard,{IAttachment} from "@/components/HomeworkCard";
 import FormActions from "@/components/FormAction";
+import { useAppSelector } from "@/hooks/useStoreHooks";
+import { IUploadedDoc } from "@/interfaces/IRegister";
 
 
 const HomeworkSubmissionPage = () => {
@@ -18,9 +20,27 @@ const HomeworkSubmissionPage = () => {
     const [link, setLink] = useState("");
     const {homeworkId}=useParams();
     const {goBack} =useAppNavigate()
+    const {user}=useAppSelector((state)=>state.currentUser);
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     const MAX_VIDEO_SIZE = 15 * 1024 * 1024; // 15MB
+
+    const fetchStudentHomeworkInfo=async()=>{
+        const res=await StudentHomeworkService.get(user.role,homeworkId);
+
+        if(!res.success){
+            console.log(res.error.message);
+            return res.success;
+        }
+
+        const homework=res.data?.data;
+
+        setNote(homework.note);
+        setLink(homework.links.join(" "));
+        //setAttachments(homework?.attachments as IUploadedDoc[]);
+    
+        return res.success;
+    }
 
     useEffect(()=>{
         const fetchHomeWork=async()=>{
@@ -33,7 +53,8 @@ const HomeworkSubmissionPage = () => {
             setHomework(hw);
         }
         fetchHomeWork();
-    });
+        fetchStudentHomeworkInfo();
+    },[homeworkId]);
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -60,7 +81,7 @@ const HomeworkSubmissionPage = () => {
     };
 
     const removeFile = (index: number) => {
-        setAttachments((prev) => prev.filter((_, i) => i !== index));
+        setAttachments((prev) => prev?.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async() => {
@@ -103,7 +124,7 @@ const HomeworkSubmissionPage = () => {
                     title={homework?.title}
                     description={homework?.description}
 
-                    attachments={homework?.attachments}
+                    attachments={homework?.attachments }
 
                     links={[]}
             />
@@ -123,6 +144,8 @@ const HomeworkSubmissionPage = () => {
             </label>
 
             <textarea
+            rows={10}
+            cols={10}
             value={note}
             onChange={(e) => setNote(e.target.value)}
             className="w-full border border-green-700 rounded-md p-3"

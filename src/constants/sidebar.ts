@@ -53,14 +53,14 @@ export const schoolSidebarLinks: SidebarItemConfig[] = [
     label: 'Fees',
     path: 'fees',
   },
-  {
-    label: 'Chat',
-    path: 'chat',
-  },
-  {
-    label: 'Holidays',
-    path: 'holidays',
-  },
+  // {
+  //   label: 'Chat',
+  //   path: 'chat',
+  // },
+  // {
+  //   label: 'Holidays',
+  //   path: 'holidays',
+  // },
   {
     label: 'Settings',
     path: 'settings',

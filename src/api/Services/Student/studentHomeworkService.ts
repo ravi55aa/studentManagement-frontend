@@ -54,12 +54,12 @@ export class StudentHomeworkService {
     static async get(role:string='Teacher',id: string) {
         const config: HandleApiOptions<null> = {
         method: 'get',
-        endPoint: `${StudentHomeworkRoute.add}/${id}`,
+        endPoint: `${StudentHomeworkRoute.get}/${id}`,
         payload: null,
         headers: { role: role },
         };
 
-        return await handleApi<null, IHomework>(config);
+        return await handleApi<null, IHomeworkSubmission>(config);
     }
 
     static async delete(role:string='Teacher',id: string) {

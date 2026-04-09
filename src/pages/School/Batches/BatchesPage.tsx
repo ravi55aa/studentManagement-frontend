@@ -133,17 +133,17 @@ const BatchesPage = () => {
           {
             header: 'Batch Counselor',
             accessor: 'batchCounselor',
-            format: (value: { firstName: string }) => value.firstName.toUpperCase(),
+            format: (value: { firstName: string }) => value?.firstName?.toUpperCase(),
           },
           {
             header: 'Start Date',
             accessor: 'schedule',
-            format: (value: { startTime: string }) => value.startTime?.slice(0, 10),
+            format: (value: { startTime: string }) => value?.startTime?.slice(0, 10),
           },
           {
             header: 'End Date',
             accessor: 'schedule',
-            format: (value: { endTime: string }) => value.endTime?.slice(0, 10),
+            format: (value: { endTime: string }) => value?.endTime?.slice(0, 10),
           },
           {
             header: 'Actions',

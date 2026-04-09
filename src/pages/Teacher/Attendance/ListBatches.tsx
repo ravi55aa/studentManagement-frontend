@@ -88,7 +88,7 @@ const ListBatches = () => {
             {
                 header: 'Batch Counselor',
                 accessor: 'batchCounselor',
-                format: (value: { firstName: string }) => value.firstName.toUpperCase(),
+                format: (value: { firstName: string }) => value?.firstName.toUpperCase(),
             },
             {
                 header: 'Start Date',

@@ -71,7 +71,7 @@ const ChatSidebar = ({
 
         {/* Tabs */}
         <div className="flex flex-col gap-2">
-            {["direct", "batch", "center"].map((tab) => (
+            {["direct", "batch"].map((tab) => (
             <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -83,7 +83,6 @@ const ChatSidebar = ({
             >
                 {tab === "direct" && "Direct"}
                 {tab === "batch" && "Batch"}
-                {tab === "center" && "Center"}
             </button>
             ))}
         </div>

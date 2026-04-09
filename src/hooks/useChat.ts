@@ -5,11 +5,9 @@ socket connect
 */
 
 import { useEffect, useState } from "react";
-import { Socket } from "socket.io-client";
 import { useSocket } from "./useAppContext";
 import { SocketMessages } from "@/constants/messages";
 import { ChatService } from "@/api/Services/other/chat.service";
-import { Roles } from "@/constants/role.enum";
 import { toast } from "react-toastify";
 import { useAppSelector } from "./useStoreHooks";
 

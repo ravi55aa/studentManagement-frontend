@@ -27,6 +27,7 @@ const SchoolSettingsPage = () => {
   const [showOtp, setShowOtp] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const school = useAppSelector((state) => state.schoolMDA);
+  const {user}=useAppSelector((state) => state.currentUser);
 
   const [utils, setUtils] = useState({
     error: '',
@@ -91,13 +92,13 @@ const SchoolSettingsPage = () => {
   };
 
   const handleUpdateProfile = async () => {
-    dispatch(toggleMDALoading());
-    const id = address.userId;
+    // dispatch(toggleMDALoading());
+
     const formData = new FormData();
     formData.append('profile', image.file);
 
-    const res = await SchoolService.updateMeta(id, formData);
-    dispatch(toggleMDALoading());
+    const res = await SchoolService.updateMeta(user.id, formData);
+    // dispatch(toggleMDALoading());
 
     if (!res.success) {
       setUtils({
@@ -239,16 +240,17 @@ const SchoolSettingsPage = () => {
 
       {/* ================= ADDRESS ================= */}
       <ProfileAddressComponent 
-        id={address?.userId} 
+        role={Roles.School}
         loading={loading} 
         utils={utils} setUtils={setUtils}  
       />
 
       {/* ================= DOCUMENTS ================= */}
       <ProfileDocumentsComponent 
-        userId={address?.userId} 
+        role={Roles.School}
         loading={loading} 
-        utils={utils} setUtils={setUtils}  
+        utils={utils} 
+        setUtils={setUtils}  
       />
 
       {/* ================= DELETE SCHOOL ================= */}

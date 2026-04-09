@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "@/hooks/useChat"; 
 import {ChatHeader,ChatInput,ChatMessages,ChatSidebar} from "./index";
 import { ChatService } from "@/api/Services/other/chat.service";
@@ -16,7 +16,7 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
     const [directChatWith, setDirectChatWith] = useState<ITeacherBio|IStudent|null>(null);
 
     useEffect(()=>{
-        
+
         const switchTab=async()=>{
             
             if (activeTab=='direct') { //call direct activeTab api call;
@@ -42,7 +42,7 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
                 const res=await ChatService.createDirectChat(role,userId,user2Id);
 
                 if(!res.success){
-                    toast.info(res.error.message);
+                    //toast.info(res.error.message);
 
                     return res.success;
                 }
