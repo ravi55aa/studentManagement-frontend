@@ -31,3 +31,5 @@ export type INotification = {
   createdAt: string;
   isRead?: boolean;
 };
+
+export type schoolStatus='verify'|'verified'|'blocked';

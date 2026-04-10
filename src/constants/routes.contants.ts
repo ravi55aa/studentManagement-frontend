@@ -12,9 +12,11 @@ export enum SchoolRoute {
   register__add_documents = '/school/register/uploadDocument',
 
   viewSchool = '/school/data/fetch',
+  getall = '/school/getall',
   updateMeta = '/school/update/meta',
   resetPassword = '/password/reset',
   delete = '/school/delete',
+  get='/school/get'
 }
 
 export enum AddressRoute {
@@ -65,6 +67,16 @@ export enum BatchRoute {
   assignTeacher = '/school/batch/assign-teacher',
   edit = '/school/batches/edit',
 }
+
+export const PlanRoute = {
+  create: '/admin/plan',
+  getAll: '/admin/plans',
+  getById: '/admin/plan',
+  update: '/admin/plan',
+  delete: '/admin/plan',
+  toggleActive: '/admin/plan/active',
+  togglePopular: '/admin/plan/popular',
+};
 
 export enum TeacherRoute {
   login='/teacher/login',

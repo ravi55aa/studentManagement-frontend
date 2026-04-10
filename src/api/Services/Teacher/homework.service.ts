@@ -16,6 +16,7 @@ export class HomeworkService {
         return await handleApi<FormData, IHomework>(config);
     }
 
+    
     static async getAll(role:string='Teacher') {
         const config: HandleApiOptions<null> = {
         method: 'get',

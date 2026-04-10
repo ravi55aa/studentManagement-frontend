@@ -14,3 +14,5 @@ export { default as notificationReducer } from './Reducer/notifications';
 export { default as homeworkReducer } from './Reducer/homework.reducer';
 export { default as studentHomeworkReducer } from './Reducer/studentHomework.submissions.reducer';
 export { default as studentsReducer } from './Reducer/students.reducer';
+export { default as schoolsReducer } from './Reducer/schools.reducer';
+export { default as planReducer } from './Reducer/plans.reducer';

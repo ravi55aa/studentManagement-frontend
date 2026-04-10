@@ -3,8 +3,10 @@ import { HandleApiOptions, handleApi } from '../global.api';
 import { ISchoolFormData } from '@/interfaces/IRegister';
 import { ISubjectReducer } from '@/utils/Redux/Reducer/school.reducer';
 import { Roles } from '@/constants/role.enum';
+import { BaseService } from './Base.Service';
+import { schoolStatus } from '@/types/types';
 
-export class SchoolService {
+export class SchoolService extends BaseService {
   static async register(formData: ISchoolFormData) {
     const config: HandleApiOptions<ISchoolFormData> = {
       method: 'post',
@@ -28,14 +30,7 @@ export class SchoolService {
   }
 
   static async view() {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: SchoolRoute.viewSchool,
-      payload: null,
-      headers: { role: 'School' },
-    };
-
-    return await handleApi<null, ISubjectReducer>(config);
+    return this.get<ISubjectReducer>(SchoolRoute.viewSchool)
   }
 
   static async resetPassword(role:string=Roles.School,userId: string, data: object) {
@@ -58,5 +53,17 @@ export class SchoolService {
     };
 
     return await handleApi<object, null>(config);
+  }
+
+  static async getAllSchool(){
+    return this.get<ISchoolFormData[]>(SchoolRoute.getall);
+  }
+
+  static async getById(id:string) {
+    return this.get<ISubjectReducer>(`${SchoolRoute.get}/${id}`)
+  }
+
+  static async updateStatus(id:string, status:schoolStatus) {
+    return this.patch<Partial<ISchoolFormData>,null>(`${SchoolRoute.updateMeta}/${id}`,{status});
   }
 }

@@ -1,3 +1,5 @@
+import { schoolStatus } from "@/types/types";
+
 export interface IFormdata {
   name: string | null;
   email: string | null;
@@ -45,6 +47,7 @@ export interface IAddress {
 /**
  * SchoolMeta
  */
+
 export interface ISchoolFormData {
   adminName: string | null;
   schoolName: string | null;
@@ -53,6 +56,7 @@ export interface ISchoolFormData {
   reEnter: string | null;
   phone: string | null;
   profile: File | null;
+  status?:schoolStatus;
   _id?: string | null;
 }
 

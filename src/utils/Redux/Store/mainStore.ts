@@ -19,7 +19,9 @@ import {
   notificationReducer,
   homeworkReducer,
   studentHomeworkReducer,
-  studentsReducer
+  studentsReducer,
+  schoolsReducer,
+  planReducer
 } from '../index';
 
 const rootReducer = combineReducers({
@@ -39,6 +41,8 @@ const rootReducer = combineReducers({
   homeworks:homeworkReducer,
   studentsHomeworks:studentHomeworkReducer,
   students:studentsReducer,
+  allSchool:schoolsReducer,
+  subscriptionPlans:planReducer,
 });
 
 const persistConfig = {
