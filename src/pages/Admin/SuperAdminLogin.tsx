@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { handleAdminSignIn } from '@/api/auth.api';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router';
 import { signInSchema } from '@/validation/register.schema';
 import { handleValidationOF } from '@/validation/validateFormData';
 import Login from '@/components/Auth/Login.component';
+import { SuperAdminService } from '@/api/Services/Admin/auth.service';
+import { handleAdminSignIn } from '@/api/auth.api';
 
 const SignIn = () => {
     const navigate = useNavigate();
@@ -12,6 +12,7 @@ const SignIn = () => {
     const [form, setForm] = useState({
         email: '',
         password: '',
+        userType: 'SuperAdmin',
     });
 
     const [error, setError] = useState('');
@@ -30,10 +31,10 @@ const SignIn = () => {
 
         setError('');
 
-        const res = await handleAdminSignIn(form);
+        const res = await  handleAdminSignIn(form,'SuperAdmin');
 
         if (res.success) {
-        navigate('/school/login');
+        navigate('/admin/dashboard');
         }
 
         setError(res.error.message);
@@ -50,7 +51,7 @@ const SignIn = () => {
             passwordValue={form.password}
             error={error}
             key='superAdminLogin'
-            user={{role:'Admin'}}
+            user={{role:'SuperAdmin'}}
             />
         </div>
         </div>

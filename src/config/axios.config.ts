@@ -1,11 +1,15 @@
 import axios from 'axios';
 
+const host=window.location.hostname;
+const subdomain=host.split('.')[0];
+console.log('@axios.config subdomain',subdomain);
+
 export const axiosBaseURL = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: `http://${subdomain}.localhost:4000`, //import.meta.env.VITE_BACKEND_URL
   withCredentials: true, //allow [cookie/sessionData]
   timeout: 15000,
   headers: {
-    ContentType: 'application/json',
+    'Content-Type': 'application/json',
   },
 });
 
@@ -25,7 +29,7 @@ axiosBaseURL.interceptors.response.use(
   },
 
   async function (error) {
-    if (error.response.status === 401) {
+    if (error.response?.status === 401) {
       //UnAuthorized
       window.location.href = '/login';
     }

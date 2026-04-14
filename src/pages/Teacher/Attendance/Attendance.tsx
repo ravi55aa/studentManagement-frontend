@@ -7,15 +7,14 @@ import SearchAndFilter from '@/components/SearchAndFilter'
 import { TableComponent } from '@/components/Table.Component'
 import { Roles } from '@/constants/role.enum';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
-import { IStudentAttendance } from '@/interfaces/IAttendance';
+import { ILeaveDocument, IStudentAttendance } from '@/interfaces/IAttendance';
 import { IStudent } from '@/interfaces/IStudent';
 import { AttendanceStatus } from '@/types/student.types';
 import { storeStudents } from '@/utils/Redux/Reducer/students.reducer';
 import { Bell } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { data, Link, useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { date } from 'zod';
 
 const Attendance = () => {
 
@@ -24,7 +23,7 @@ const Attendance = () => {
     const [attendanceList,setAttendanceList]=useState<IStudentAttendance[]>([]);
 
     // Modal states
-    const [selectedStudent, setSelectedStudent] = useState<IStudent>(null);
+    const [selectedStudent, setSelectedStudent] = useState<{student:IStudent,leaveHistory:ILeaveDocument|null}>({student:null,leaveHistory:null});
     const [remarkModal, setRemarkModal] = useState(false);
     const [viewModal, setViewModal] = useState(false);
     const [currentStudentId, setCurrentStudentId] = useState<string | null>(null);
@@ -34,7 +33,6 @@ const Attendance = () => {
     );
 
     const dispatch = useAppDispatch();
-    const navigate=useNavigate();
     const {batchId}=useParams();
 
     //Get all Students from BatchId
@@ -66,14 +64,12 @@ const Attendance = () => {
 
     (async () => {
         //Get AttendanceList of particular day
+        
         const res = await AttendanceService.getAttendanceOfBatch(Roles.Teacher,{batchId:batchId,date:selectedDate});
 
 
         //Batch Attendance report with date;
         const BatchAttendanceReport = res.data?.data;
-        
-        console.log('@Attendance BatchAttendanceReport',BatchAttendanceReport);
-        
         
         const initial: IStudentAttendance[] = studentsStore.students?.map((student) => {
             
@@ -100,7 +96,7 @@ const Attendance = () => {
 
         return res.success;
     })();
-    }, [dispatch, studentsStore.loading]);
+    }, [dispatch, studentsStore.loading,selectedDate]);
 
     // Update status
     function handleStatusChange(studentId: string, status: AttendanceStatus)  {
@@ -133,21 +129,27 @@ const Attendance = () => {
     };
 
     // View student
-    const handleViewStudent = (student: IStudent) => {
-        setSelectedStudent(student);
+    const handleViewStudent = async (student: IStudent) => {
+        
+        //here fetchThe studentLeave
+        const res=await AttendanceService.getLeaveHistory(Roles.Student,student._id,selectedDate);
+        
         setViewModal(true);
+        setSelectedStudent({student,leaveHistory:res?.data?.data[0]});
+
+        return res.success;
     };
     
     const handleUpdateAttendance=async()=>{
 
-        const res=await AttendanceService.update(Roles.Teacher,attendanceList,batchId);
+        const res=await AttendanceService.update(Roles.Teacher,attendanceList,batchId,selectedDate);
 
         if(!res.success){
             toast.warn(res.error.message);
             return res.success;
         }
 
-        toast.success(res.data.message);
+        toast.success(res.data?.message);
         return res.success;
     }
 
@@ -264,7 +266,8 @@ const Attendance = () => {
 
         <ViewStudentModal 
             viewModal={viewModal} 
-            selectedStudent={selectedStudent} 
+            selectedStudent={selectedStudent.student} 
+            leaveHistory={selectedStudent.leaveHistory} 
             setViewModal={setViewModal} 
         />
 

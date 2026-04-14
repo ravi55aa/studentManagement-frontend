@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { InputField } from '@/components'; 
 import { subscriptionPlanFields } from '@/constants/Admin/subscription.fileds'; 
 import { PlanService } from '@/api/Services/Admin/plan.service'; 
 import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
+import { IPlan } from '@/interfaces/IPlan';
+import { IResponse } from '@/interfaces/IResponse';
 
 const initialState = {
     name: '',
     description: '',
     amount: 0,
     discount: 0,
-    discountAmount: 0,
     finalAmount: 0,
     duration: 30,
     benefits: [],
@@ -22,6 +24,43 @@ const initialState = {
 const AddPlanPage = () => {
     const [formData, setFormData] = useState(initialState);
     const [benefitInput, setBenefitInput] = useState('');
+    const {planId}=useParams();
+
+    //Edit-plan
+    useEffect(()=>{
+        const fetchPlan=async()=>{
+            const res=await PlanService.getById(planId);
+
+            if(!res.success){
+                console.log(res.error.message);
+                return res.success;
+            }
+
+            //if(!res.data.data); narrow down error;
+
+            const plan:IPlan=res?.data?.data
+
+            const initialState={
+                name: plan?.name || '',
+                description: plan?.description || '',
+                amount: plan?.amount || 0,
+                discount: plan?.discount || 0,
+                finalAmount: plan?.finalAmount || 0,
+                duration: plan?.duration || 30,
+                benefits: plan?.benefits || [],
+                maxStudents: plan?.maxStudents || 0,
+                maxTeachers: plan?.maxTeachers || 0,
+                isActive: plan?.isActive || true,
+                isPopular: plan?.isPopular || false,
+            }
+
+            setFormData(initialState);
+
+            return res.success;
+        }
+
+        fetchPlan();
+    },[planId]);
 
     //  handle change
     const handleChange = (e: any) => {
@@ -66,7 +105,6 @@ const AddPlanPage = () => {
 
         setFormData((prev: any) => ({
         ...prev,
-        discountAmount,
         finalAmount,
         }));
     };
@@ -75,8 +113,27 @@ const AddPlanPage = () => {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
 
+        //validation
+
         try {
-        const res = await PlanService.create(formData);
+
+            let res : { 
+                success: boolean; 
+                data?: IResponse<IPlan>; 
+                error?: { 
+                    message?: string; 
+                    field?: string; 
+                    code?: number; 
+                    }; 
+                };
+
+            if(planId){
+                res = await PlanService.update(planId,formData);
+                
+            } else {
+                res = await PlanService.create(formData);
+
+            }
 
         if (!res.success) {
             toast.error(res.error.message);
@@ -93,17 +150,19 @@ const AddPlanPage = () => {
         <div className="p-6 bg-white min-h-screen">
         <h1 className="text-xl font-semibold mb-4">Add Subscription Plan</h1>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <form onSubmit={ handleSubmit} className="grid grid-cols-2 gap-4">
 
             {/*  Dynamic Inputs */}
             {subscriptionPlanFields.map((field, index) => (
-            <InputField
+            !field?.manual
+            &&
+            (<InputField
                 key={index}
                 uniqueKey={index}
                 {...field}
                 value={formData[field.name]}
                 onChange={handleChange}
-            />
+            />)
             ))}
 
             {/*  Benefits */}
@@ -168,7 +227,7 @@ const AddPlanPage = () => {
             type="submit"
             className="bg-green-700 text-white px-4 py-2 rounded col-span-2"
             >
-            Create Plan
+            {planId ?  'Edit Plan' : 'Create Plan'}
             </button>
         </form>
         </div>

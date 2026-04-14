@@ -11,6 +11,10 @@ export const schoolMetaDataValidate = z
       .max(8, 'Password must not be greater tha 8 characters'),
     reEnter: z.string(),
     profile: z.any().optional(),
+    subdomain:z.string()
+    .min(6, 'Subdomain must be 3+ characters')
+    .max(10, 'Subdomain must not be greater tha 10 characters'),
+    
     phone: z
       .string()
       .regex(/^[6-9]\d{9}$/, 'Enter valid 10 digits number')

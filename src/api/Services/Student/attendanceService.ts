@@ -7,11 +7,12 @@ import { ILeaveDocument, IStudentAttendance,IStudentAttendanceMain } from '@/int
 
 export class AttendanceService {
   // { role : Student }
-    static async update(role:string=Roles.Teacher,attendanceData: IStudentAttendance[],batchId:string) {
+    static async update(role:string=Roles.Teacher,attendanceData: IStudentAttendance[],batchId:string,date:string) {
         const config: HandleApiOptions<IStudentAttendance[]> = {
         endPoint: `${StudentRouter.updateAttendance}/${batchId}`,
         method: 'post',
         payload: attendanceData,
+        params:{date},
         headers: { role: role },
         };
 
@@ -76,11 +77,12 @@ export class AttendanceService {
         return await handleApi<ILeaveDocument, null>(config);
     }
 
-    static async getLeaveHistory(role:string=Roles.Student,studentId:string) {
+    static async getLeaveHistory(role:string=Roles.Student,studentId:string,date:string) {
         const config: HandleApiOptions<null> = {
         endPoint: `${StudentRouter.getLeaveHistory}/${studentId}`,
         method: 'get',
         payload: null,
+        params:{date},
         headers: { role: role },
         };
 

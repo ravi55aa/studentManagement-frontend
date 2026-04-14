@@ -17,6 +17,7 @@ function CreateSchool() {
     password: '',
     reEnter: '',
     profile: null,
+    subdomain:'',
     phone: '',
   });
 

@@ -13,6 +13,11 @@ export const fields = [
     type: 'text',
   },
   {
+    name: 'subdomain',
+    placeholder: 'what we should call your school',
+    type: 'text',
+  },
+  {
     name: 'email',
     placeholder: 'Enter the school email',
     type: 'email',

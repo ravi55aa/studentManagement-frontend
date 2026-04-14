@@ -66,3 +66,19 @@ export const schoolSidebarLinks: SidebarItemConfig[] = [
     path: 'settings',
   },
 ] as const;
+
+
+export const superAdminSidebar=[
+  {
+    label: 'Dashboard',
+    path: '',
+  },
+  {
+    label: 'Schools',
+    path: 'schools',
+  },
+  {
+    label: 'Plans',
+    path: 'plans',
+  },
+]

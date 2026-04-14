@@ -71,3 +71,15 @@ export {default as 'StudentAttendance'} from "./Student/Attendance/Attendance.ts
 export {default as 'StudentFee'} from "./Student/Fee/Fee.Student.tsx"
 export {default as 'StudentCourse'} from "./Student/Course/Course.Page.tsx"
 export {default as 'StudentChat'} from "./Student/Chat/StudentChat.tsx"
+
+
+
+
+/*************** Super-Admin ****************/
+
+export { default as 'SuperAdminLogin' } from './Admin/SuperAdminLogin.tsx';
+//subscription
+export { default as 'SuperAdminDashboard' } from './Admin/Dashboard.tsx';
+export { default as 'Subscriptions' } from './Admin/Subscription/List.plan.tsx';
+export { default as 'AddSubscription' } from './Admin/Subscription/Add.plan.tsx';
+export { default as 'SuperAdminSchools' } from './Admin/SchoolManagement/Schools.tsx';

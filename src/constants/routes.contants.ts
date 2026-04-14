@@ -69,13 +69,13 @@ export enum BatchRoute {
 }
 
 export const PlanRoute = {
-  create: '/admin/plan',
+  create: '/admin/plans/add',
   getAll: '/admin/plans',
-  getById: '/admin/plan',
-  update: '/admin/plan',
-  delete: '/admin/plan',
-  toggleActive: '/admin/plan/active',
-  togglePopular: '/admin/plan/popular',
+  getById: '/admin/plans',
+  update: '/admin/plans',
+  delete: '/admin/plans',
+  toggleActive: '/admin/plans/active',
+  togglePopular: '/admin/plans/popular',
 };
 
 export enum TeacherRoute {
@@ -131,6 +131,10 @@ export enum AdminRouter {
   login2 = '/auth/login',
 }
 
+export enum SuperAdminRouter {
+  login = '/admin/login',
+}
+
 export enum AuthRouter {
   register = '/auth/register',
   login = '/auth/login',
@@ -180,7 +184,7 @@ export enum StudentRouter {
   getBatchAttendance = '/student/attendance/batch',
 
   applyLeave = '/student/applyLeave',
-  getLeaveHistory = '/student/applyLeave',
+  getLeaveHistory = '/student/leaveHistory',
   
   //studentFee
   studentPaidFeeDetails = '/student/fee/details',

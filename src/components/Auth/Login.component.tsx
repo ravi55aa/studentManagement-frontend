@@ -8,7 +8,7 @@ export const Login = (props:LoginType) => {
     return (
         <div>
         {/* Heading */}
-        <h1 className="text-3xl font-semibold text-gray-800 mb-2">Welcome, Log into your account</h1>
+        <h1 className="text-3xl font-semibold text-gray-800 mb-2">Welcome {props.user.role}, Log into your account</h1>
 
         <p className="text-gray-500 mb-8 text-sm">
             It is our great pleasure to have <br /> you on board!
@@ -37,11 +37,14 @@ export const Login = (props:LoginType) => {
                 placeholder="Enter Password"
             />
 
-            <button 
-            onClick={()=>navigate("/passwordReset/emailVerify",{state:props.user})} 
-            type="button" className="text-sm ps-2 text-end! w-[100]">
-                forgot password
-            </button>
+            { props.user.role!='SuperAdmin' 
+            &&
+                <button 
+                onClick={()=>navigate("/passwordReset/emailVerify",{state:props.user})} 
+                type="button" className="text-sm ps-2 text-end! w-[100]">
+                    forgot password
+                </button>
+            }               
 
             <button
             type="submit"

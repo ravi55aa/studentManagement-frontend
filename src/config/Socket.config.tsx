@@ -14,13 +14,13 @@ const SocketProvider = ({ children }) => {
       if (!user?.id) return;
 
       //!Later update the production url
-      const newSocket = io(import.meta.env.VITE_BACKEND_URL, { 
+      const newSocket = io(window.location.origin, { 
         auth: {
           userId: user.id,
           role: user.role,
         },
         withCredentials:true
-      });
+      }); 
 
       newSocket.on('connect', () => {
         console.log('Socket CONNECTED:', newSocket.id);
@@ -35,7 +35,7 @@ const SocketProvider = ({ children }) => {
       });
 
       setSocket(newSocket);
-      
+
       //clean up when component unmounts
       return ()=>{
         newSocket.disconnect();

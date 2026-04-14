@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { PlanService } from '@/api/Services/Admin/plan.service';
 import { toast } from 'react-toastify';
-import { Eye } from 'lucide-react';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 
-import { Pagination } from '@/components';
+import { Pagination, TopBar } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
 
 import {
@@ -13,10 +13,20 @@ import {
 } from '@/utils/Redux/Reducer/plans.reducer';
 
 import { TableComponent } from '@/components/Table.Component';
+import { useNavigate } from 'react-router-dom';
+import { IPlan } from '@/interfaces/IPlan';
+import Swal from 'sweetalert2';
+import { PlanViewModal } from '@/components/plan/plan.view.modal';
 
 const UserPlanList = () => {
+
+    const [utils,setUtils]=useState(
+        {modalIsOpen:false,plan:null}
+    )
+
     const dispatch = useAppDispatch();
     const { plans, loading } = useAppSelector((state) => state.subscriptionPlans);
+    const navigate=useNavigate();
 
     //  Fetch Plans
     useEffect(() => {
@@ -43,12 +53,45 @@ const UserPlanList = () => {
     }, []);
 
     //  View Plan (optional modal later)
-    const handleView = (plan: any) => {
-        console.log(plan);
+    const handleView = (plan: IPlan) => {
+        setUtils({plan,modalIsOpen:true});
+        return true;
     };
+
+    //delete plan
+    const handleDelete = async (planId:string) => {
+            const deletePlan = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it',
+            });
+        
+            if (!deletePlan.isConfirmed) {
+                return;
+            }
+        
+            const res = await PlanService.delete(planId);
+        
+            if (!res.success) {
+                toast.error(res.error.message);
+                return res.success;
+            }
+            
+            toast.success(res?.data?.message);
+            return res.success;
+    }
 
     return (
         <div className="p-6 bg-white min-h-screen">
+
+        <button
+            onClick={() => navigate('add')}
+            className="bg-green-600 mr-5 mb-3 text-white px-4 py-2 rounded-md text-sm"
+            >
+            Add New
+        </button>
 
         <SearchAndFilter />
 
@@ -109,14 +152,31 @@ const UserPlanList = () => {
                 header: 'Actions',
                 align: 'center',
                 render: (plan) => (
-                <Eye
-                    onClick={() => handleView(plan)}
-                    className="w-4 h-4 cursor-pointer hover:text-green-700"
-                />
+                    <>
+                    <Eye
+                        onClick={() => handleView(plan)}
+                        className="w-4 h-4 cursor-pointer hover:text-green-700"
+                    />
+                    <Pencil
+                    onClick={
+                        () => 
+                            navigate(`edit/${plan._id}`)
+                        }
+                        className="w-4 h-4 cursor-pointer hover:text-blue-700"
+                    />
+                    <Trash2
+                    onClick={() => handleDelete(plan._id)}
+                        className="w-4 h-4 cursor-pointer hover:text-red-700"
+                    />
+                </>
                 ),
             },
             ]}
         />
+
+        {utils.modalIsOpen &&
+            <PlanViewModal plan={utils.plan} isOpen={utils.modalIsOpen} onClose={()=>setUtils({plan:null,modalIsOpen:false})} />
+        }
 
         <Pagination />
         </div>

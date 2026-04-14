@@ -1,4 +1,11 @@
 import {
+  /*Super Admin */
+  SuperAdminLogin,
+  SuperAdminDashboard,
+  AddSubscription,
+  Subscriptions,
+  SuperAdminSchools,
+
   HomePage,
   NotFound,
   Register,
@@ -54,7 +61,8 @@ import {
   StudentAttendance,
   StudentFee,
   StudentCourse,
-  StudentChat
+  StudentChat,
+
 } from '@/pages/index';
 
 import {TeacherDashboard,HomeworkAdd} from '@/pages/Teacher/index'
@@ -75,11 +83,14 @@ const App = () => {
     <div>
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
-
         {/*.*/}
         
         <Route path="*" element={<NotFound />} />
         <Route element={<PublicRoute />}>
+          {/* SuperAdminLogin */}
+          <Route path="/admin/login" element={<SuperAdminLogin />} />
+
+
           {/* admin login */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
@@ -96,18 +107,31 @@ const App = () => {
           <Route path="/passwordReset" element={<PasswordReset />} />
 
 
-        {/*.*/}
-        {/*LOGIN-REGISTER*/}
-          <Route path="/school/login" element={<SignInSchool />} />
-          <Route path="/school/register" element={<CreateSchool />} />
-          <Route path="/school/register/address" element={<AddAddress />} />
-          <Route path="/school/register/uploadDocuments" element={<DocumentUpload />} />
+          {/*.*/}
+          {/*LOGIN-REGISTER*/}
+            <Route path="/school/login" element={<SignInSchool />} />
+            <Route path="/school/register" element={<CreateSchool />} />
+            <Route path="/school/register/address" element={<AddAddress />} />
+            <Route path="/school/register/uploadDocuments" element={<DocumentUpload />} />
         </Route>
 
         {/*.*/}
         {/*STRIPE*/}
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/payment-status" element={<PaymentSuccess />} />
+
+        {/*.*/}
+        {/* SuperAdmin */}
+        <Route path="/admin/dashboard" element={<SuperAdminDashboard />} >
+            <Route index element={<DashboardHome />} />
+            
+            <Route path='plans' >
+              <Route index element={<Subscriptions />} />
+              <Route path='add' element={<AddSubscription />} />  
+              <Route path='edit/:planId' element={<AddSubscription />} />  
+            </Route>
+            <Route path='schools' element={<SuperAdminSchools />} />
+        </Route>
         
         {/*.*/}
         {/* SCHOOL */}

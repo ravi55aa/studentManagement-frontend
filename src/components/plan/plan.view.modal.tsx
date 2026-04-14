@@ -1,4 +1,4 @@
-const PlanViewModal = ({ plan, isOpen, onClose }) => {
+export const PlanViewModal = ({ plan, isOpen, onClose }) => {
     if (!isOpen || !plan) return null;
 
     return (
