@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { PlanService } from '@/api/Services/Admin/plan.service';
 import { toast } from 'react-toastify';
@@ -25,12 +25,13 @@ const UserPlanList = () => {
     )
 
     const dispatch = useAppDispatch();
+    
     const { plans, loading } = useAppSelector((state) => state.subscriptionPlans);
+
     const navigate=useNavigate();
 
     //  Fetch Plans
-    useEffect(() => {
-        const fetchPlans = async () => {
+    const fetchPlans = async () => {
         try {
             dispatch(togglePlansLoading(true));
 
@@ -47,10 +48,11 @@ const UserPlanList = () => {
         } finally {
             dispatch(togglePlansLoading(false));
         }
-        };
+    };
 
+    useEffect(() => {
         fetchPlans();
-    }, []);
+    }, [dispatch]);
 
     //  View Plan (optional modal later)
     const handleView = (plan: IPlan) => {
@@ -60,6 +62,7 @@ const UserPlanList = () => {
 
     //delete plan
     const handleDelete = async (planId:string) => {
+            
             const deletePlan = await Swal.fire({
                 title: 'Are you sure?',
                 text: 'This action cannot be undone!',
@@ -71,17 +74,22 @@ const UserPlanList = () => {
             if (!deletePlan.isConfirmed) {
                 return;
             }
-        
+            
+            dispatch(togglePlansLoading(true));
+
             const res = await PlanService.delete(planId);
-        
+
+            dispatch(togglePlansLoading(false));
+
             if (!res.success) {
                 toast.error(res.error.message);
                 return res.success;
             }
-            
+
+            await fetchPlans();
             toast.success(res?.data?.message);
             return res.success;
-    }
+    };
 
     return (
         <div className="p-6 bg-white min-h-screen">
@@ -152,7 +160,7 @@ const UserPlanList = () => {
                 header: 'Actions',
                 align: 'center',
                 render: (plan) => (
-                    <>
+                    <div className='flex gap-2 justify-center'>
                     <Eye
                         onClick={() => handleView(plan)}
                         className="w-4 h-4 cursor-pointer hover:text-green-700"
@@ -168,7 +176,7 @@ const UserPlanList = () => {
                     onClick={() => handleDelete(plan._id)}
                         className="w-4 h-4 cursor-pointer hover:text-red-700"
                     />
-                </>
+                </div>
                 ),
             },
             ]}

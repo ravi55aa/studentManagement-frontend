@@ -57,7 +57,7 @@ export interface ISchoolFormData {
   phone: string | null;
   profile: File | null;
   status?:schoolStatus;
-  subdomain?:string;
+  subdomain:string;
   _id?: string | null;
 }
 

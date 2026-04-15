@@ -2,6 +2,7 @@ import { PlanRoute } from '@/constants/routes.contants';
 import { BaseService } from '../Base.Service'; 
 import { Roles } from '@/constants/role.enum';
 import { IPlan } from '@/interfaces/IPlan'; 
+import { HandleApiOptions,handleApi } from '@/api/global.api';
 
 export class PlanService extends BaseService {
 
@@ -45,10 +46,13 @@ export class PlanService extends BaseService {
     }
 
     // Delete Plan
-    static delete(id: string) {
-        return this.delete(
-        `${PlanRoute.delete}/${id}`,
-        );
+    static async delete(id: string) {
+        const config: HandleApiOptions<null> = {
+            method: 'delete',
+            endPoint: `${PlanRoute.delete}/${id}`,
+        };
+    
+        return await handleApi<null, IPlan>(config);
     }
 
     //  Toggle Active Status

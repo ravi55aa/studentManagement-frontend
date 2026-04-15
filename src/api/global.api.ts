@@ -36,7 +36,7 @@ export const handleApi = async <TRequest = unknown, TData = unknown>(
 
     return {
       success: true,
-      data: response.data,
+      data: response?.data,
     };
   } catch (err) {
     const error = err as AxiosError;

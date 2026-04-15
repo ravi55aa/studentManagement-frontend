@@ -1,16 +1,8 @@
 
 
-export const ViewStudentModal = ({viewModal,selectedStudent,setViewModal,leaveHistory}) => {
 
-    const handleLeaveAction = (leave, status) => {
-        console.log("Leave:", leave);
-        console.log("Action:", status);
+export const ViewStudentModal = ({viewModal,selectedStudent,setViewModal,leaveHistory,handleLeaveAction}) => {
 
-        // Example API call
-        // dispatch(updateLeaveStatus({ leaveId: leave._id, status }));
-
-        // OR call backend directly
-    };
 
     return (
         <div>{viewModal && selectedStudent && (

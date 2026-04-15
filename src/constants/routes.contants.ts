@@ -184,6 +184,7 @@ export enum StudentRouter {
   getBatchAttendance = '/student/attendance/batch',
 
   applyLeave = '/student/applyLeave',
+  updateAppliedLeave = '/student/appliedLeave/updateStatus',
   getLeaveHistory = '/student/leaveHistory',
   
   //studentFee

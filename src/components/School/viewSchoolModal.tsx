@@ -1,5 +1,9 @@
+import { IDocument, IUploadedDoc } from "@/interfaces/IRegister";
+
 export const SchoolViewModal = ({ viewSchool, isModalOpen, onClose }) => {
     if (!isModalOpen || !viewSchool) return null;
+
+    const {meta,address,documents}=viewSchool
 
     return (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
@@ -7,32 +11,37 @@ export const SchoolViewModal = ({ viewSchool, isModalOpen, onClose }) => {
 
             {/* META */}
             <div>
-            <h2 className="font-bold text-lg mb-2">Meta Info</h2>
-            <p>Name: {viewSchool.schoolName}</p>
-            <p>Admin: {viewSchool.adminName}</p>
-            <p>Email: {viewSchool.email}</p>
-            <p>Phone: {viewSchool.phone}</p>
+            <h2 className="font-bold text-lg mb-2">School</h2>
+            <p>Name: {meta?.schoolName}</p>
+            <p>Admin: {meta?.adminName}</p>
+            <p>Email: {meta?.email}</p>
+            <p>Phone: {meta?.phone}</p>
             </div>
 
             {/* ADDRESS */}
             <div>
             <h2 className="font-bold text-lg mb-2">Address</h2>
-            <p>{viewSchool.address?.street}</p>
-            <p>{viewSchool.address?.city}</p>
-            <p>{viewSchool.address?.state}</p>
-            <p>{viewSchool.address?.zip}</p>
+                <p>{address?.street}</p>
+                <p>{address?.city}</p>
+                <p>{address?.state}</p>
+                <p>{address?.zip}</p>
+                {!address && <p>No Address</p>}
             </div>
 
             {/* DOCUMENTS */}
             <div>
             <h2 className="font-bold text-lg mb-2">Documents</h2>
-            <a href={viewSchool.documents?.registrationCert} target="_blank">
-                Registration Certificate
-            </a>
-            <br />
-            <a href={viewSchool.documents?.idProof} target="_blank">
-                ID Proof
-            </a>
+            {documents.docs?.map((doc:IUploadedDoc)=>
+            { return (<> <a href={doc?.url} target="_blank">
+                        {doc?.fileName}
+                    </a>
+                    <br />
+                </>)
+                }
+            )}
+            
+            {documents.docs.length==0 && <p>No documents</p>}
+
             </div>
 
             <button

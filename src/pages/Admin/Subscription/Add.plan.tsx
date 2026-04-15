@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
 import { IPlan } from '@/interfaces/IPlan';
 import { IResponse } from '@/interfaces/IResponse';
+import { useAppNavigate } from '@/hooks/useNavigate.hook';
 
 const initialState = {
     name: '',
@@ -25,9 +26,12 @@ const AddPlanPage = () => {
     const [formData, setFormData] = useState(initialState);
     const [benefitInput, setBenefitInput] = useState('');
     const {planId}=useParams();
+    const {goBack}=useAppNavigate();
 
     //Edit-plan
     useEffect(()=>{
+        if(!planId) return ;
+
         const fetchPlan=async()=>{
             const res=await PlanService.getById(planId);
 
@@ -96,19 +100,6 @@ const AddPlanPage = () => {
         }));
     };
 
-    //  auto calculate final amount
-    const calculateFinalAmount = () => {
-        const { amount, discount } = formData;
-
-        const discountAmount = (amount * discount) / 100;
-        const finalAmount = amount - discountAmount;
-
-        setFormData((prev: any) => ({
-        ...prev,
-        finalAmount,
-        }));
-    };
-
     //  submit
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -140,9 +131,11 @@ const AddPlanPage = () => {
             return;
         }
 
+        goBack();
         toast.success('Plan created successfully');
+
         } catch (err: any) {
-        toast.error(err.message);
+            toast.error(err.message);
         }
     };
 
@@ -212,15 +205,6 @@ const AddPlanPage = () => {
                 Most Popular
             </label>
             </div>
-
-            {/*  Calculate Button */}
-            <button
-            type="button"
-            onClick={calculateFinalAmount}
-            className="bg-blue-600 text-white px-4 py-2 rounded col-span-2"
-            >
-            Calculate Final Amount
-            </button>
 
             {/*  Submit */}
             <button

@@ -1,11 +1,14 @@
 import axios from 'axios';
 
 const host=window.location.hostname;
-const subdomain=host.split('.')[0];
-console.log('@axios.config subdomain',subdomain);
+let subdomain=host.split('.')[0]+'.';
+
+if(subdomain=='localhost'){
+  subdomain=''
+}
 
 export const axiosBaseURL = axios.create({
-  baseURL: `http://${subdomain}.localhost:4000`, //import.meta.env.VITE_BACKEND_URL
+  baseURL: `http://${subdomain}localhost:4000`, //import.meta.env.VITE_BACKEND_URL
   withCredentials: true, //allow [cookie/sessionData]
   timeout: 15000,
   headers: {

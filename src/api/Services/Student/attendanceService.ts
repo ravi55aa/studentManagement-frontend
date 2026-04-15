@@ -77,6 +77,16 @@ export class AttendanceService {
         return await handleApi<ILeaveDocument, null>(config);
     }
 
+    static async updateAppliedLeave(studentId:string,batchId:string,query:{status:string,date:string}) {
+        const config: HandleApiOptions<null> = {
+        endPoint: `${StudentRouter.updateAppliedLeave}/${studentId}/${batchId}`,
+        method: 'patch',
+        params: query,        
+        };
+
+        return await handleApi<null, null>(config);
+    }
+
     static async getLeaveHistory(role:string=Roles.Student,studentId:string,date:string) {
         const config: HandleApiOptions<null> = {
         endPoint: `${StudentRouter.getLeaveHistory}/${studentId}`,

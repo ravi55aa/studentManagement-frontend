@@ -160,6 +160,27 @@ const Attendance = () => {
         student.email.toLowerCase().includes(search.toLowerCase()),
     );
 
+    const handleLeaveAction = async(leaveDocument:ILeaveDocument ,status:string) => {
+        
+        console.log(leaveDocument);
+
+        const query={date:selectedDate,status}
+        
+        const studentId=selectedStudent.student._id;
+        
+        const batchId=selectedStudent.student.batch;
+
+        const res=await AttendanceService.updateAppliedLeave(studentId,batchId,query);
+
+        if(!res.success){
+            toast.error(res.error.message);
+            return res.success;
+        }
+
+        toast.success(res.data.message);
+        return res.success;
+    };
+
 
     return (
         <div className="p-6 bg-[#ffffff] min-h-screen">
@@ -269,6 +290,7 @@ const Attendance = () => {
             selectedStudent={selectedStudent.student} 
             leaveHistory={selectedStudent.leaveHistory} 
             setViewModal={setViewModal} 
+            handleLeaveAction={handleLeaveAction}
         />
 
         <RemarkModal 

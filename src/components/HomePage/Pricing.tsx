@@ -1,57 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
+import { PlanService } from '@/api/Services/Admin/plan.service';
+import { setPlans, togglePlansLoading } from '@/utils/Redux/Reducer/plans.reducer';
+import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
+import { toast } from 'react-toastify';
+import { IPlan } from '@/interfaces/IPlan';
 
-const pricingPlans = [
-  {
-    name: 'Starter',
-    price: 'Free',
-    monthly: '',
-    description: 'Perfect for small schools and tutoring centers',
-    features: [
-      'Up to 100 students',
-      'Basic reporting',
-      'Email support',
-      'Mobile app access',
-      '5GB storage',
-    ],
-    buttonColor: 'bg-green-100 text-green-700',
-    popular: false,
-  },
-  {
-    name: 'Professional',
-    price: '$79',
-    monthly: '/month',
-    description: 'Ideal for growing educational institutions',
-    features: [
-      'Up to 500 students',
-      'Advanced analytics',
-      'Priority support',
-      'Custom integrations',
-      '50GB storage',
-      'Parent portal',
-    ],
-    buttonColor: 'bg-green-600 text-white',
-    popular: true,
-  },
-  {
-    name: 'Enterprise',
-    price: '$199',
-    monthly: '/month',
-    description: 'For large schools and districts',
-    features: [
-      'Unlimited students',
-      'Custom reporting',
-      '24/7 dedicated support',
-      'API access',
-      'Unlimited storage',
-      'Advanced security',
-      'Training sessions',
-    ],
-    buttonColor: 'bg-green-100 text-green-700',
-    popular: false,
-  },
-];
 
 // Animations
 const containerVariants: Variants = {
@@ -72,6 +27,34 @@ const cardVariants: Variants = {
 };
 
 const PricingSection: React.FC = () => {
+
+  const dispatch=useAppDispatch();
+  
+  const planReduxStore=useAppSelector((state)=>state.subscriptionPlans);
+
+  const fetchPlans = async () => {
+        try {
+            dispatch(togglePlansLoading(true));
+
+            const res = await PlanService.getAll({ isActive: true });
+
+            if (!res.success) {
+            toast.error(res.error.message);
+            return;
+            }
+
+            dispatch(setPlans(res.data.data));
+        } catch (err: any) {
+            toast.error(err.message);
+        } finally {
+            dispatch(togglePlansLoading(false));
+        }
+      };
+
+  useEffect(()=>{
+    fetchPlans();
+  },[]);
+
   return (
     <section className="w-full bg-[#F5FFF8] px-6 py-20">
       <div className="max-w-7xl mx-auto text-center">
@@ -105,36 +88,36 @@ const PricingSection: React.FC = () => {
           viewport={{ once: true }}
           className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-10"
         >
-          {pricingPlans.map((plan, index) => (
+          {planReduxStore.plans?.map((plan:IPlan, index) => (
             <motion.div
               key={index}
               variants={cardVariants}
               className={`relative bg-white rounded-2xl shadow-md border p-8 text-center hover:shadow-lg transition ${
-                plan.popular ? 'border-green-600 shadow-xl scale-105' : ''
+                plan?.isPopular ? 'border-green-600 shadow-xl scale-105' : ''
               }`}
             >
               {/* Badge */}
-              {plan.popular && (
+              {plan?.isPopular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white text-sm font-semibold px-4 py-1 rounded-full">
                   Most Popular
                 </div>
               )}
 
               {/* Title */}
-              <h3 className="text-2xl font-semibold">{plan.name}</h3>
+              <h3 className="text-2xl font-semibold">{plan?.name}</h3>
 
               {/* Price */}
               <p className="text-5xl font-bold mt-4">
-                {plan.price}
-                <span className="text-xl font-medium text-gray-500">{plan.monthly}</span>
+                {plan?.finalAmount}
+                <span className="text-xl font-medium text-gray-500">{plan.duration}-days</span>
               </p>
 
               {/* Description */}
-              <p className="text-gray-600 mt-2">{plan.description}</p>
+              <p className="text-gray-600 mt-2">{plan?.description}</p>
 
               {/* Features */}
               <ul className="text-left mt-6 space-y-3">
-                {plan.features.map((f, i) => (
+                {plan.benefits?.map((f:string, i:number) => (
                   <li key={i} className="flex items-center gap-2 text-gray-700">
                     <CheckCircle size={20} className="text-green-600" />
                     {f}
@@ -144,7 +127,7 @@ const PricingSection: React.FC = () => {
 
               {/* Button */}
               <button
-                className={`${plan.buttonColor} 
+                className={`${plan.isActive} 
                     ${index !== 0 ? 'cursor-not-allowed' : 'cursor-pointer'}
                     mt-8 w-full py-3 rounded-xl font-semibold`}
               >

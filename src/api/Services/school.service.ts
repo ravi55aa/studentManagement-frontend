@@ -55,8 +55,19 @@ export class SchoolService extends BaseService {
     return await handleApi<object, null>(config);
   }
 
-  static async getAllSchool(){
-    return this.get<ISchoolFormData[]>(SchoolRoute.getall);
+  // static async getAllSchool(){
+  //   return this.get<ISchoolFormData[]>(SchoolRoute.getall);
+  // }
+
+  static async getAllSchool() {
+    const config: HandleApiOptions<ISchoolFormData> = {
+      method: 'get',
+      endPoint: SchoolRoute.getall,
+      payload: null,
+      headers: { role: 'Admin' },
+    };
+
+    return await handleApi<ISchoolFormData, ISchoolFormData>(config);
   }
 
   static async getById(id:string) {
