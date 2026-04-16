@@ -1,0 +1,1 @@
+export const paginationQuery={page:0,limit:8};

@@ -5,6 +5,7 @@ import { Teachers } from '@/types/types';
 import { IGetAllTeachers, ITeacher, ITeacherBio } from '@/interfaces/ITeacher';
 import { LoginPayloadType } from '@/types/loginType';
 import { Roles } from '@/constants/role.enum';
+import { TPaginationQuery ,TPaginationResult} from '@/types/paginationTypes';
 
 export class TeacherService {
   // { role : Teacher }
@@ -61,15 +62,15 @@ export class TeacherService {
     return await handleApi<null, Teachers>(config);
   }
 
-  static async getAll(role:string=Roles.Teacher) {
+  static async getAll(paginationQuery:TPaginationQuery) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: TeacherRoute.getAll,
       payload: null,
-      headers: { role: role },
+      params:paginationQuery
     };
 
-    return await handleApi<null, IGetAllTeachers>(config);
+    return await handleApi<null, TPaginationResult<IGetAllTeachers>>(config);
   }
 
   static async editBio(role:string=Roles.Teacher,id: string, formData: FormData) {

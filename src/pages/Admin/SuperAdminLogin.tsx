@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { signInSchema } from '@/validation/register.schema';
 import { handleValidationOF } from '@/validation/validateFormData';
 import Login from '@/components/Auth/Login.component';
-import { SuperAdminService } from '@/api/Services/Admin/auth.service';
 import { handleAdminSignIn } from '@/api/auth.api';
 
 const SignIn = () => {

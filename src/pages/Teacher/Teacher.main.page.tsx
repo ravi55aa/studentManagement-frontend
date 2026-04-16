@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { IGetAllTeachers, ITeacherBio } from '@/interfaces/ITeacher';
-import { Eye, Pencil, Bell } from 'lucide-react';
+import { Eye, Pencil } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -11,11 +11,15 @@ import { TableComponent } from '@/components/Table.Component';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { Pagination } from '@/components';
 import { TeacherService } from '@/api/Services/teacher.service';
+import { paginationQuery } from '@/constants/pagination';
 
 const TeachersListPage = () => {
   const dispatch = useAppDispatch();
   const teachersStore = useAppSelector((state) => state.teacher);
   const [isOpen, setIsOpen] = useState(false);
+  const [paginationUtils, setPaginationUtils] = useState({
+    page:0,total:0,totalPages:0
+  });
   const [selectedTeacher, setSelectedTeacher] = useState<ITeacherBio | null>(null);
 
   const handleOpen = (teacher: ITeacherBio) => {
@@ -25,14 +29,24 @@ const TeachersListPage = () => {
 
   useEffect(() => {
     (async () => {
-      const res = await TeacherService.getAll();
+      
+      const res = await TeacherService.getAll(paginationQuery);
 
       if (!res.success) {
         toast.warn(res.error.message);
         return;
       }
 
-      const { teacherBio, teachersSchoolData } = res.data.data;
+      const resData = res.data.data;
+      
+      const {teacherBio, teachersSchoolData} = resData.data[0];
+
+      setPaginationUtils(
+        { page:resData.page,
+          total:resData.total,
+          totalPages:resData.totalPages
+        });
+
       const result: IGetAllTeachers = { teacherBio, teachersSchoolData };
       dispatch(storeTeachers(result));
 
@@ -110,7 +124,11 @@ const TeachersListPage = () => {
       />
 
       {/* ===== Pagination ===== */}
-      <Pagination />
+      <Pagination
+      page={paginationUtils?.page} 
+      totalPages={paginationUtils?.totalPages}
+      total={paginationUtils?.total} 
+      />
     </div>
   );
 };
