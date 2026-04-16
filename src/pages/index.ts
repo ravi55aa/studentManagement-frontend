@@ -31,7 +31,6 @@ export { default as 'AcademicEditYear' } from './School/Academic/YearEdit.page';
 
 export { default as 'AcademicSubjects' } from './School/Academic/Subjects.page';
 export { default as 'AcademicSubjectsAdd' } from './School/Academic/Subjects.add.page';
-export { default as 'AcademicSubjectsEdit' } from './School/Academic/Subject.edit.page';
 
 export { default as 'AcademicCourses' } from './School/Academic/Course/Courses.page';
 export { default as 'AcademicCoursesAdd' } from './School/Academic/Course/Course.add.page';

@@ -1,6 +1,6 @@
 import { schoolSubjectSchema } from '@/validation/school.validator';
 import { handleValidationOF } from '@/validation/validateFormData';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
 import { toast } from 'react-toastify';
 import { useAppNavigate } from '@/hooks/useNavigate.hook';
@@ -11,6 +11,10 @@ import { department_Array } from '@/constants/deparment';
 import { CheckList, RadioGroup } from '@/components/Teacher';
 import FormActions from '@/components/FormAction';
 import { SubjectService } from '@/api/Services/subject.service';
+import { useParams } from 'react-router-dom';
+import { Roles } from '@/constants/role.enum';
+import { IAcademicSubject } from '@/interfaces/ISchool';
+import { IResponse } from '@/interfaces/IResponse';
 
 enum subjectType {
   primary = 'theory',
@@ -19,7 +23,8 @@ enum subjectType {
 }
 
 const AddSubject = () => {
-  const [form, setForm] = useState({
+
+  const [form, setForm] = useState<Partial<IAcademicSubject>>({
     name: '',
     code: '',
     className: '',
@@ -35,12 +40,62 @@ const AddSubject = () => {
     referenceBooks: [] as File[],
     status: 'active',
   });
-  const { goBack } = useAppNavigate();
-  const dispatch = useAppDispatch();
 
   const [error, setError] = useState<string | null>(null);
+  
+  const [docsOfSubject, setDocsOfSubject] = useState<string[] >([]);
+
+  
+  const { goBack } = useAppNavigate();
+  
+  const dispatch = useAppDispatch();
+  
   //const batches=useAppSelector((state)=>state.batch);
+  
   const year = useAppSelector((state) => state.schoolYear);
+
+  const {subjectId}=useParams();
+  
+  useEffect(()=>{
+    
+    if(!subjectId) return;
+
+    const fetchSubject = async( ) => {
+      const res = await SubjectService.get(Roles.Teacher,subjectId);
+      
+      if(!res.success){
+        console.log(res.error.message);
+        return res.success;
+      }
+
+      const data = res.data?.data;
+
+      setForm({
+        name: data.name || '',
+        code: data.code || '',
+        className: data.className || '',
+        type: data.type || '' as subjectType,
+        maxMarks: data.maxMarks || 0,
+        passMarks: data.passMarks || 0,
+        credits: data.credits || 0,
+        department: data.department || '',
+        //level: data.level || "" as subjectLevel,
+        academicYear: data.academicYear || '',
+        //batchesToFollow: data.batchesToFollow || [] as string[],
+        description: data.description || '',
+        referenceBooks: data?.referenceBooks as string[] || [] as File[],
+        status: data?.status || 'active',
+      });
+
+      setDocsOfSubject(data?.referenceBooks as string[]||[]);
+
+      return res.success;
+    }
+
+    fetchSubject();
+
+  },[subjectId]);
+
 
   /* ---------- Handlers ---------- */
   const handleChange = (
@@ -69,7 +124,9 @@ const AddSubject = () => {
   // };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
     const files = e.target.files;
+    
     if (!files) return;
 
     const fileArray = Array.from(files);
@@ -85,6 +142,7 @@ const AddSubject = () => {
     }
 
     const updated = [...form.referenceBooks, ...fileArray];
+
     setForm((prev) => ({ ...prev, referenceBooks: updated }));
 
     setError('');
@@ -101,8 +159,7 @@ const AddSubject = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(toggleAcademicLoading(true));
-
+    
     //validate
     const payload = {
       ...form,
@@ -119,31 +176,47 @@ const AddSubject = () => {
       return false;
     }
 
-    const validation = handleValidationOF(schoolSubjectSchema, payload);
+    // const validation = handleValidationOF(schoolSubjectSchema, payload);
 
-    if (!validation.success) {
-      console.log('The validation. Error', validation.error);
-      dispatch(toggleAcademicLoading(false));
-      return false;
-    }
-
+    // if (!validation.success) {
+    //   console.log('The validation. Error', validation.error);
+    //   return false;
+    // }
+    
     setError(null);
-
+    
     //formData.append()
     const formData = new FormData();
 
     for (const field in form) {
+      
       if (field == 'referenceBooks') {
-        form[field]?.forEach((ele) => formData.append('docs', ele));
+        
+        form[field]?.forEach((file:File) => formData.append('docs',file));
+
       } else {
+
         formData.append(field, form[field]);
       }
+
     }
-    const response = await SubjectService.create(formData);
+
+    formData.append('docsOfSubject', form['docsOfSubject']);
+
+    dispatch(toggleAcademicLoading(true));
+
+    let response: { success: boolean; data?: IResponse<IAcademicSubject>; error?: { message?: string; field?: string; code?: number; }; };
+    
+    if(subjectId){
+      response = await SubjectService.update(subjectId,formData);
+    } else {
+      response = await SubjectService.create(formData);
+    }
+
+    dispatch(toggleAcademicLoading(false));
 
     if (!response.success) return response.success;
 
-    dispatch(toggleAcademicLoading(false));
     toast.success('New Subject Added', { draggable: true });
     goBack();
 
@@ -153,7 +226,7 @@ const AddSubject = () => {
   return (
     <div className="p-6 bg-white min-h-screen">
       {/* Header */}
-      <h1 className="text-2xl font-semibold text-gray-800 mb-1">Add Subject</h1>
+      <h1 className="text-2xl font-semibold text-gray-800 mb-1">{subjectId ?'Edit Subject' :'Add Subject'}</h1>
       <p className="text-sm text-gray-500 mb-6">Create a new academic subject</p>
 
       {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
@@ -296,7 +369,7 @@ const AddSubject = () => {
                     key={index}
                     className="flex justify-between items-center bg-white p-2 rounded border"
                   >
-                    <span className="text-gray-700">{file.name}</span>
+                    <span className="text-gray-700">{file?.name}</span>
 
                     <button
                       onClick={() => removeFile(index)}

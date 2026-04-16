@@ -33,7 +33,6 @@ import {
   AcademicEditYear,
   AcademicSubjects,
   AcademicSubjectsAdd,
-  AcademicSubjectsEdit,
   AcademicCourses,
   AcademicCoursesAdd,
   AcademicCoursesEdit,
@@ -88,13 +87,13 @@ const App = () => {
         <Route path="*" element={<NotFound />} />
         <Route element={<PublicRoute />}>
           {/* SuperAdminLogin */}
-          <Route path="/admin/login" element={<SuperAdminLogin />} />
+          <Route path="/login" element={<SuperAdminLogin />} />
 
 
           {/* admin login */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin/register" element={<Register />} />
 
           {/* AUTH-LOGIN */}
           <Route path="/teacher/login" element={<TeacherLogin />} />
@@ -160,7 +159,7 @@ const App = () => {
 
               <Route path="subjects" element={<AcademicSubjects />} />
               <Route path="subjects/add" element={<AcademicSubjectsAdd />} />
-              <Route path="subjects/edit/:id" element={<AcademicSubjectsEdit />} />
+              <Route path="subjects/edit/:subjectId" element={<AcademicSubjectsAdd />} />
 
               <Route path="courses" element={<AcademicCourses />} />
               <Route path="courses/add" element={<AcademicCoursesAdd />} />

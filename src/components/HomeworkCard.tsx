@@ -1,4 +1,6 @@
 import { Paperclip, Link2 } from "lucide-react";
+import PreviewModal from "./PreviewModa";
+import { useState } from "react";
 
 export interface IAttachment {
     url: string;
@@ -18,6 +20,13 @@ export default function HomeworkCard({
     attachments = [],
     links = [],
 }: HomeworkCardProps) {
+    const [utils,setUtils] = useState({selectedUrl:'',isOpen:false});
+
+    const handleView=(url:string)=>{
+        setUtils({isOpen:true,selectedUrl:url});
+        return true;
+    }
+
     return (
         <div className="bg-white rounded-xl shadow-md p-5 border border-gray-100 hover:shadow-lg transition">
 
@@ -39,16 +48,19 @@ export default function HomeworkCard({
                 Attachments
             </h3>
 
+            <PreviewModal 
+            isOpen={utils.isOpen} 
+            onClose={()=>setUtils({isOpen:false,selectedUrl:''})} url={utils.selectedUrl} />
+
             <div className="flex flex-wrap gap-2">
                 {attachments.map((file, index) => (
-                <a
+                <button
                     key={index}
-                    href={file.url}
-                    target="_blank"
+                    onClick={()=>handleView(file?.url)}
                     className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md text-gray-700"
                 >
                     {file.fileName}
-                </a>
+                </button>
                 ))}
             </div>
             </div>

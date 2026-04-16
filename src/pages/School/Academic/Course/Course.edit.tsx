@@ -12,6 +12,7 @@ import { InputField, Select } from '@/components';
 import { Textarea } from '@/components/textArea';
 import { CourseService } from '@/api/Services/course.service';
 import { IGetAllCourse } from '@/types/tcourse';
+import { Roles } from '@/constants/role.enum';
 
 /* ===================== COMPONENT ===================== */
 
@@ -26,7 +27,7 @@ const CourseEditPage = () => {
   /*UseEffect for fetch edit data's */
   useEffect(() => {
     const fetchCourse = async () => {
-      const res = await CourseService.get(id);
+      const res = await CourseService.get(Roles.Student,id);
 
       if (!res.success) {
         toast.warn(res.error.message);

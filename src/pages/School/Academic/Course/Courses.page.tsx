@@ -75,6 +75,7 @@ const CourseListPage = () => {
 
   return (
     <div className="p-6 bg-white min-h-screen">
+
       {/* Top Bar */}
       <div className="flex justify-between items-center mb-4">
         <Link to="add">
@@ -82,8 +83,6 @@ const CourseListPage = () => {
             Add New
           </button>
         </Link>
-
-        <Bell className="w-5 h-5 text-green-700 cursor-pointer" />
       </div>
 
       <SearchAndFilter />
@@ -100,7 +99,7 @@ const CourseListPage = () => {
           },
           { header: 'Code', accessor: 'code' },
           {
-            header: 'duration',
+            header: 'Duration',
             accessor: 'duration',
             format: (value: { value: string; unit: string }) => value?.value + ' ' + value?.unit,
           },

@@ -40,6 +40,7 @@ export enum SubjectRoute {
   get = '/school/academic/subjects',
   add = '/school/academic/subjects/add',
   edit = '/school/academic/subjects/edit',
+  editV1 = '/school/academic/subjects/edit/v1',
 }
 
 export enum HomeworkRoute {

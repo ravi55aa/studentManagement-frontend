@@ -27,7 +27,6 @@ const SubjectsPage = () => {
   }, [dispatch, subjectStore.loading]);
 
   const handleDelete = async (id: string) => {
-    dispatch(toggleAcademicSubLoading(true));
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: 'This action cannot be undone!',
@@ -39,8 +38,10 @@ const SubjectsPage = () => {
     if (!result.isConfirmed) {
       return;
     }
-
+    
+    dispatch(toggleAcademicSubLoading(true));
     const res = await SubjectService.delete(Roles.School,id);
+    dispatch(toggleAcademicSubLoading(false));
 
     if (!res.success) {
       Swal.fire('Deleted!', res.error?.message, 'error');
@@ -48,7 +49,6 @@ const SubjectsPage = () => {
     }
 
     Swal.fire('Deleted!', 'Item deleted successfully', 'success');
-    dispatch(toggleAcademicSubLoading(false));
     return true;
   };
 

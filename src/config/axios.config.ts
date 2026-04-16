@@ -12,7 +12,7 @@ export const axiosBaseURL = axios.create({
   withCredentials: true, //allow [cookie/sessionData]
   timeout: 15000,
   headers: {
-    'Content-Type': 'application/json',
+    'contentType': 'application/json',
   },
 });
 

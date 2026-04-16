@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAppSelector } from '@/hooks/useStoreHooks';
 import { handleValidationOF } from '@/validation/validateFormData';
@@ -11,6 +11,8 @@ import { Textarea } from '@/components/textArea';
 import { CheckList } from '@/components/Teacher';
 import { CourseService } from '@/api/Services/course.service';
 import { Roles } from '@/constants/role.enum';
+import { _useFormatDateForInput } from '@/hooks/useDateFormata';
+import { IGetAllCourse } from '@/types/tcourse';
 
 const CourseAddPage = () => {
   const navigate = useNavigate();
@@ -18,6 +20,68 @@ const CourseAddPage = () => {
   const [form, setForm] = useState<ICourseForm>(initialForm);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+
+    // const {courseId}=useParams();
+    
+    // useEffect(() => {
+    //     const fetchCourse = async () => {
+    //       const res = await CourseService.get(Roles.Student,courseId);
+    
+    //       if (!res.success) {
+    //         toast.warn(res.error.message);
+    //         return res.success;
+    //       }
+    
+    //       const courseToEdit = res?.data?.data;
+    
+    //       const { course, meta }: IGetAllCourse = courseToEdit;
+    
+    //       const initialForm: ICourseForm = {
+    //         name: course?.name,
+    //         code: course?.code,
+    //         academicYear:
+    //           typeof course?.academicYear == 'string' ? course?.academicYear : course?.academicYear,
+    //         //level: course.level,
+    //         description: course?.description,
+    //         status: course?.status,
+    
+    //         duration: course?.duration,
+    
+    //         schedule: {
+    //           startDate: _useFormatDateForInput(course?.schedule.startDate),
+    //           endDate: _useFormatDateForInput(course?.schedule?.endDate),
+    //         },
+    
+    //         maxStudents: Number(meta?.maxStudents),
+    //         enrollmentOpen: true,
+    
+    //         subjects: meta?.subjects,
+    //         classes: [...meta.classes],
+    //         coordinators: meta?.coordinators,
+    
+    //         modelType: course?.modelType,
+    //         center: course.modelType == 'School' ? 'School' : course?.center,
+    
+    //         eligibilityCriteria: '',
+    //         syllabusUrl: '',
+    //         attachments: [],
+    //       };
+    //       initialForm.academicYear  = course?.academicYear?.code;
+    
+    //       if (meta.subjects  && meta?.subjects[0].subjectType == 'ACADEMIC') {
+    //         initialForm.subjects = meta?.subjects[0]?.subjectRef;
+    
+    //         initialForm.subjects?.includes(undefined);
+    //       } else {
+    //         initialForm.subjects = meta?.subjects[0]?.customSubjectName;
+    //       }
+    //       //pending for the coordinators;
+          
+    //       setForm(initialForm);
+    //     };
+    //     fetchCourse();
+    //   }, [courseId]);
 
   /****************** Redux-store ******************/
   //const batchesReduxStore=useAppSelector((state)=>state.batch);

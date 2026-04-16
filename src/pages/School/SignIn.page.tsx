@@ -48,7 +48,9 @@ const SignInSchool = () => {
       setError(res.error.message);
     }
 
-    const user = { id: res.data.data.userId, role: Roles.School };
+    const schoolData=res.data?.data;
+
+    const user = { id: schoolData?._id, role: Roles.School };
     dispatch(storeCurrentUser(user));
 
     navigate('/school/dashboard');

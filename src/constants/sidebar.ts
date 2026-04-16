@@ -10,10 +10,10 @@ export const schoolSidebarLinks: SidebarItemConfig[] = [
     label: 'Dashboard',
     path: '',
   },
-  {
-    label: 'Students',
-    path: 'students',
-  },
+  // {
+  //   label: 'Students',
+  //   path: 'students',
+  // },
   {
     label: 'Teachers',
     path: 'teachers',

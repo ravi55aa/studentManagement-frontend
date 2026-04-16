@@ -64,7 +64,7 @@ export interface IAcademicSubject {
   credits?: number;
   level?: 'primary' | 'secondary' | 'higher-secondary' | 'degree';
 
-  referenceBooks?: string[]; // URLs
+  referenceBooks?: unknown[]; // URLs
   syllabusUrl?: string;
 
   status?: 'active' | 'inactive';

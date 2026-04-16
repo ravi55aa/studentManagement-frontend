@@ -35,19 +35,28 @@ const PricingSection: React.FC = () => {
   const fetchPlans = async () => {
         try {
             dispatch(togglePlansLoading(true));
+            
+            const data = await fetch(`${import.meta.env.VITE_BACKEND_URL}admin/plans?isActive=true`, { method: "GET"});
+            
+            const res=await data.json();
 
-            const res = await PlanService.getAll({ isActive: true });
+            PlanService.getAll({ isActive: true });
 
             if (!res.success) {
-            toast.error(res.error.message);
+            toast.error(res.error?.message);
             return;
             }
 
-            dispatch(setPlans(res.data.data));
+            dispatch(setPlans(res.data));
+
         } catch (err: any) {
+
             toast.error(err.message);
+
         } finally {
+
             dispatch(togglePlansLoading(false));
+
         }
       };
 
@@ -88,7 +97,7 @@ const PricingSection: React.FC = () => {
           viewport={{ once: true }}
           className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-10"
         >
-          {planReduxStore.plans?.map((plan:IPlan, index) => (
+          {planReduxStore?.plans?.map((plan:IPlan, index) => (
             <motion.div
               key={index}
               variants={cardVariants}
@@ -128,7 +137,7 @@ const PricingSection: React.FC = () => {
               {/* Button */}
               <button
                 className={`${plan.isActive} 
-                    ${index !== 0 ? 'cursor-not-allowed' : 'cursor-pointer'}
+                    ${index !== 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 cursor-pointer'}
                     mt-8 w-full py-3 rounded-xl font-semibold`}
               >
                 {index != 0 ? 'NA' : 'Get Started'}

@@ -335,10 +335,10 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
                     {!loading && documentState.docs?.length > 0 ? (
                     documentState?.docs?.map((file: IUploadedDoc, index: number) => (
                         <DocumentRow
-                        file={file}
-                        removeAFile={handleRemoveAFile}
-                        key={index}
-                        index={index}
+                            file={file}
+                            removeAFile={handleRemoveAFile}
+                            key={index}
+                            index={index}
                         />
                     ))
                     ) : (

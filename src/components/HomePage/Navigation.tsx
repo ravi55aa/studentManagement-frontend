@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
         {/* Login Button */}
         <button
           type="button"
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/admin/login')}
           className="bg-[#1E9E3A] text-white px-6 py-2 rounded-xl font-semibold shadow-md hover:opacity-90"
         >
           signIn | signup
