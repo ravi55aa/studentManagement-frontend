@@ -12,14 +12,14 @@ import SearchAndFilter from '@/components/SearchAndFilter';
 import { Pagination } from '@/components';
 import { TeacherService } from '@/api/Services/teacher.service';
 import { paginationQuery } from '@/constants/pagination';
+import { TPaginationQuery } from '@/types/paginationTypes';
+import { usePagination } from '@/hooks/usePagination';
+
 
 const TeachersListPage = () => {
   const dispatch = useAppDispatch();
   const teachersStore = useAppSelector((state) => state.teacher);
   const [isOpen, setIsOpen] = useState(false);
-  const [paginationUtils, setPaginationUtils] = useState({
-    page:0,total:0,totalPages:0
-  });
   const [selectedTeacher, setSelectedTeacher] = useState<ITeacherBio | null>(null);
 
   const handleOpen = (teacher: ITeacherBio) => {
@@ -27,8 +27,9 @@ const TeachersListPage = () => {
     setIsOpen(true);
   };
 
-  useEffect(() => {
-    (async () => {
+  const { pagination, setPagination, nextPage, prevPage } = usePagination(fetchTeachers,8);
+
+  async function fetchTeachers (paginationQuery:TPaginationQuery):Promise<void> {
       
       const res = await TeacherService.getAll(paginationQuery);
 
@@ -41,18 +42,24 @@ const TeachersListPage = () => {
       
       const {teacherBio, teachersSchoolData} = resData.data[0];
 
-      setPaginationUtils(
+      const result: IGetAllTeachers = { teacherBio, teachersSchoolData };
+
+      dispatch(storeTeachers(result));
+
+      setPagination(
         { page:resData.page,
           total:resData.total,
           totalPages:resData.totalPages
         });
 
-      const result: IGetAllTeachers = { teacherBio, teachersSchoolData };
-      dispatch(storeTeachers(result));
+      return;
+    }
 
-      return true;
-    })();
+
+  useEffect(() => {
+    fetchTeachers(paginationQuery);
   }, [dispatch]);
+
 
   return (
     <div className="p-6 bg-white min-h-screen">
@@ -125,9 +132,11 @@ const TeachersListPage = () => {
 
       {/* ===== Pagination ===== */}
       <Pagination
-      page={paginationUtils?.page} 
-      totalPages={paginationUtils?.totalPages}
-      total={paginationUtils?.total} 
+        page={pagination?.page} 
+        totalPages={pagination?.totalPages}
+        total={pagination?.total} 
+        onLeftClick={prevPage}
+        onRightClick={nextPage}
       />
     </div>
   );

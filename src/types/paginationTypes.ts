@@ -9,3 +9,14 @@ export type TPaginationResult<T> = {
     page: number;
     totalPages: number;
 } ;
+
+
+
+//useHook
+export type TPaginationState = {
+    page: number;
+    total: number;
+    totalPages: number;
+};
+
+export type FetchFn = (params: TPaginationQuery) => Promise<void>;
