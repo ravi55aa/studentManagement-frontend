@@ -40,7 +40,7 @@ const SubjectsPage = () => {
     }
     
     dispatch(toggleAcademicSubLoading(true));
-    const res = await SubjectService.delete(Roles.School,id);
+    const res = await SubjectService.deleteSubject(id);
     dispatch(toggleAcademicSubLoading(false));
 
     if (!res.success) {
@@ -97,7 +97,7 @@ const SubjectsPage = () => {
         ]}
       />
 
-      <Pagination />
+      {/* <Pagination /> */}
     </div>
   );
 };

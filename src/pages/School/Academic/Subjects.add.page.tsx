@@ -61,7 +61,7 @@ const AddSubject = () => {
     if(!subjectId) return;
 
     const fetchSubject = async( ) => {
-      const res = await SubjectService.get(Roles.Teacher,subjectId);
+      const res = await SubjectService.getById(subjectId);
       
       if(!res.success){
         console.log(res.error.message);

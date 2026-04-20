@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import FormActions from '@/components/FormAction';
 import { TeacherService } from '@/api/Services/teacher.service';
 import { BatchService } from '@/api/Services/batch.service';
+import { paginationQuery } from '@/constants/pagination';
 
 const AddBatch = () => {
   const [form, setForm] = useState({
@@ -41,8 +42,10 @@ const AddBatch = () => {
 
       span.textContent = '';
 
-      const res = await TeacherService.getAllUnAssigned(form.center);
-      const teachers = res?.data?.data;
+      const res = await TeacherService.getAllUnAssigned(form.center,paginationQuery);
+      const resData = res?.data?.data;
+
+      const teachers = resData.data ||[];
 
       if (!teachers || teachers.length <= 0) {
         span.textContent = 'Not found unassigned TEACHERS, from chosen CENTER';

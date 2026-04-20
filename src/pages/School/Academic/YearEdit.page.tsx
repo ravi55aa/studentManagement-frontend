@@ -22,7 +22,7 @@ const EditAcademicYear = () => {
   useEffect(() => {
     const fetchYear = async () => {
       dispatch(toggleAcademicLoading(true));
-      const res = await AcademicYearService.get(id);
+      const res = await AcademicYearService.getById(id);
 
       if (!res.success) {
         toast.error(res.error.message);

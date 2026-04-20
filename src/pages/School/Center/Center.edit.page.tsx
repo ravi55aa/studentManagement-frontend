@@ -52,7 +52,7 @@ const EditCenter = () => {
 
   useEffect(() => {
     const fetchYear = async () => {
-      const res = await CenterService.get(id);
+      const res = await CenterService.getById(id);
 
       if (!res.success) {
         setUtils({ error: 'Center Edit error', openAddress: false });

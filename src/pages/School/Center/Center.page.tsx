@@ -68,7 +68,7 @@ const CentersPage = () => {
 
     if (!result.isConfirmed) return;
 
-    const res = await CenterService.delete(id);
+    const res = await CenterService.deleteCenter(id);
 
     if (!res.success) return res.success;
 

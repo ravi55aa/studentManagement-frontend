@@ -71,7 +71,7 @@ const AcademicYearsPage = () => {
       return;
     }
 
-    const res = await AcademicYearService.delete(id);
+    const res = await AcademicYearService.deleteAcademicYear(id);
 
     if (!res.success) {
       toast.error(res.error.message);

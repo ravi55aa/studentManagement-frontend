@@ -27,7 +27,7 @@ const CourseEditPage = () => {
   /*UseEffect for fetch edit data's */
   useEffect(() => {
     const fetchCourse = async () => {
-      const res = await CourseService.get(Roles.Student,id);
+      const res = await CourseService.getById(id);
 
       if (!res.success) {
         toast.warn(res.error.message);

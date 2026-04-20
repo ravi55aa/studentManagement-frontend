@@ -77,7 +77,7 @@ const UserPlanList = () => {
             
             dispatch(togglePlansLoading(true));
 
-            const res = await PlanService.delete(planId);
+            const res = await PlanService.deletePlan(planId);
 
             dispatch(togglePlansLoading(false));
 
@@ -186,7 +186,7 @@ const UserPlanList = () => {
             <PlanViewModal plan={utils.plan} isOpen={utils.modalIsOpen} onClose={()=>setUtils({plan:null,modalIsOpen:false})} />
         }
 
-        <Pagination />
+        {/* <Pagination /> */}
         </div>
     );
 };

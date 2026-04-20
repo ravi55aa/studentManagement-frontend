@@ -7,7 +7,6 @@ import { paginationQuery } from '@/constants/pagination';
 import { Roles } from '@/constants/role.enum';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { IBatches } from '@/interfaces/ISchool';
-import { ITeacher } from '@/interfaces/ITeacher';
 import { storeBatches } from '@/utils/Redux/Reducer/batchReducer';
 import { Bell } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -32,7 +31,7 @@ const ListBatches = () => {
             return false;
         }
     
-        const res=await TeacherService.get(Roles.Teacher,teacherId);
+        const res=await TeacherService.getById(teacherId);
         const teacher=res.data.data?.teacher;
 
         if(!res.success || !teacher.center){
@@ -131,7 +130,7 @@ const ListBatches = () => {
             ))}
         </div>
 
-        <Pagination />
+        {/* <Pagination /> */}
         </div>
     )
 }

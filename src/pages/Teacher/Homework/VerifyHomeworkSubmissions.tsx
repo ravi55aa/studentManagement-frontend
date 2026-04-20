@@ -30,7 +30,7 @@ const VerifyHomeworkSubmissions = () => {
     
     const fetchData = async () => {
         const res = await StudentHomeworkService.getAllSubmissions(
-            Roles.Teacher,{ homeworkId });
+            { homeworkId });
 
             if (!res.success) {
                 toast.error(res.error.message);
@@ -51,7 +51,7 @@ const VerifyHomeworkSubmissions = () => {
         }
 
         const fetchHomeWork=async()=>{
-            const res=await HomeworkService.get(Roles.Teacher,homeworkId);
+            const res=await HomeworkService.getById(homeworkId);
             if(!res.success){
                 toast.error(res.error.message);
                 return res.success;
@@ -85,7 +85,7 @@ const VerifyHomeworkSubmissions = () => {
         
         setData(updated);
 
-        const res=await StudentHomeworkService.update(Roles.Teacher,selected._id,updateHomework);
+        const res=await StudentHomeworkService.update(selected._id,updateHomework);
 
         if(!res.success){
             toast.error(res.error.message);

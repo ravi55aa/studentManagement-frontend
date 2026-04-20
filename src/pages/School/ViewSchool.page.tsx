@@ -129,7 +129,7 @@ const SchoolSettingsPage = () => {
 
     setShowOtp(false);
 
-    const res = await SchoolService.resetPassword(Roles.School,userId, data);
+    const res = await SchoolService.resetPassword(userId, data);
 
     setShowResetModal(false);
     if (!res.success) {

@@ -34,6 +34,7 @@ const AddStudentPage = () => {
         parentPhone: "",
         status: Student_Status.Active,
         profile: null as File | string | null,
+        batch:batchId
     });
 
     /* ---------- handlers ---------- */
@@ -44,10 +45,7 @@ const AddStudentPage = () => {
         const spanTag = document.getElementById(name);
         if (spanTag) spanTag.textContent = "";
 
-        setStudentForm((prev) => ({
-        ...prev,
-        [name]: value,
-        }));
+        setStudentForm((prev) => ({...prev,[name]: value,}));
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

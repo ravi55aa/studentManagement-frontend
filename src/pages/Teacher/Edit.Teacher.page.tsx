@@ -38,7 +38,7 @@ const EditTeacherPage = () => {
     const fetchTeacher = async () => {
       setLoading(true);
 
-      const res = await TeacherService.get(Roles.Teacher, id);
+      const res = await TeacherService.getById( id);
 
       if (!res.success) {
         toast.error('Failed to fetch teacher');
@@ -118,7 +118,7 @@ const EditTeacherBio = ({ teacher }: { teacher: Partial<ITeacherBio> }) => {
       }
     });
 
-    const res = await TeacherService.editBio(Roles.School,teacher._id, formData);
+    const res = await TeacherService.editBio(teacher._id, formData);
 
     if (!res.success) {
       toast.error('Failed to update bio');
@@ -243,7 +243,7 @@ const EditTeacherProfessional = ({
 
     if (!isValid.success) return;
 
-    const res = await TeacherService.editProfessional(Roles.School,teacher.teacherId, professionalForm);
+    const res = await TeacherService.editProfessional(teacher.teacherId, professionalForm);
 
     if (!res.success) {
       toast.error(res.error.message);

@@ -1,7 +1,7 @@
-import Swal from 'sweetalert2';
+
 import { toast } from 'react-toastify';
-import { Lock, Trash } from 'lucide-react';
-import  React, { ChangeEvent, useEffect, useState } from 'react';
+import { Lock } from 'lucide-react';
+import  {  useEffect, useState } from 'react';
 import { IResetPassword } from '@/interfaces/ISchool';
 
 import { handleValidationOF } from '@/validation/validateFormData';
@@ -13,14 +13,12 @@ import { SchoolService } from '@/api/Services/school.service';
 import { Card, PasswordResetModal} from '@/components/School/card';
 import { ProfileAddressComponent, ProfileDocumentsComponent } from '@/components/Settings.components';
 import { useNavigate } from 'react-router-dom';
-import { StudentService } from '@/api/Services/Student/student.service';
-import { IUserProfile, storeCurrentUserProfile,toggleCurrentUserProfileLoading } from '@/utils/Redux/Reducer/currentUserProfile.reducer';
+import { storeCurrentUserProfile,toggleCurrentUserProfileLoading } from '@/utils/Redux/Reducer/currentUserProfile.reducer';
 import { Roles } from '@/constants/role.enum';
 import { AddressService } from '@/api/Services/address.service';
 import { DocumentService } from '@/api/Services/document.service';
 import { IAddress, IDocument } from '@/interfaces/IRegister';
 import { TeacherService } from '@/api/Services/teacher.service';
-import { ITeacherBio } from '@/interfaces/ITeacher';
 
 const TeacherSettingsPage = () => {
     /**
@@ -68,10 +66,10 @@ const TeacherSettingsPage = () => {
         
         (async () => {
         
-        const res = await TeacherService.get(Roles.Teacher,user.id);
+        const res = await TeacherService.getById(user.id);
         
-        const resAddress = await AddressService.get(Roles.Teacher,user.id);
-        const resDocument = await DocumentService.get(Roles.Teacher,user.id);
+        const resAddress = await AddressService.getAAddress(user.id);
+        const resDocument = await DocumentService.getById(user.id);
         
         if (!res.success ) {
             toast.warn(res.error?.message);
@@ -118,7 +116,7 @@ const TeacherSettingsPage = () => {
         const formData = new FormData();
         formData.append('profile', image.file);
 
-        const res = await TeacherService.editBio(Roles.Teacher,id, formData);
+        const res = await TeacherService.editBio(id, formData);
         dispatch(toggleCurrentUserProfileLoading());
 
         if (!res.success) {
@@ -152,7 +150,7 @@ const TeacherSettingsPage = () => {
 
         setShowOtp(false);
 
-        const res = await SchoolService.resetPassword(Roles.Teacher,userId, data);
+        const res = await SchoolService.resetPassword(userId, data);
 
         setShowResetModal(false);
         if (!res.success) {

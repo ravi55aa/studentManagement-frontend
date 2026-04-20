@@ -140,7 +140,7 @@ const AdminSchoolList = () => {
             ]}
         />
 
-        <Pagination />
+        {/* <Pagination /> */}
 
         {/* Modal */}
         <SchoolViewModal

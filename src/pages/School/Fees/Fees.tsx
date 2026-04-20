@@ -55,7 +55,7 @@ export default function FeeListPage() {
 
     dispatch(toggleFeeLoading(true));
 
-    const res = await FeeService.delete(id);
+    const res = await FeeService.deleteFee(id);
 
     if (!res.success) {
       toast.warn(res.error.message);

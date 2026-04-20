@@ -43,7 +43,7 @@ const Attendance = () => {
         }
 
     (async () => {
-        const res = await StudentService.getALLWithQuery(Roles.Teacher,{batch:batchId});
+        const res = await StudentService.getALLWithQuery({batch:batchId});
 
         if (!res.success) {
             toast.warn(res.error.message);
@@ -65,7 +65,7 @@ const Attendance = () => {
     (async () => {
         //Get AttendanceList of particular day
         
-        const res = await AttendanceService.getAttendanceOfBatch(Roles.Teacher,{batchId:batchId,date:selectedDate});
+        const res = await AttendanceService.getAttendanceOfBatch({batchId:batchId,date:selectedDate});
 
 
         //Batch Attendance report with date;
@@ -132,7 +132,7 @@ const Attendance = () => {
     const handleViewStudent = async (student: IStudent) => {
         
         //here fetchThe studentLeave
-        const res=await AttendanceService.getLeaveHistory(Roles.Student,student._id,selectedDate);
+        const res=await AttendanceService.getLeaveHistory(student._id,selectedDate);
         
         setViewModal(true);
         setSelectedStudent({student,leaveHistory:res?.data?.data[0]});
@@ -142,7 +142,7 @@ const Attendance = () => {
     
     const handleUpdateAttendance=async()=>{
 
-        const res=await AttendanceService.update(Roles.Teacher,attendanceList,batchId,selectedDate);
+        const res=await AttendanceService.update(attendanceList,batchId,selectedDate);
 
         if(!res.success){
             toast.warn(res.error.message);
@@ -319,7 +319,7 @@ const Attendance = () => {
             ))}
         </div>
 
-        <Pagination />
+        {/* <Pagination /> */}
         </div>
     )
 }

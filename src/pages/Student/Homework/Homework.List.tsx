@@ -15,6 +15,7 @@ import { IAcademicSubject } from '@/interfaces/ISchool';
 import NotificationModal from '@/components/Notification/component/NotificationModal';
 import { StudentHomeworkService } from '@/api/Services/Student/studentHomeworkService';
 import { IHomework, IHomeworkSubmission } from '@/interfaces/IHomework';
+import { paginationQuery } from '@/constants/pagination';
 
 export default function FeeListPage() {
     const dispatch = useAppDispatch();
@@ -34,14 +35,16 @@ export default function FeeListPage() {
                 return false;
             }
 
-            const res = await HomeworkService.getAllWithQuery(Roles.Student,{batch:user.batchId});
+            const res = await HomeworkService.getAllWithQuery(paginationQuery,{batch:user.batchId});
 
             if (!res.success) {
                 toast.error(res.error.message);
             return res.success;
             }
 
-            const homeworksArray=res.data.data;
+            const resData=res.data.data;
+            const homeworksArray=resData.data;
+
             dispatch(storeHomeworks(homeworksArray));
         })();
     }, [dispatch]);
@@ -53,7 +56,7 @@ export default function FeeListPage() {
             
             for(let homework of homeworks.homeworks){
             
-                const res=await StudentHomeworkService.get(Roles.Student,homework._id);
+                const res=await StudentHomeworkService.getById(homework._id);
 
                 if(res.success){
                     const studentHomework=res.data?.data;
@@ -138,7 +141,7 @@ export default function FeeListPage() {
             ]}
         />
 
-        <Pagination />
+        {/* <Pagination /> */}
         </div>
     );
 }

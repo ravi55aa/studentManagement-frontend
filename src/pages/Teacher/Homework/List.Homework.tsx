@@ -84,7 +84,7 @@ const TeacherHomeworkTable = () => {
             return;
         }
     
-        const res = await HomeworkService.delete(Roles.School,id);
+        const res = await HomeworkService.deleteHomework(id);
         
         dispatch(toggleHomeworkLoading(false));
 

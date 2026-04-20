@@ -26,7 +26,7 @@ const HomeworkSubmissionPage = () => {
     const MAX_VIDEO_SIZE = 15 * 1024 * 1024; // 15MB
 
     const fetchStudentHomeworkInfo=async()=>{
-        const res=await StudentHomeworkService.get(user.role,homeworkId);
+        const res=await StudentHomeworkService.getById(homeworkId);
 
         if(!res.success){
             console.log(res.error.message);
@@ -44,7 +44,7 @@ const HomeworkSubmissionPage = () => {
 
     useEffect(()=>{
         const fetchHomeWork=async()=>{
-            const res=await HomeworkService.get(Roles.Teacher,homeworkId);
+            const res=await HomeworkService.getById(homeworkId);
             if(!res.success){
                 toast.error(res.error.message);
                 return res.success;

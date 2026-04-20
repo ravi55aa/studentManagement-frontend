@@ -61,7 +61,7 @@ const CourseListPage = () => {
     if (!result.isConfirmed) {
       return;
     }
-    const deletedDoc = await CourseService.delete(id);
+    const deletedDoc = await CourseService.deleteCourse(id);
 
     if (!deletedDoc.success) {
       Swal.fire('Deleted!', deletedDoc.error.message, 'error');
@@ -124,7 +124,7 @@ const CourseListPage = () => {
         ]}
       />
 
-      <Pagination />
+      {/* <Pagination /> */}
     </div>
   );
 };

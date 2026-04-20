@@ -8,7 +8,6 @@ import { ILeaveDocument } from "@/interfaces/IAttendance";
 import { handleValidationOF } from "@/validation/validateFormData";
 import { leaveSchema } from "@/validation/student.validation";
 import NotificationModal from "@/components/Notification/component/NotificationModal";
-import { IUserNotification } from "@/interfaces/INotification";
 
 const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -40,7 +39,7 @@ const StudentAttendance = () => {
         const fetchStudentAttendance=async()=>{
 
             //fetchAttendance
-            const res=await AttendanceService.getAStudentList(Roles.Student,{studentId:user.id,year,month});
+            const res=await AttendanceService.getAStudentList({studentId:user.id,year,month});
 
             if(!res.success){
                 toast.error(res.error.message);
@@ -89,7 +88,7 @@ const StudentAttendance = () => {
             return isValidation.success;
         }
 
-        const res=await AttendanceService.applyLeave(Roles.Student,leaveData,user.id);
+        const res=await AttendanceService.applyLeave(leaveData,user.id);
 
         if(!res.success){
             toast.warn(res.error.message);

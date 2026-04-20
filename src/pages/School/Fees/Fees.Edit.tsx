@@ -51,7 +51,7 @@ export default function AddFeePage() {
 
   useEffect(() => {
     const fetch = async () => {
-      const res = await FeeService.get(id);
+      const res = await FeeService.getById(id);
       if (!res.success) {
         toast.warn(res.error.message);
         return res.success;

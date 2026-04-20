@@ -18,6 +18,7 @@ import { HomeWorkStatus } from '@/types/homework.status';
 import { TeacherService } from '@/api/Services/teacher.service';
 import { useParams } from 'react-router-dom';
 import { IAttachment } from '@/components/HomeworkCard';
+import { paginationQuery } from '@/constants/pagination';
 
 const AddHomework = () => {
     
@@ -51,11 +52,11 @@ const AddHomework = () => {
             }
 
             const fetchStoreData=async()=>{
-                const resTeacher=await TeacherService.get(Roles.Teacher,user.id);
+                const resTeacher=await TeacherService.getById(user.id);
                 const teacherProfile=resTeacher.data?.data;
 
-                const res1=await SubjectService.getAll(Roles.Teacher);
-                const res2=await BatchService.getAllWithQuery({center:teacherProfile.teacher.center});
+                const res1=await SubjectService.getAll(); //Get all subject of the appropriate center
+                const res2=await BatchService.getAllWithQuery({center:teacherProfile.teacher.center},paginationQuery);
 
                 if(!res1.success){
                     toast.error(res1.error.message);
@@ -86,7 +87,7 @@ const AddHomework = () => {
             }
 
             const fetchHomework=async()=>{
-                const res = await HomeworkService.get(Roles.Teacher,homeworkId);
+                const res = await HomeworkService.getById(homeworkId);
 
                 if(!res.success){
                     toast.error(res.error.message);
@@ -194,7 +195,7 @@ const AddHomework = () => {
                 formData.append(key,form[key]);
             }
             
-            const res=await HomeworkService.update(Roles.Teacher,homeworkId,formData);
+            const res=await HomeworkService.update(homeworkId,formData);
 
             setLoading(true)
 

@@ -66,10 +66,10 @@ const StudentSettingsPage = () => {
         
         (async () => {
         
-        const res = await StudentService.get(Roles.Student,user.id);
+        const res = await StudentService.getById(user.id);
         
-        const resAddress = await AddressService.get(Roles.Student,user.id);
-        const resDocument = await DocumentService.get(Roles.Student,user.id);
+        const resAddress = await AddressService.getAAddress(user.id);
+        const resDocument = await DocumentService.getById(user.id);
         
         if (!res.success ) {
             toast.warn(res.error?.message);
@@ -116,7 +116,7 @@ const StudentSettingsPage = () => {
         const formData = new FormData();
         formData.append('profile', image.file);
 
-        const res = await StudentService.update(Roles.Student,id, formData);
+        const res = await StudentService.update(id, formData);
         dispatch(toggleCurrentUserProfileLoading());
 
         if (!res.success) {
@@ -150,7 +150,7 @@ const StudentSettingsPage = () => {
 
         setShowOtp(false);
 
-        const res = await SchoolService.resetPassword(Roles.Student,userId, data);
+        const res = await SchoolService.resetPassword(userId, data);
 
         setShowResetModal(false);
         if (!res.success) {

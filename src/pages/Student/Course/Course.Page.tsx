@@ -8,7 +8,6 @@ import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { storeSchoolAcademicCourses, storeSchoolAcademicCoursesMeta, toggleAcademicCourseLoading } from '@/utils/Redux/Reducer/courses.reducer';
 import { Bell, Eye  } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
 import { ICourseForm } from '@/interfaces/ICourseForm';
 import { IUploadedDoc } from '@/interfaces/IRegister';
 import CourseViewModal from '@/components/ViewCourse.component';
@@ -52,7 +51,7 @@ const StudentCourse = () => {
     try {
         dispatch(toggleAcademicCourseLoading(true));
 
-        const res = await CourseService.get(Roles.Student, id);
+        const res = await CourseService.getById( id);
 
         if (!res.success) {
             toast.error(res.error.message);
@@ -130,7 +129,7 @@ const StudentCourse = () => {
             ]}
         />
 
-        <Pagination />
+        {/* <Pagination /> */}
 
         {/* View Modal */}
         <CourseViewModal viewCourse={viewCourse} isModalOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

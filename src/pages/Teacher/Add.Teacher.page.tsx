@@ -163,7 +163,7 @@ const AddTeacherPage = () => {
       }
     });
 
-    const res = await TeacherService.addBio(Roles.School,formData);
+    const res = await TeacherService.addBio(formData);
 
     if (!res.success) {
       toast.error(res.error?.message);
@@ -197,7 +197,7 @@ const AddTeacherPage = () => {
       return isValid.success;
     }
 
-    const res = await TeacherService.addProfessional(Roles.School,teacherId, professionalForm);
+    const res = await TeacherService.addProfessional(teacherId, professionalForm);
 
     if (!res.success) {
       toast.error(res.error.message);

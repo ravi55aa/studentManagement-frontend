@@ -1,8 +1,6 @@
 import  { useEffect, useState } from 'react'
-import { Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
-import { Roles } from '@/constants/role.enum';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { storeSchoolAcademicSubjects,toggleAcademicSubLoading } from '@/utils/Redux/Reducer/subjectReducer';
 import { Bell, Eye  } from 'lucide-react';
@@ -27,7 +25,7 @@ const TeacherSubjects = () => {
         const fetchSubjects = async () => {
             try {
                 dispatch(toggleAcademicSubLoading(true));
-                const resTeacher=await TeacherService.get(Roles.Teacher,user.id);
+                const resTeacher=await TeacherService.getById(user.id);
 
                 if(!resTeacher){
                     toast.error(resTeacher.error.message);
@@ -38,7 +36,7 @@ const TeacherSubjects = () => {
                 const subjectArray:IAcademicSubject[]=[];
         
                 for(let _subjectId of teacher?.assignedSubjects){
-                    const res = await SubjectService.get(Roles.Student,_subjectId?._id);
+                    const res = await SubjectService.getById(_subjectId?._id);
 
                     if (!res.success) {
                         toast.error(res.error.message);
@@ -66,7 +64,7 @@ const TeacherSubjects = () => {
     try {
         dispatch(toggleAcademicSubLoading(true));
 
-        const res = await SubjectService.get(Roles.Teacher, id);
+        const res = await SubjectService.getById( id);
 
         if (!res.success) {
             toast.error(res.error.message);

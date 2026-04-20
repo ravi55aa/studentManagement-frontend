@@ -16,6 +16,7 @@ import { IFee } from '@/interfaces/IFee';
 import { IStudentFee } from '@/interfaces/IStudent';
 import { Bell } from 'lucide-react';
 import NotificationModal from '@/components/Notification/component/NotificationModal';
+import { paginationQuery } from '@/constants/pagination';
 
 export default function StudentFeeListPage() {
     const dispatch = useAppDispatch();
@@ -34,19 +35,21 @@ export default function StudentFeeListPage() {
         //  Make sure to update into
         //  filtering the query, by the there are specific
         //  center, course may vary.  
-        const res = await FeeService.getAll(); 
+        const res = await FeeService.getAll(paginationQuery); 
 
         if (!res.success) {
             toast.error(res.error.message);
             return;
         }
 
+        const resData = res.data?.data;
+
         dispatch(toggleFeeLoading(false));
-        dispatch(storeFees(res.data?.data));
+        dispatch(storeFees(resData.data || []));
     };
 
     const handleGetStudentPaidFeeDetail=async()=>{
-        const res = await StudentFeeService.getAllStudentFeeDetails(Roles.Student,user.id); 
+        const res = await StudentFeeService.getAllStudentFeeDetails(user.id); 
 
         if (!res.success) {
             toast.error(res.error.message);
@@ -161,7 +164,7 @@ export default function StudentFeeListPage() {
             ]}
         />
 
-        <Pagination />
+        {/* <Pagination /> */}
         </div>
     );
 }

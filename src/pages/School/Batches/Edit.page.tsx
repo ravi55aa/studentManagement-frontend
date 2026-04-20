@@ -12,6 +12,7 @@ import FormActions from '@/components/FormAction';
 import { TeacherService } from '@/api/Services/teacher.service';
 import { BatchService } from '@/api/Services/batch.service';
 import { Roles } from '@/constants/role.enum';
+import { paginationQuery } from '@/constants/pagination';
 
 const EditBatch = () => {
   const [form, setForm] = useState({
@@ -32,7 +33,7 @@ const EditBatch = () => {
 
   useEffect(() => {
     const fetchBatchById = async () => {
-      const res = await BatchService.get(Roles.School,id);
+      const res = await BatchService.getById(id);
 
       const batchData = res?.data?.data;
 
@@ -62,9 +63,9 @@ const EditBatch = () => {
       }
       span.textContent = '';
 
-      const res = await TeacherService.getAllUnAssigned(form.center);
-      const teachers = res?.data?.data;
-      console.log('@addBatch teachers', teachers);
+      const res = await TeacherService.getAllUnAssigned(form.center,paginationQuery);
+      const resData = res?.data?.data;
+      const teachers = resData.data || [];
 
       if (!teachers || teachers.length <= 0) {
         span.textContent = 'Not found unassigned TEACHERS, from chosen CENTER';
@@ -109,7 +110,7 @@ const EditBatch = () => {
       return isValid.success;
     }
 
-    const res = await BatchService.update(Roles.School,id, form);
+    const res = await BatchService.update(id, form);
 
     if (!res.success) {
       toast.error(res.error.message);

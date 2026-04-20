@@ -107,7 +107,7 @@ const BatchesPage = () => {
   const handleAssignTeacher = async (teacherId: string): Promise<boolean> => {
     dispatch(toggleBatchLoading(true));
 
-    const res = await BatchService.assignTeacher(Roles.Admin,selectedBatch?._id, teacherId);
+    const res = await BatchService.assignTeacher(selectedBatch?._id, teacherId);
     setSearch('');
 
     dispatch(toggleBatchLoading(false));

@@ -35,7 +35,7 @@ const SignIn = () => {
 
         setError('');
 
-        const res = await TeacherService.login(Roles.Teacher,form);
+        const res = await TeacherService.login(form);
         
         if (!res.success) {
             toast.error(res.error.message);
