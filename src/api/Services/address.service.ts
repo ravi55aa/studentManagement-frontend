@@ -1,39 +1,28 @@
 import { AddressRoute } from '@/constants/routes.contants';
-import { HandleApiOptions, handleApi } from '../global.api';
 import { IAddress } from '@/interfaces/IRegister';
-import { Roles } from '@/constants/role.enum';
+import { BaseService } from './Base.Service';
 
-export class AddressService {
-  static async getAll() {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: AddressRoute.getAll,
-      payload: null,
-      headers: { role: 'School' },
-    };
+export class AddressService extends BaseService {
 
-    return await handleApi<null, IAddress[]>(config);
+  // Get All Addresses
+  static getAll() {
+    return this.get<IAddress[]>(
+      AddressRoute.getAll
+    );
   }
 
-  static async get(role:string=Roles.School,id: string) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: `${AddressRoute.get}/${id}`,
-      payload: null,
-      headers: { role: role },
-    };
-
-    return await handleApi<null, IAddress>(config);
+  // Get Single Address
+  static getAAddress(id: string) {
+    return this.get<IAddress>(
+      `${AddressRoute.get}/${id}`
+    );
   }
 
-  static async update(role:string=Roles.School,id: string, form: IAddress) {
-    const config: HandleApiOptions<IAddress> = {
-      method: 'patch',
-      endPoint: `${AddressRoute.edit}/${id}`,
-      payload: form,
-      headers: { role: role },
-    };
-
-    return await handleApi<IAddress, IAddress>(config);
+  // Update Address
+  static update(id: string, form: IAddress) {
+    return this.patch<IAddress, IAddress>(
+      `${AddressRoute.edit}/${id}`,
+      form
+    );
   }
 }

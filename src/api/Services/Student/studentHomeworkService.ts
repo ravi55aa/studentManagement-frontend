@@ -2,96 +2,68 @@ import { handleApi,HandleApiOptions } from '@/api/global.api';
 import { Roles } from '@/constants/role.enum';
 import { HomeworkRoute, StudentHomeworkRoute, SubjectRoute } from '@/constants/routes.contants';
 import { IHomework, IHomeworkSubmission } from '@/interfaces/IHomework';
+import { BaseService } from '../Base.Service';
 
 
-export class StudentHomeworkService {
-    static async submit(formData: FormData,homeworkId:string) {
-        const config: HandleApiOptions<FormData> = {
-        method: 'post',
-        endPoint: `${StudentHomeworkRoute.submit}/${homeworkId}`,
-        payload: formData,
-        headers: { role: Roles.Student },
-        };
+export class StudentHomeworkService extends BaseService {
 
-        return await handleApi<FormData, IHomework>(config);
-    }
+  static submit(formData: FormData, homeworkId: string) {
+    return this.post<FormData, IHomework>(
+      `${StudentHomeworkRoute.submit}/${homeworkId}`,
+      formData
+    );
+  }
 
-    static async getAll(role:string='Teacher') {
-        const config: HandleApiOptions<null> = {
-        method: 'get',
-        endPoint: StudentHomeworkRoute.getall,
-        payload: null,
-        headers: { role: role },
-        };
+  static getAll() {
+    return this.get<IHomework[]>(
+      StudentHomeworkRoute.getall
+    );
+  }
 
-        return await handleApi<null, IHomework[]>(config);
-    }
+  static getAllWithQuery(
+    query: Record<string, string | number | boolean> = {}
+  ) {
+    return this.get<IHomework[]>(
+      StudentHomeworkRoute.getall,
+      query
+    );
+  }
 
-    static async getAllWithQuery(role:string=Roles.Student,query:Record<string,string|number|boolean>={}) {
-        const config: HandleApiOptions<null> = {
-        method: 'get',
-        endPoint: StudentHomeworkRoute.getall,
-        payload: null,
-        params:query,
-        headers: { role: role },
-        };
+  static getAllSubmissions(
+    query: Record<string, string | number | boolean> = {}
+  ) {
+    return this.get<IHomeworkSubmission[]>(
+      StudentHomeworkRoute.getall,
+      query
+    );
+  }
 
-        return await handleApi<null, IHomework[]>(config);
-    }
-    
-    static async getAllSubmissions(role:string=Roles.Student,query:Record<string,string|number|boolean>={}) {
-        const config: HandleApiOptions<null> = {
-        method: 'get',
-        endPoint: StudentHomeworkRoute.getall,
-        payload: null,
-        params:query,
-        headers: { role: role },
-        };
+  static getById(id: string) {
+    return this.get<IHomeworkSubmission>(
+      `${StudentHomeworkRoute.get}/${id}`
+    );
+  }
 
-        return await handleApi<null, IHomeworkSubmission[]>(config);
-    }
+  static deleteHomework(id: string) {
+    return this.delete<{ message: string }>(
+      `${SubjectRoute.get}/${id}`
+    );
+  }
 
-    static async get(role:string='Teacher',id: string) {
-        const config: HandleApiOptions<null> = {
-        method: 'get',
-        endPoint: `${StudentHomeworkRoute.get}/${id}`,
-        payload: null,
-        headers: { role: role },
-        };
+  static update(id: string, formData: IHomeworkSubmission) {
+    return this.put<IHomeworkSubmission, IHomeworkSubmission>(
+      `${StudentHomeworkRoute.update}/${id}`,
+      formData
+    );
+  }
 
-        return await handleApi<null, IHomeworkSubmission>(config);
-    }
-
-    static async delete(role:string='Teacher',id: string) {
-        const config: HandleApiOptions<null> = {
-        method: 'delete',
-        endPoint: `${SubjectRoute.get}/${id}`,
-        payload: null,
-        headers: { role: role },
-        };
-
-        return await handleApi<null, { message: string }>(config);
-    }
-
-    static async update(role:string=Roles.Teacher,id: string, formData: IHomeworkSubmission) {
-        const config: HandleApiOptions<IHomeworkSubmission> = {
-        method: 'put', // (better use PATCH if backend supports it)
-        endPoint: `${StudentHomeworkRoute.update}/${id}`,
-        payload: formData,
-        headers: { role: role },
-        };
-
-        return await handleApi<IHomeworkSubmission, IHomeworkSubmission>(config);
-    }
-
-    static async updateMany(role:string=Roles.Student,homeworkId: string, formData: IHomeworkSubmission[]) {
-        const config: HandleApiOptions<IHomeworkSubmission[]> = {
-        method: 'put', // (better use PATCH if backend supports it)
-        endPoint: `${StudentHomeworkService.updateMany}/${homeworkId}`,
-        payload: formData,
-        headers: { role: role },
-        };
-
-        return await handleApi<IHomeworkSubmission[], IHomeworkSubmission[]>(config);
-    }
+  static updateMany(
+    homeworkId: string,
+    formData: IHomeworkSubmission[]
+  ) {
+    return this.put<IHomeworkSubmission[], IHomeworkSubmission[]>(
+      `${StudentHomeworkRoute.updateMany}/${homeworkId}`,
+      formData
+    );
+  }
 }

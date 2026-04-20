@@ -1,72 +1,42 @@
 import { ChatRouter } from '@/constants/routes.contants';
-import { HandleApiOptions,handleApi } from '@/api/global.api'; 
-import { Roles } from '@/constants/role.enum';
 import { IChatRoom, IMessage } from '@/interfaces/IChat';
+import { BaseService } from '../Base.Service';
 
-export class ChatService {
+export class ChatService extends BaseService {
 
-  //  Create Direct Chat
-    static async createDirectChat(role:string=Roles.Student,user1: string, user2: string) {
-        const config: HandleApiOptions<{ user1: string; user2: string }> = {
-        method: "post",
-        endPoint: ChatRouter.createDirectChat,
-        payload: { user1, user2 },
-        headers: { role: role }, // adjust if dynamic
-        };
+  static createDirectChat(user1: string, user2: string) {
+    return this.post<{ user1: string; user2: string }, IChatRoom>(
+      ChatRouter.createDirectChat,
+      { user1, user2 }
+    );
+  }
 
-        return await handleApi<{ user1: string; user2: string },IChatRoom>(config);
-    }
+  static createBatchChat(batchId: string) {
+    return this.post<{ batchId: string }, IChatRoom>(
+      ChatRouter.createBatchChat,
+      { batchId }
+    );
+  }
 
-    static async createBatchChat(role:string=Roles.Student,batchId: string) {
-        const config: HandleApiOptions<{ batchId: string; }> = {
-        method: "post",
-        endPoint: ChatRouter.createBatchChat,
-        payload: { batchId },
-        headers: { role: role }, // adjust if dynamic
-        };
+  static getUserChats(userId: string) {
+    return this.get<IChatRoom[]>(
+      ChatRouter.getUserChats.replace(":userId", userId)
+    );
+  }
 
-        return await handleApi<{ batchId: string; },IChatRoom>(config);
-    }
+  static sendMessage(chatRoomId: string, message: string) {
+    return this.post<
+      { chatRoomId: string; message: string },
+      unknown
+    >(
+      ChatRouter.sendMessage,
+      { chatRoomId, message }
+    );
+  }
 
-    //  Get User Chats
-    static async getUserChats(role:string=Roles.Student,userId: string) {
-        const config: HandleApiOptions<null> = {
-        method: "get",
-        endPoint: ChatRouter.getUserChats.replace(":userId", userId),
-        payload: null,
-        headers: { role: role },
-        };
-
-        return await handleApi<null, IChatRoom[]>(config);
-    }
-
-    //  Send Message
-    static async sendMessage(role:string=Roles.Student,chatRoomId: string, message: string) {
-        const config: HandleApiOptions<{
-        chatRoomId: string;
-        message: string;
-        }> = {
-        method: "post",
-        endPoint: ChatRouter.sendMessage,
-        payload: { chatRoomId, message },
-        headers: { role: role },
-        };
-
-        return await handleApi(config);
-    }
-
-    //  Get Messages
-    static async getMessages(role:string=Roles.Student,chatRoomId: string) {
-        const config: HandleApiOptions<null> = {
-        method: "get",
-        endPoint: ChatRouter.getMessages.replace(
-            ":chatRoomId",
-            chatRoomId
-        ),
-        payload: null,
-        headers: { role: role },
-        };
-
-        return await handleApi<null, IMessage[]>(config);
-    }
+  static getMessages(chatRoomId: string) {
+    return this.get<IMessage[]>(
+      ChatRouter.getMessages.replace(":chatRoomId", chatRoomId)
+    );
+  }
 }

@@ -1,73 +1,51 @@
 import { BatchRoute } from '@/constants/routes.contants';
-import { HandleApiOptions, handleApi } from '../global.api';
 import { IBatches } from '@/interfaces/ISchool';
 import { TPaginationQuery, TPaginationResult } from '@/types/paginationTypes';
+import { BaseService } from './Base.Service';
 
-export class BatchService {
-  static async create(form: Partial<IBatches>) {
-    const config: HandleApiOptions<Partial<IBatches>> = {
-      method: 'post',
-      endPoint: BatchRoute.add,
-      payload: form,
-      headers: { role: 'School' },
-    };
+export class BatchService extends BaseService {
 
-    return await handleApi<Partial<IBatches>, IBatches>(config);
+  static create(form: Partial<IBatches>) {
+    return this.post<Partial<IBatches>, IBatches>(
+      BatchRoute.add,
+      form
+    );
   }
 
-  static async getAll(paginationQuery: TPaginationQuery) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: BatchRoute.get,
-      payload: null,
-      params: paginationQuery,
-    };
-
-    return await handleApi<null, TPaginationResult<IBatches>>(config);
+  static getAll(paginationQuery: TPaginationQuery) {
+    return this.get<TPaginationResult<IBatches>>(
+      BatchRoute.get,
+      paginationQuery
+    );
   }
 
-  static async getAllWithQuery(query:Record<string,string|number|boolean>={},paginationQuery: TPaginationQuery) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: BatchRoute.get,
-      payload: null,
-      params: {...query, ...paginationQuery},
-    };
-
-    return await handleApi<null, TPaginationResult<IBatches>>(config);
+  static getAllWithQuery(
+    query: Record<string, string | number | boolean> = {},
+    paginationQuery: TPaginationQuery
+  ) {
+    return this.get<TPaginationResult<IBatches>>(
+      BatchRoute.get,
+      { ...query, ...paginationQuery }
+    );
   }
 
-  static async get(role:string='School',id:string) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: `${BatchRoute.get}/${id}`,
-      payload: null,
-      headers: { role: role },
-    };
-
-    return await handleApi<null, IBatches>(config);
+  static getById(id: string) {
+    return this.get<IBatches>(
+      `${BatchRoute.get}/${id}`
+    );
   }
 
-  static async assignTeacher(role:string='School',batchId: string, teacherId: string) {
-    const config: HandleApiOptions<{ teacherId: string }> = {
-      method: 'patch',
-      endPoint: `${BatchRoute.assignTeacher}/${batchId}`,
-      payload: { teacherId },
-      headers: { role: role },
-    };
-
-    return await handleApi<{ teacherId: string }, IBatches>(config);
+  static assignTeacher(batchId: string, teacherId: string) {
+    return this.patch<{ teacherId: string }, IBatches>(
+      `${BatchRoute.assignTeacher}/${batchId}`,
+      { teacherId }
+    );
   }
 
-  static async update(role:string='School',id: string, form: object) {
-    const config: HandleApiOptions<object> = {
-      method: 'put',
-      endPoint: `${BatchRoute.edit}/${id}`,
-      payload: form,
-      headers: { role: role },
-    };
-
-    return await handleApi<object, IBatches>(config);
+  static update(id: string, form: object) {
+    return this.put<object, IBatches>(
+      `${BatchRoute.edit}/${id}`,
+      form
+    );
   }
-
 }

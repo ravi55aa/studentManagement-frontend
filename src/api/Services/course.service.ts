@@ -1,62 +1,39 @@
 import { CourseRoute } from '@/constants/routes.contants';
-import { HandleApiOptions, handleApi } from '../global.api';
 import { ICourseForm } from '@/interfaces/ICourseForm';
 import { IGetAllArrayOfCourses, IGetAllCourse } from '@/types/tcourse';
-import { Roles } from '@/constants/role.enum';
+import { BaseService } from './Base.Service';
 
-export class CourseService {
-  static async create(formData: FormData) {
-    const config: HandleApiOptions<FormData> = {
-      method: 'post',
-      endPoint: CourseRoute.add,
-      payload: formData,
-      headers: { role: 'School' },
-    };
+export class CourseService extends BaseService {
 
-    return await handleApi<FormData, ICourseForm>(config);
+  static create(formData: FormData) {
+    return this.post<FormData, ICourseForm>(
+      CourseRoute.add,
+      formData
+    );
   }
 
-  static async getAll(role:string=Roles.School) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: CourseRoute.get,
-      payload: null,
-      headers: { role: role },
-    };
-
-    return await handleApi<null, IGetAllArrayOfCourses>(config);
+  static getAll() {
+    return this.get<IGetAllArrayOfCourses>(
+      CourseRoute.get
+    );
   }
 
-  static async get(role:string=Roles.School,id: string) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: `${CourseRoute.get}/${id}`,
-      payload: null,
-      headers: { role: role },
-    };
-
-    return await handleApi<null, IGetAllCourse>(config);
+  static getById(id: string) {
+    return this.get<IGetAllCourse>(
+      `${CourseRoute.get}/${id}`
+    );
   }
 
-  static async update(id: string, formData: FormData) {
-    const config: HandleApiOptions<FormData> = {
-      method: 'put', // use patch if partial update
-      endPoint: `${CourseRoute.edit}/${id}`,
-      payload: formData,
-      headers: { role: 'School' },
-    };
-
-    return await handleApi<FormData, ICourseForm>(config);
+  static update(id: string, formData: FormData) {
+    return this.put<FormData, ICourseForm>(
+      `${CourseRoute.edit}/${id}`,
+      formData
+    );
   }
 
-  static async delete(id: string) {
-    const config: HandleApiOptions<null> = {
-      method: 'delete',
-      endPoint: `${CourseRoute.get}/${id}`,
-      payload: null,
-      headers: { role: 'School' },
-    };
-
-    return await handleApi<null, { message: string }>(config);
+  static deleteCourse(id: string) {
+    return this.delete<{ message: string }>(
+      `${CourseRoute.get}/${id}`
+    );
   }
 }

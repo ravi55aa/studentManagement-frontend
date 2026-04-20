@@ -1,47 +1,40 @@
 import { IOtp } from '@/pages/Auth/ForgotPassword/Otp.page';
 import { HandleApiOptions, handleApi } from '../global.api';
 import { forgotPassword } from '@/constants/routes.contants';
+import { BaseService } from './Base.Service';
 
-export class AuthService {
-  static async verifyEmail(email: string,role:string) {
-    const config: HandleApiOptions<object> = {
-      method: 'post',
-      endPoint: forgotPassword.emailVerify,
-      payload: { email: email, model: role },
-      headers: { role: role },
-    };
+export class AuthService extends BaseService {
 
-    return await handleApi<object, {id:string}>(config);
+  static verifyEmail(email: string, role: string) {
+    return this.post<{ email: string; model: string }, { id: string }>(
+      forgotPassword.emailVerify,
+      { email, model: role }
+    );
   }
 
-  static async generateOtp(id: string) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: `${forgotPassword.generateOtp}/${id}`,
-      headers: { role: 'Admin' },
-    };
-    return await handleApi<null, IOtp>(config);
+  static generateOtp(id: string) {
+    return this.get<IOtp>(
+      `${forgotPassword.generateOtp}/${id}`
+    );
   }
 
-  static async verifyOtp(genOtp: string, formOtp: string, id: string) {
-    const config: HandleApiOptions<object> = {
-      method: 'post',
-      endPoint: `${forgotPassword.verifyOtp}/${id}`,
-      payload: { generatedOtp: genOtp, userEnteredOtp: formOtp },
-      headers: { role: 'Admin' },
-    };
-    return await handleApi(config);
+  static verifyOtp(genOtp: string, formOtp: string, id: string) {
+    return this.post<
+      { generatedOtp: string; userEnteredOtp: string },
+      unknown
+    >(
+      `${forgotPassword.verifyOtp}/${id}`,
+      { generatedOtp: genOtp, userEnteredOtp: formOtp }
+    );
   }
 
-  static async updatePassword(id: string, newPassword: string) {
-    const config: HandleApiOptions<object> = {
-      method: 'patch',
-      endPoint: `${forgotPassword.updatePassword}/${id}`,
-      payload: { newPassword: newPassword, modelName: 'Admin' },
-      headers: { role: 'Admin' },
-    };
-
-    return await handleApi(config);
+  static updatePassword(id: string, newPassword: string) {
+    return this.patch<
+      { newPassword: string; modelName: string },
+      unknown
+    >(
+      `${forgotPassword.updatePassword}/${id}`,
+      { newPassword, modelName: 'Admin' }
+    );
   }
 }
-

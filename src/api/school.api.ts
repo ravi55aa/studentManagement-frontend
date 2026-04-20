@@ -51,7 +51,7 @@ export const handleDocsUploadCreateSchoolApi = async (formData): Promise<IRespon
     const res: IResponse<null> = await axiosBaseURL.post(
       SchoolRoute.register__add_documents,
       formData,
-      { headers: { role: 'admin', 'Content-Type': 'multipart/formData' } },
+      { headers: { role: 'Admin', 'Content-Type': 'multipart/formData' } },
     );
 
     return res.data;

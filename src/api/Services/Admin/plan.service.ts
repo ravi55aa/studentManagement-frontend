@@ -46,13 +46,9 @@ export class PlanService extends BaseService {
     }
 
     // Delete Plan
-    static async delete(id: string) {
-        const config: HandleApiOptions<null> = {
-            method: 'delete',
-            endPoint: `${PlanRoute.delete}/${id}`,
-        };
-    
-        return await handleApi<null, IPlan>(config);
+    static async deletePlan(id: string) {
+        return this.delete<null>(
+            `${PlanRoute.delete}/${id}`);
     }
 
     //  Toggle Active Status

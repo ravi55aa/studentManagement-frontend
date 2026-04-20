@@ -7,7 +7,7 @@ export class BaseService {
         payload,
         params
     }: {
-        method: 'get' | 'post' | 'patch' | 'delete';
+        method: 'get' | 'post' | 'put' | 'patch' | 'delete';
         endPoint: string;
         payload?: TPayload;
         params?: Record<string, any>; 
@@ -49,7 +49,7 @@ export class BaseService {
         params?:Record<string,any>
     ) {
         return this.request<TPayload, TResponse>({
-        method: 'post',
+        method: 'put',
         endPoint,
         payload,
         params:params||null

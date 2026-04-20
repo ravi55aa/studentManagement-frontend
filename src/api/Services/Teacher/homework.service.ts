@@ -1,75 +1,51 @@
-import { handleApi,HandleApiOptions } from '@/api/global.api';
-import { Roles } from '@/constants/role.enum';
+
 import { HomeworkRoute, SubjectRoute } from '@/constants/routes.contants';
 import { IHomework } from '@/interfaces/IHomework';
 import { TPaginationQuery,TPaginationResult } from '@/types/paginationTypes';
+import { BaseService } from '../Base.Service';
 
 
-export class HomeworkService {
-    static async create(formData: FormData) {
-        const config: HandleApiOptions<FormData> = {
-        method: 'post',
-        endPoint: HomeworkRoute.add,
-        payload: formData,
-        headers: { role: 'Teacher' },
-        };
+export class HomeworkService extends BaseService {
 
-        return await handleApi<FormData, IHomework>(config);
-    }
+  static create(formData: FormData) {
+    return this.post<FormData, IHomework>(
+      HomeworkRoute.add,
+      formData
+    );
+  }
 
-    
-    static async getAll(role:string='Teacher') {
-        const config: HandleApiOptions<null> = {
-        method: 'get',
-        endPoint: HomeworkRoute.get,
-        payload: null,
-        headers: { role: role },
-        };
+  static getAll() {
+    return this.get<IHomework[]>(
+      HomeworkRoute.get
+    );
+  }
 
-        return await handleApi<null, IHomework[]>(config);
-    }
+  static getAllWithQuery(
+    paginationQuery: TPaginationQuery,
+    query: Record<string, string | number | boolean> = {}
+  ) {
+    return this.get<TPaginationResult<IHomework>>(
+      HomeworkRoute.getall,
+      { ...paginationQuery, ...query }
+    );
+  }
 
-    static async getAllWithQuery(paginationQuery:TPaginationQuery,query:Record<string,string|number|boolean>={}) {
-        const config: HandleApiOptions<null> = {
-        method: 'get',
-        endPoint: HomeworkRoute.getall,
-        payload: null,
-        params:{...paginationQuery,...query},
-        };
+  static getById(id: string) {
+    return this.get<IHomework>(
+      `${HomeworkRoute.get}/${id}`
+    );
+  }
 
-        return await handleApi<null, TPaginationResult<IHomework>>(config);
-    }
+  static deleteHomework(id: string) {
+    return this.delete<{ message: string }>(
+      `${HomeworkRoute.delete}/${id}`
+    );
+  }
 
-    static async get(role:string='Teacher',id: string) {
-        const config: HandleApiOptions<null> = {
-        method: 'get',
-        endPoint: `${HomeworkRoute.get}/${id}`,
-        payload: null,
-        headers: { role: role },
-        };
-
-        return await handleApi<null, IHomework>(config);
-    }
-
-    static async delete(role:string='Teacher',id: string) {
-        const config: HandleApiOptions<null> = {
-        method: 'delete',
-        endPoint: `${HomeworkRoute.delete}/${id}`,
-        payload: null,
-        headers: { role: role },
-        };
-
-        return await handleApi<null, { message: string }>(config);
-    }
-
-    static async update(role:string=Roles.Teacher,id: string, formData: FormData) {
-        const config: HandleApiOptions<FormData> = {
-        method: 'patch', // (better use PATCH if backend supports it)
-        endPoint: `${HomeworkRoute.edit}/${id}`,
-        payload: formData,
-        headers: { role: role },
-        };
-
-        return await handleApi<FormData, IHomework>(config);
-    }
+  static update(id: string, formData: FormData) {
+    return this.patch<FormData, IHomework>(
+      `${HomeworkRoute.edit}/${id}`,
+      formData
+    );
+  }
 }

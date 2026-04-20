@@ -2,28 +2,21 @@ import { StripeRouter, StudentRouter } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '@/api/global.api';
 import { Roles } from '@/constants/role.enum';
 import { IStudentFee } from '@/interfaces/IStudent';
+import { BaseService } from '../Base.Service';
 
-export class StudentFeeService {
-    static async pay(role:string=Roles.Student,credential: Record<string,string|number>={}) {
-        const config: HandleApiOptions<object> = {
-        method: 'post',
-        endPoint: StripeRouter.pay,
-        payload: credential,
-        headers: { role: role },
-        };
+export class StudentFeeService extends BaseService {
 
-        return await handleApi<object, {'clientSecret':string}>(config);
-    }
+  static pay(credential: Record<string, string | number> = {}) {
+    return this.post<Record<string, string | number>, { clientSecret: string }>(
+      StripeRouter.pay,
+      credential
+    );
+  }
 
-    static async getAllStudentFeeDetails(role:string=Roles.Student,userId:string) {
-        const config: HandleApiOptions<object> = {
-        method: 'get',
-        endPoint: `${StudentRouter.studentPaidFeeDetails}/${userId}`,
-        payload: null,
-        headers: { role: role },
-        };
-
-        return await handleApi<object, IStudentFee[]>(config);
-    }
+  static getAllStudentFeeDetails(userId: string) {
+    return this.get<IStudentFee[]>(
+      `${StudentRouter.studentPaidFeeDetails}/${userId}`
+    );
+  }
 
 }

@@ -1,109 +1,71 @@
 import { TeacherRoute,AuthRouter } from '@/constants/routes.contants';
-import { HandleApiOptions, handleApi } from '../global.api';
 import { Teachers } from '@/types/types';
 
 import { IGetAllTeachers, ITeacher, ITeacherBio } from '@/interfaces/ITeacher';
 import { LoginPayloadType } from '@/types/loginType';
-import { Roles } from '@/constants/role.enum';
 import { TPaginationQuery ,TPaginationResult} from '@/types/paginationTypes';
+import { BaseService } from './Base.Service';
 
-export class TeacherService {
-  // { role : Teacher }
-  static async login(role:string=Roles.Teacher,formData: LoginPayloadType) {
-    const config: HandleApiOptions<LoginPayloadType> = {
-      endPoint: AuthRouter.login,
-      method: 'post',
-      payload: formData,
-      headers: { role: role },
-    };
-    return await handleApi<LoginPayloadType, Partial<ITeacherBio>>(config);
+export class TeacherService extends BaseService {
+
+  static login(formData: LoginPayloadType) {
+    return this.post<LoginPayloadType, Partial<ITeacherBio>>(
+      AuthRouter.login,
+      formData
+    );
   }
 
-  static async verifyTeacher(role:string=Roles.Teacher,email: string) {
-    const config: HandleApiOptions<null> = {
-      endPoint: `${TeacherRoute.verifyTeacher}/${email}`,
-      method: 'get',
-      payload: null,
-      headers: { role: role },
-    };
-    return await handleApi<LoginPayloadType, {id:string}>(config);
+  static verifyTeacher(email: string) {
+    return this.get<{ id: string }>(
+      `${TeacherRoute.verifyTeacher}/${email}`
+    );
   }
 
-
-  // { role : School }
-  static async addBio(role:string=Roles.Teacher,formData: FormData) {
-    const config: HandleApiOptions<FormData> = {
-      endPoint: TeacherRoute.addBio,
-      method: 'post',
-      payload: formData,
-      headers: { role: role },
-    };
-    return await handleApi<FormData, Partial<ITeacherBio>>(config);
+  static addBio(formData: FormData) {
+    return this.post<FormData, Partial<ITeacherBio>>(
+      TeacherRoute.addBio,
+      formData
+    );
   }
 
-  static async addProfessional(role:string=Roles.Teacher,teacherId: string, formData: Partial<ITeacher>) {
-    const config: HandleApiOptions<Partial<ITeacher>> = {
-      endPoint: `${TeacherRoute.addProfessional}/${teacherId}`,
-      method: 'post',
-      payload: formData,
-      headers: { role: role },
-    };
-
-    return await handleApi<Partial<ITeacher>, Partial<ITeacher>>(config);
+  static addProfessional(teacherId: string, formData: Partial<ITeacher>) {
+    return this.post<Partial<ITeacher>, Partial<ITeacher>>(
+      `${TeacherRoute.addProfessional}/${teacherId}`,
+      formData
+    );
   }
 
-  static async get(role:string=Roles.Teacher, id: string) {
-    const config: HandleApiOptions<null> = {
-      endPoint: `/teacher/${id}`,
-      method: 'get',
-      headers: { role: role },
-    };
-
-    return await handleApi<null, Teachers>(config);
+  static getById(id: string) {
+    return this.get<Teachers>(
+      `/teacher/${id}`
+    );
   }
 
-  static async getAll(paginationQuery:TPaginationQuery) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: TeacherRoute.getAll,
-      payload: null,
-      params:paginationQuery
-    };
-
-    return await handleApi<null, TPaginationResult<IGetAllTeachers>>(config);
+  static getAll(paginationQuery: TPaginationQuery) {
+    return this.get<TPaginationResult<IGetAllTeachers>>(
+      TeacherRoute.getAll,
+      paginationQuery
+    );
   }
 
-  static async editBio(role:string=Roles.Teacher,id: string, formData: FormData) {
-    const config: HandleApiOptions<FormData> = {
-      endPoint: `${TeacherRoute.updateBio}/${id}`,
-      method: 'patch',
-      payload: formData,
-      headers: { role: role },
-    };
-
-    return await handleApi(config);
+  static editBio(id: string, formData: FormData) {
+    return this.patch<FormData, unknown>(
+      `${TeacherRoute.updateBio}/${id}`,
+      formData
+    );
   }
 
-  static async editProfessional(role:string=Roles.Teacher,id: string, formData: Partial<ITeacher>) {
-    
-    const config: HandleApiOptions<Partial<ITeacher>> = {
-      endPoint: `${TeacherRoute.updateProfessional}/${id}`,
-      method: 'patch',
-      payload: formData,
-      headers: { role: role },
-    };
-
-    return await handleApi(config);
+  static editProfessional(id: string, formData: Partial<ITeacher>) {
+    return this.patch<Partial<ITeacher>, unknown>(
+      `${TeacherRoute.updateProfessional}/${id}`,
+      formData
+    );
   }
 
-  static async getAllUnAssigned(center: string,paginationQuery:TPaginationQuery) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: TeacherRoute.getAllUnAssigned,
-      payload: null,
-      params: { center: center, ...paginationQuery },
-    };
-
-    return await handleApi<null, TPaginationResult<ITeacherBio>>(config);
+  static getAllUnAssigned(center: string, paginationQuery: TPaginationQuery) {
+    return this.get<TPaginationResult<ITeacherBio>>(
+      TeacherRoute.getAllUnAssigned,
+      { center, ...paginationQuery }
+    );
   }
 }

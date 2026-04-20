@@ -1,58 +1,40 @@
 import { YearRoute } from '@/constants/routes.contants';
-import { HandleApiOptions, handleApi } from '../global.api';
 import { IAcademicYear } from '@/interfaces/ISchool';
 import { TPaginationQuery, TPaginationResult } from '@/types/paginationTypes';
+import { BaseService } from './Base.Service';
 
-export class AcademicYearService {
-  static async add(formData: object) {
-    const config: HandleApiOptions<object> = {
-      method: 'post',
-      endPoint: YearRoute.add,
-      headers: { 'Content-type': 'application/json' },
-      payload: formData,
-    };
+export class AcademicYearService extends BaseService {
 
-    return await handleApi(config);
+  static add(formData: object) {
+    return this.post<object, unknown>(
+      YearRoute.add,
+      formData
+    );
   }
 
-  static async get(id: string) {
-    const config: HandleApiOptions<null> = {
-      endPoint: `${YearRoute.get}/${id}`,
-      method: 'get',
-      headers: { role: 'School' },
-    };
-    return await handleApi<null, IAcademicYear>(config);
+  static getById(id: string) {
+    return this.get<IAcademicYear>(
+      `${YearRoute.get}/${id}`
+    );
   }
 
-  static async getAll(paginationQuery:TPaginationQuery) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: YearRoute.get,
-      payload: null,
-      params: paginationQuery,
-    };
-
-    return await handleApi<null, TPaginationResult<IAcademicYear>>(config);
+  static getAll(paginationQuery: TPaginationQuery) {
+    return this.get<TPaginationResult<IAcademicYear>>(
+      YearRoute.get,
+      paginationQuery
+    );
   }
 
-  static async edit(id: string, formData: object) {
-    const config: HandleApiOptions<object> = {
-      endPoint: `${YearRoute.edit}/${id}`,
-      method: 'put',
-      payload: formData,
-      headers: { role: 'school' },
-    };
-    return await handleApi<object, null>(config);
+  static edit(id: string, formData: object) {
+    return this.put<object, null>(
+      `${YearRoute.edit}/${id}`,
+      formData
+    );
   }
 
-  static async delete(id: string) {
-    const config: HandleApiOptions<null> = {
-      method: 'delete',
-      endPoint: `${YearRoute.get}/${id}`,
-      payload: null,
-      headers: { role: 'School' },
-    };
-
-    return await handleApi<null, null>(config);
+  static deleteAcademicYear(id: string) {
+    return this.delete<null>(
+      `${YearRoute.get}/${id}`
+    );
   }
 }

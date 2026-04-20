@@ -3,99 +3,88 @@ import { HandleApiOptions, handleApi } from '@/api/global.api';
 import { IStudent } from '@/interfaces/IStudent';
 import { Roles } from '@/constants/role.enum';
 import { ILeaveDocument, IStudentAttendance,IStudentAttendanceMain } from '@/interfaces/IAttendance';
+import { BaseService } from '../Base.Service';
 
 
-export class AttendanceService {
-  // { role : Student }
-    static async update(role:string=Roles.Teacher,attendanceData: IStudentAttendance[],batchId:string,date:string) {
-        const config: HandleApiOptions<IStudentAttendance[]> = {
-        endPoint: `${StudentRouter.updateAttendance}/${batchId}`,
-        method: 'post',
-        payload: attendanceData,
-        params:{date},
-        headers: { role: role },
-        };
+export class AttendanceService extends BaseService {
 
-        return await handleApi<IStudentAttendance[], Partial<IStudent>>(config);
+  static update(
+    attendanceData: IStudentAttendance[],
+    batchId: string,
+    date: string
+  ) {
+    return this.post<IStudentAttendance[], Partial<IStudent>>(
+      `${StudentRouter.updateAttendance}/${batchId}`,
+      attendanceData,
+      { date }
+    );
+  }
+
+  static getAStudentList(data: {
+    studentId: string;
+    year: number;
+    month: number;
+  }) {
+    return this.get<Record<number, string>>(
+      StudentRouter.getAStudentList,
+      data
+    );
+  }
+
+  static getAllWithQuery(
+    query: Record<string, string | number> = {}
+  ) {
+    return this.get<Partial<IStudentAttendanceMain[]>>(
+      StudentRouter.getallAttendances,
+      query
+    );
+  }
+
+  static getAttendanceOfBatch(
+    query: Record<string, string | number> = {}
+  ) {
+    return this.get<Partial<IStudentAttendanceMain | null>>(
+      StudentRouter.getBatchAttendance,
+      query
+    );
+  }
+
+  static getByQuery(
+    query: {
+      studentId: string;
+      year: number;
+      month: number;
     }
+  ) {
+    return this.get<Record<number, string>>(
+      StudentRouter.getAStudentList,
+      query
+    );
+  }
 
-    
-    static async getAStudentList(role:string=Roles.Teacher,data:{studentId:string,year:number,month:number}) {
-        const config: HandleApiOptions<{studentId:string,year:number,month:number}> = {
-            endPoint: StudentRouter.getAStudentList,
-            method: 'get',
-            params: data,
-            headers: { role: role },
-        };
-        
-        return await handleApi<{studentId:string,year:number,month:number}, Record<number,string>>(config);
-    }
+  static applyLeave(data: ILeaveDocument, studentId: string) {
+    return this.post<ILeaveDocument, null>(
+      `${StudentRouter.applyLeave}/${studentId}`,
+      data
+    );
+  }
 
-    static async getAllWithQuery(role:string=Roles.Teacher,query:Record<string,string|number>={}) {
-        const config: HandleApiOptions<null> = {
-        endPoint: StudentRouter.getallAttendances,
-        method: 'get',
-        payload: null,
-        params:query,
-        headers: { role: role },
-        };
+  static updateAppliedLeave(
+    studentId: string,
+    batchId: string,
+    query: { status: string; date: string }
+  ) {
+    return this.patch<null, null>(
+      `${StudentRouter.updateAppliedLeave}/${studentId}/${batchId}`,
+      null,
+      query
+    );
+  }
 
-        return await handleApi<null, Partial<IStudentAttendanceMain[]>>(config);
-    }
-
-    static async getAttendanceOfBatch(role:string=Roles.Teacher,query:Record<string,string|number>={}) {
-        const config: HandleApiOptions<null> = {
-        endPoint: StudentRouter.getBatchAttendance,
-        method: 'get',
-        payload: null,
-        params:query,
-        headers: { role: role },
-        };
-
-        return await handleApi<null, Partial<IStudentAttendanceMain|null>>(config);
-    }
-    
-    static async get(role:string=Roles.Teacher,query:Record<string,string|number>={}) {
-        const config: HandleApiOptions<{studentId:string,year:number,month:number}> = {
-        endPoint: StudentRouter.getAStudentList,
-        method: 'get',
-        params: query,
-        headers: { role: role },
-        };
-
-        return await handleApi<{studentId:string,year:number,month:number}, Record<number,string>>(config);
-    }
-
-    static async applyLeave(role:string=Roles.Student,data:ILeaveDocument,studentId:string) {
-        const config: HandleApiOptions<ILeaveDocument> = {
-        endPoint: `${StudentRouter.applyLeave}/${studentId}`,
-        method: 'post',
-        payload: data,
-        headers: { role: role },
-        };
-
-        return await handleApi<ILeaveDocument, null>(config);
-    }
-
-    static async updateAppliedLeave(studentId:string,batchId:string,query:{status:string,date:string}) {
-        const config: HandleApiOptions<null> = {
-        endPoint: `${StudentRouter.updateAppliedLeave}/${studentId}/${batchId}`,
-        method: 'patch',
-        params: query,        
-        };
-
-        return await handleApi<null, null>(config);
-    }
-
-    static async getLeaveHistory(role:string=Roles.Student,studentId:string,date:string) {
-        const config: HandleApiOptions<null> = {
-        endPoint: `${StudentRouter.getLeaveHistory}/${studentId}`,
-        method: 'get',
-        payload: null,
-        params:{date},
-        headers: { role: role },
-        };
-
-        return await handleApi<null,ILeaveDocument>(config);
-    }
+  static getLeaveHistory(studentId: string, date: string) {
+    return this.get<ILeaveDocument>(
+      `${StudentRouter.getLeaveHistory}/${studentId}`,
+      { date }
+    );
+  }
 }

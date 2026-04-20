@@ -2,60 +2,40 @@ import { FeeRoute } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '../global.api';
 import { IFee } from '@/interfaces/IFee';
 import { TPaginationQuery,TPaginationResult } from '@/types/paginationTypes';
+import { BaseService } from './Base.Service';
 
-export class FeeService {
-  static async create(form: object) {
-    const config: HandleApiOptions<object> = {
-      method: 'post',
-      endPoint: FeeRoute.add,
-      payload: form,
-      headers: { role: 'School' },
-    };
+export class FeeService extends BaseService {
 
-    return await handleApi<object, IFee>(config);
+  static create(form: object) {
+    return this.post<object, IFee>(
+      FeeRoute.add,
+      form
+    );
   }
 
-  static async get(id: string) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: `${FeeRoute.get}/${id}`,
-      payload: null,
-      headers: { role: 'School' },
-    };
-
-    return await handleApi<null, Partial<IFee>>(config);
+  static getById(id: string) {
+    return this.get<Partial<IFee>>(
+      `${FeeRoute.get}/${id}`
+    );
   }
 
-  static async getAll(paginationQuery:TPaginationQuery) {
-    const config: HandleApiOptions<null> = {
-      method: 'get',
-      endPoint: FeeRoute.getAll,
-      payload: null,
-      params:paginationQuery
-    };
-
-    return await handleApi<null, TPaginationResult<IFee>>(config);
+  static getAll(paginationQuery: TPaginationQuery) {
+    return this.get<TPaginationResult<IFee>>(
+      FeeRoute.getAll,
+      paginationQuery
+    );
   }
 
-  static async update(id: string, form: object) {
-    const config: HandleApiOptions<object> = {
-      method: 'patch',
-      endPoint: `${FeeRoute.edit}/${id}`,
-      payload: form,
-      headers: { role: 'School' },
-    };
-
-    return await handleApi<object, IFee>(config);
+  static update(id: string, form: object) {
+    return this.patch<object, IFee>(
+      `${FeeRoute.edit}/${id}`,
+      form
+    );
   }
 
-  static async delete(id: string) {
-    const config: HandleApiOptions<null> = {
-      method: 'delete',
-      endPoint: `${FeeRoute.delete}/${id}`,
-      payload: null,
-      headers: { role: 'School' },
-    };
-
-    return await handleApi<null, { message: string }>(config);
+  static deleteFee(id: string) {
+    return this.delete<{ message: string }>(
+      `${FeeRoute.delete}/${id}`
+    );
   }
 }
