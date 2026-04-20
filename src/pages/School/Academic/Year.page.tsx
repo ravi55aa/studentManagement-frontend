@@ -12,6 +12,9 @@ import { TableComponent } from '@/components/Table.Component';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { AcademicYearService } from '@/api/Services/year.service';
 import { toast } from 'react-toastify';
+import { paginationQuery } from '@/constants/pagination';
+import { usePagination } from '@/hooks/usePagination';
+
 
 const AcademicYearsPage = () => {
   //const [search, setSearch] = useState("");
@@ -20,19 +23,28 @@ const AcademicYearsPage = () => {
   const dispatch = useAppDispatch();
   const { years, loading } = useAppSelector((state) => state.schoolYear);
 
+  const {pagination,setPagination,prevPage,nextPage,}= usePagination(fetchAcademicYears,8);
+
+  async function fetchAcademicYears() {
+    dispatch(toggleAcademicLoading(true));
+    const res = await AcademicYearService.getAll(paginationQuery);
+
+    if (!res.success) {
+      return 
+    }
+
+    const resData = res?.data?.data;
+
+    dispatch(toggleAcademicLoading(false));
+    
+    dispatch(storeSchoolAcademicYears(resData?.data));
+
+    //setPagination
+    setPagination({page:resData.page,total:resData.total,totalPages:resData.totalPages}); 
+  };
+
   useEffect(() => {
-    (async () => {
-      dispatch(toggleAcademicLoading(true));
-      const res = await AcademicYearService.getAll();
-
-      if (!res.success) {
-        return res.success;
-      }
-
-      const allYear = res?.data?.data;
-      dispatch(toggleAcademicLoading(false));
-      dispatch(storeSchoolAcademicYears(allYear));
-    })();
+    fetchAcademicYears();
   }, [dispatch]);
 
   /* ---------- Filtering ---------- */
@@ -65,7 +77,7 @@ const AcademicYearsPage = () => {
       toast.error(res.error.message);
       return res.success;
     }
-    await AcademicYearService.getAll();
+    await AcademicYearService.getAll(paginationQuery);
 
     toast.success('Deleted Successfully');
     dispatch(toggleAcademicLoading(false));
@@ -121,7 +133,11 @@ const AcademicYearsPage = () => {
         ]}
       />
 
-      <Pagination />
+      <Pagination
+        pagination={pagination}
+        onLeftClick={prevPage}
+        onRightClick={nextPage}
+      />
     </div>
   );
 };

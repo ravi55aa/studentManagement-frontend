@@ -196,13 +196,16 @@ const VerifyHomeworkSubmissions = () => {
         {/* MODAL */}
         {selected && (
             <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-            <div className="bg-white w-full max-w-xl p-6 rounded-xl shadow-lg">
+            <div className="bg-white  w-full max-w-xl p-6 rounded-xl shadow-lg">
+
+            <div className="bg-gray-100 p-2">
+
                 <h3 className="text-xl font-semibold text-green-700 mb-4">
                 {selected.studentId?.name}'s Submission
                 </h3>
 
                 {/* NOTE */}
-                <div className="mb-4">
+            <div className="mb-4">
                 <h4 className="font-medium mb-1">Note</h4>
                 <p className="text-gray-700">
                     {selected.note || "No submission"}
@@ -256,10 +259,14 @@ const VerifyHomeworkSubmissions = () => {
                     <p className="text-gray-400 text-sm">No attachments</p>
                 )}
                 </div>
+            </div>
+
+                
+                <br />
 
                 {/* STATUS */}
                 <div className="mb-4">
-                <label className="block mb-1 font-medium">Status</label>
+                <label className="block mb-1 font-medium text-green-500">Status</label>
                 <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as HomeworkSubmitStatus)}
@@ -274,7 +281,7 @@ const VerifyHomeworkSubmissions = () => {
 
                 {/* REMARK */}
                 <div className="mb-4">
-                <label className="block mb-1 font-medium">Remark</label>
+                <label className="block text-green-500 mb-1 font-medium">Remark</label>
                 <textarea
                     value={remark}
                     onChange={(e) => setRemark(e.target.value)}

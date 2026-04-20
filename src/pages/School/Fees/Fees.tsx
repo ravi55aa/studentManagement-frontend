@@ -12,23 +12,35 @@ import { TableComponent } from '@/components/Table.Component';
 import TypeBadge from '@/components/fee/TypeBadge.c';
 import StatusBadge from '@/components/fee/StatusBadge.c';
 import { FeeService } from '@/api/Services/fee.service';
+import { usePagination } from '@/hooks/usePagination';
+import { paginationQuery } from '@/constants/pagination';
 
 export default function FeeListPage() {
   const dispatch = useAppDispatch();
   const feeStore = useAppSelector((state) => state.fees);
   const navigate = useNavigate();
 
-  const handleGetAllFess = async () => {
+  const {nextPage,pagination,prevPage,setPagination}= usePagination(handleGetAllFess,8);
+
+  async function handleGetAllFess () {
     dispatch(toggleFeeLoading(true));
 
-    const res = await FeeService.getAll();
+    const res = await FeeService.getAll(paginationQuery);
 
     if (!res.success) {
       toast.error(res.error.message);
-      return res.success;
+      return ;
     }
+
+    const resData=res.data.data;
+
     dispatch(toggleFeeLoading(false));
-    dispatch(storeFees(res.data?.data.reverse()));
+
+    dispatch(storeFees(resData.data.reverse()));
+
+    setPagination({page:resData.page,totalPages:resData.totalPages,total:resData.total}) ;
+
+    return;
   };
 
   useEffect(() => {
@@ -113,7 +125,10 @@ export default function FeeListPage() {
         ]}
       />
 
-      <Pagination />
+      <Pagination 
+      pagination={pagination} 
+      onLeftClick={prevPage} 
+      onRightClick={nextPage} />
     </div>
   );
 }

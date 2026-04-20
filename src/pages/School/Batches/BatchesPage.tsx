@@ -15,6 +15,8 @@ import { TableComponent } from '@/components/Table.Component';
 import { TeacherService } from '@/api/Services/teacher.service';
 import { BatchService } from '@/api/Services/batch.service';
 import { Roles } from '@/constants/role.enum';
+import { paginationQuery } from '@/constants/pagination';
+import { usePagination } from '@/hooks/usePagination';
 
 const BatchesPage = () => {
   const [search, setSearch] = useState('');
@@ -29,25 +31,39 @@ const BatchesPage = () => {
   const [selectedBatch, setSelectedBatch] = useState<IBatches | null>(null);
   // const centerReduxStore=useAppSelector((state)=>state.center);
 
+  const {pagination,setPagination,prevPage,nextPage,}=usePagination(fetchBatches,8);
+
+  async function fetchBatches(): Promise<void> {
+    const res = await BatchService.getAll(paginationQuery);
+
+    if (!res.success) {
+      toast.warn(res.error.message);
+      return ;
+    }
+
+    const resData = res.data.data;
+
+    dispatch(storeBatches(resData?.data));
+
+    setPagination({
+      page:resData.page,
+      total:resData.total,
+      totalPages:resData.totalPages
+    });
+
+  };
+
   useEffect(() => {
-    (async () => {
-      const res = await BatchService.getAll();
-
-      if (!res.success) {
-        toast.warn(res.error.message);
-        return res.success;
-      }
-
-      const batches = res.data.data;
-      dispatch(storeBatches(batches));
-    })();
+    fetchBatches();
   }, [dispatch, batchReduxStore.loading]);
 
+
+
   useEffect(() => {
     (async () => {
-      const res = await TeacherService.getAllUnAssigned('');
-      const teachers = res.data?.data;
-      setUnAssignedTeachers(teachers);
+      const res = await TeacherService.getAllUnAssigned('',paginationQuery);
+      const resData = res.data?.data;
+      setUnAssignedTeachers(resData.data);
       return true;
     })();
   }, []);
@@ -75,9 +91,9 @@ const BatchesPage = () => {
     }
     const center = teacher_Professional_data.center;
 
-    const res = await TeacherService.getAllUnAssigned(center);
-    const teachers = res.data?.data || [];
-    setUnAssignedTeachers(teachers);
+    const res = await TeacherService.getAllUnAssigned(center,paginationQuery);
+    const resData = res.data?.data;
+    setUnAssignedTeachers(resData?.data);
 
     return res.success;
   };
@@ -176,7 +192,7 @@ const BatchesPage = () => {
 
       {/* ---------- Mobile Card View ---------- */}
       <div className="lg:hidden space-y-4">
-        {filteredBatches.map((batch) => (
+        {filteredBatches?.map((batch) => (
           <div key={batch?._id} className="bg-white border rounded-md p-4">
             <div className="font-semibold">{batch.name}</div>
             {/* <div className="text-sm text-gray-600">
@@ -195,7 +211,11 @@ const BatchesPage = () => {
         ))}
       </div>
 
-      <Pagination />
+      <Pagination 
+      pagination={pagination} 
+      onLeftClick={prevPage}
+      onRightClick={nextPage}
+      />
     </div>
   );
 };

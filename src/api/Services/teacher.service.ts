@@ -96,15 +96,14 @@ export class TeacherService {
     return await handleApi(config);
   }
 
-  static async getAllUnAssigned(role:string=Roles.Teacher,center: string) {
+  static async getAllUnAssigned(center: string,paginationQuery:TPaginationQuery) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: TeacherRoute.getAllUnAssigned,
       payload: null,
-      params: { center: center },
-      headers: { role: role },
+      params: { center: center, ...paginationQuery },
     };
 
-    return await handleApi<null, ITeacherBio[]>(config);
+    return await handleApi<null, TPaginationResult<ITeacherBio>>(config);
   }
 }

@@ -55,7 +55,6 @@ const TeachersListPage = () => {
       return;
     }
 
-
   useEffect(() => {
     fetchTeachers(paginationQuery);
   }, [dispatch]);
@@ -132,9 +131,7 @@ const TeachersListPage = () => {
 
       {/* ===== Pagination ===== */}
       <Pagination
-        page={pagination?.page} 
-        totalPages={pagination?.totalPages}
-        total={pagination?.total} 
+        pagination={pagination} 
         onLeftClick={prevPage}
         onRightClick={nextPage}
       />

@@ -13,6 +13,8 @@ import { storeHomeworks,toggleHomeworkLoading } from '@/utils/Redux/Reducer/home
 import { Roles } from '@/constants/role.enum';
 import { IAcademicSubject } from '@/interfaces/ISchool';
 import Swal from "sweetalert2";
+import { paginationQuery } from '@/constants/pagination';
+import { usePagination } from '@/hooks/usePagination';
 
 // const statusColors = {
 //     pending: "bg-gray-200 text-gray-700",
@@ -21,31 +23,49 @@ import Swal from "sweetalert2";
 // };
 
 const TeacherHomeworkTable = () => {
+    
     const navigate = useNavigate();
+    
     const dispatch = useAppDispatch();
+    
     const homeworks = useAppSelector((state) =>state.homeworks);
+    
     const {user}=useAppSelector((state)=>state.currentUser);
 
+    const {nextPage,prevPage,pagination,setPagination} = usePagination(fetchHomeworks,8);
+
+    async function fetchHomeworks() {
+        if(!user){
+            toast.warn('Kindly log in,Auth failed');
+            return;
+        }
+
+        const res = await HomeworkService.getAllWithQuery(
+            paginationQuery,
+            {teacherId:user.id}
+        );
+
+        if (!res.success) {
+            toast.error(res.error.message);
+            return;
+        }
+
+        const resData=res.data?.data;
+
+        dispatch(storeHomeworks(resData.data));
+
+        setPagination(
+            {
+                page:resData.page,
+                total:resData.total,
+                totalPages:resData.totalPages
+            });
+
+        return ;
+    };
+
     useEffect(() => {
-        (async () => {
-            if(!user){
-                toast.warn('Kindly log in,Auth failed');
-                return false;
-            }
-
-            const res = await HomeworkService.getAllWithQuery(
-                Roles.Teacher,
-                {teacherId:user.id}
-            );
-
-            if (!res.success) {
-                toast.error(res.error.message);
-                return res.success;
-            }
-
-            const homeworksArray=res.data.data;
-            dispatch(storeHomeworks(homeworksArray));
-        })();
+        fetchHomeworks();
     }, [dispatch]);
 
     const handleDelete = async (id: string) => { //have to reload page
@@ -67,8 +87,11 @@ const TeacherHomeworkTable = () => {
         const res = await HomeworkService.delete(Roles.School,id);
         
         dispatch(toggleHomeworkLoading(false));
+
         if (!res.success) {
+
             Swal.fire('Deleted!', res.error?.message, 'error');
+            
             return res.success;
         }
 
@@ -135,7 +158,12 @@ const TeacherHomeworkTable = () => {
             ]}
         />
 
-        <Pagination />
+        <Pagination 
+            pagination={pagination} 
+            onLeftClick={prevPage} 
+            onRightClick={nextPage} 
+            />
+        
         </div>
     );
 };

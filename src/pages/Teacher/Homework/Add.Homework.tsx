@@ -55,8 +55,7 @@ const AddHomework = () => {
                 const teacherProfile=resTeacher.data?.data;
 
                 const res1=await SubjectService.getAll(Roles.Teacher);
-                const res2=await BatchService.getAllWithQuery(Roles.Teacher,
-                    {center:teacherProfile.teacher.center});
+                const res2=await BatchService.getAllWithQuery({center:teacherProfile.teacher.center});
 
                 if(!res1.success){
                     toast.error(res1.error.message);

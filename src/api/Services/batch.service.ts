@@ -1,6 +1,7 @@
 import { BatchRoute } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '../global.api';
 import { IBatches } from '@/interfaces/ISchool';
+import { TPaginationQuery, TPaginationResult } from '@/types/paginationTypes';
 
 export class BatchService {
   static async create(form: Partial<IBatches>) {
@@ -14,27 +15,26 @@ export class BatchService {
     return await handleApi<Partial<IBatches>, IBatches>(config);
   }
 
-  static async getAll(role:string='School') {
+  static async getAll(paginationQuery: TPaginationQuery) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: BatchRoute.get,
       payload: null,
-      headers: { role: role },
+      params: paginationQuery,
     };
 
-    return await handleApi<null, IBatches>(config);
+    return await handleApi<null, TPaginationResult<IBatches>>(config);
   }
 
-  static async getAllWithQuery(role:string='School',query:Record<string,string|number|boolean>={}) {
+  static async getAllWithQuery(query:Record<string,string|number|boolean>={},paginationQuery: TPaginationQuery) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: BatchRoute.get,
       payload: null,
-      params:query,
-      headers: { role: role },
+      params: {...query, ...paginationQuery},
     };
 
-    return await handleApi<null, IBatches[]>(config);
+    return await handleApi<null, TPaginationResult<IBatches>>(config);
   }
 
   static async get(role:string='School',id:string) {

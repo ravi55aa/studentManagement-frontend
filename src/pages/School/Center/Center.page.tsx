@@ -155,7 +155,7 @@ const CentersPage = () => {
         )}
       </div>
 
-      <Pagination />
+      {/* <Pagination /> */}
     </div>
   );
 };

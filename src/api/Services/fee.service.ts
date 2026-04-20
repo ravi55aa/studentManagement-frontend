@@ -1,6 +1,7 @@
 import { FeeRoute } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '../global.api';
 import { IFee } from '@/interfaces/IFee';
+import { TPaginationQuery,TPaginationResult } from '@/types/paginationTypes';
 
 export class FeeService {
   static async create(form: object) {
@@ -25,15 +26,15 @@ export class FeeService {
     return await handleApi<null, Partial<IFee>>(config);
   }
 
-  static async getAll() {
+  static async getAll(paginationQuery:TPaginationQuery) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: FeeRoute.getAll,
       payload: null,
-      headers: { role: 'School' },
+      params:paginationQuery
     };
 
-    return await handleApi<null, IFee[]>(config);
+    return await handleApi<null, TPaginationResult<IFee>>(config);
   }
 
   static async update(id: string, form: object) {

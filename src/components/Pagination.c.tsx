@@ -1,13 +1,15 @@
 type paginationPropTypes={
-  page:number,
-  totalPages:number,
-  total:number,
+  pagination:{
+    page:number,
+    totalPages:number,
+    total:number
+  },
   onLeftClick?:()=>void,
   onRightClick?:()=>void
 }
 
 export default function Pagination(
-      {page,totalPages,total,onLeftClick,onRightClick}:paginationPropTypes
+      {pagination,onLeftClick,onRightClick}:paginationPropTypes
 ) {
 
   return (
@@ -15,7 +17,7 @@ export default function Pagination(
       <button className="px-3 py-1 border rounded-md" onClick={onLeftClick}>
         ←
       </button>
-      <span>Page {page} of {totalPages}</span>
+      <span>Page {pagination.page} of {pagination.    totalPages || 1}</span>
       <button className="px-3 py-1 border rounded-md" onClick={onRightClick}>
         →
       </button>

@@ -14,9 +14,13 @@ import SubjectViewModal from '@/components/ViewSubjectModal';
 
 const TeacherSubjects = () => {
     const dispatch = useAppDispatch();
+
     const { subjects, loading } = useAppSelector((state) => state.schoolSubject);
+
     const { user } = useAppSelector((state) => state.currentUser);
+
     const [ viewSubject, setViewSubject ] = useState<IAcademicSubject>();
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
@@ -118,7 +122,7 @@ const TeacherSubjects = () => {
             ]}
         />
 
-        <Pagination />
+        {/* <Pagination /> */}
 
         {/* View Modal */}
         <SubjectViewModal viewSubject={viewSubject} isModalOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> 

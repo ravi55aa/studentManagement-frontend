@@ -3,6 +3,7 @@ import { TeacherService } from '@/api/Services/teacher.service';
 import { ActionBtn, Pagination } from '@/components'
 import SearchAndFilter from '@/components/SearchAndFilter'
 import { TableComponent } from '@/components/Table.Component'
+import { paginationQuery } from '@/constants/pagination';
 import { Roles } from '@/constants/role.enum';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { IBatches } from '@/interfaces/ISchool';
@@ -39,7 +40,7 @@ const ListBatches = () => {
             return res.success;
         }
 
-        const res2 = await BatchService.getAllWithQuery(Roles.Teacher,{center:teacher.center});
+        const res2 = await BatchService.getAllWithQuery({center:teacher.center},paginationQuery);
 
         if (!res2.success) {
             toast.warn(res2.error.message);

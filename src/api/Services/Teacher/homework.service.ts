@@ -2,6 +2,7 @@ import { handleApi,HandleApiOptions } from '@/api/global.api';
 import { Roles } from '@/constants/role.enum';
 import { HomeworkRoute, SubjectRoute } from '@/constants/routes.contants';
 import { IHomework } from '@/interfaces/IHomework';
+import { TPaginationQuery,TPaginationResult } from '@/types/paginationTypes';
 
 
 export class HomeworkService {
@@ -28,16 +29,15 @@ export class HomeworkService {
         return await handleApi<null, IHomework[]>(config);
     }
 
-    static async getAllWithQuery(role:string='Teacher',query:Record<string,string|number|boolean>={}) {
+    static async getAllWithQuery(paginationQuery:TPaginationQuery,query:Record<string,string|number|boolean>={}) {
         const config: HandleApiOptions<null> = {
         method: 'get',
         endPoint: HomeworkRoute.getall,
         payload: null,
-        params:query,
-        headers: { role: role },
+        params:{...paginationQuery,...query},
         };
 
-        return await handleApi<null, IHomework[]>(config);
+        return await handleApi<null, TPaginationResult<IHomework>>(config);
     }
 
     static async get(role:string='Teacher',id: string) {

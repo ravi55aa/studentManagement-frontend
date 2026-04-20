@@ -11,7 +11,6 @@ export default function AssignTeacherModal({
   const [selectedTeacher, setSelectedTeacher] = useState<string>('');
 
   if (!open) return null;
-  console.warn(batchId);
 
   const handleSubmit = async () => {
     if (!selectedTeacher) return;
@@ -27,8 +26,8 @@ export default function AssignTeacherModal({
         <div className="max-h-64 overflow-y-auto space-y-2 border p-4 rounded-md bg-gray-50">
           {teachers.length === 0 ? (
             <p className="text-sm text-gray-500">No available teachers</p>
-          ) : (
-            teachers.map((teacher) => (
+          ) : (teachers &&
+            teachers?.map((teacher) => (
               <label key={teacher._id} className="flex items-center gap-3 cursor-pointer text-sm">
                 <input
                   type="radio"

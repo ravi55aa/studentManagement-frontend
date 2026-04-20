@@ -1,6 +1,7 @@
 import { YearRoute } from '@/constants/routes.contants';
 import { HandleApiOptions, handleApi } from '../global.api';
 import { IAcademicYear } from '@/interfaces/ISchool';
+import { TPaginationQuery, TPaginationResult } from '@/types/paginationTypes';
 
 export class AcademicYearService {
   static async add(formData: object) {
@@ -23,15 +24,15 @@ export class AcademicYearService {
     return await handleApi<null, IAcademicYear>(config);
   }
 
-  static async getAll() {
+  static async getAll(paginationQuery:TPaginationQuery) {
     const config: HandleApiOptions<null> = {
       method: 'get',
       endPoint: YearRoute.get,
       payload: null,
-      headers: { role: 'School' },
+      params: paginationQuery,
     };
 
-    return await handleApi<null, null>(config);
+    return await handleApi<null, TPaginationResult<IAcademicYear>>(config);
   }
 
   static async edit(id: string, formData: object) {

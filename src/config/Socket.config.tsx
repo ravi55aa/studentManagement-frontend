@@ -9,12 +9,20 @@ const SocketProvider = ({ children }) => {
 
   const [socket, setSocket] = useState<Socket | null>(null);
 
+  const host=window.location.hostname;
+  let subdomain=host.split('.')[0]+'.';
+
+  if(subdomain=='localhost'){
+    subdomain=''
+  }
+
   useEffect(() => {
     (() => {
       if (!user?.id) return;
-
+      
       //!Later update the production url
-      const newSocket = io(window.location.origin, { 
+      
+      const newSocket = io(`http://${subdomain}localhost:4000`, { 
         auth: {
           userId: user.id,
           role: user.role,
