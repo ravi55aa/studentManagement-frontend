@@ -53,7 +53,7 @@ export default function DocumentUploadModal({ open, onClose, onUpload }: Props) 
           <p className="text-sm text-gray-500">No documents selected</p>
         ) : (
           files.map((file, index) => (
-            <DocumentRow key={index} file={file} index={index} removeFile={removeFile} />
+            <DocumentRow key={index} file={file} index={index} removeAFile={removeFile} />
           ))
         )}
       </div>

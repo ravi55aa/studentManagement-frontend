@@ -37,7 +37,7 @@ export const ProfileAddressComponent=({role,loading,setUtils,utils})=>{
             return;
         }
         (async()=>{
-            const res=await AddressService.get(role,user.id);
+            const res=await AddressService.getAAddress(user.id);
             
             if(!res.success){
                 toast.warn(res.error?.message);
@@ -63,7 +63,7 @@ export const ProfileAddressComponent=({role,loading,setUtils,utils})=>{
             return isValid.success;
         }
 
-        const res = await AddressService.update(Roles.Student,user.id, form);
+        const res = await AddressService.update(user.id, form);
 
         dispatch(toggleMDALoading());
         if (!res.success) {
@@ -164,7 +164,7 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
     const {user}=useAppSelector((state)=>state.currentUser);
     
     const handleDocumentsFetch=useCallback(async()=>{
-        const res=await DocumentService.get(role,user.id);
+        const res=await DocumentService.getById(user.id);
         
         if(!res.success){
             toast.warn(res.error?.message);
@@ -206,7 +206,7 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
 
         dispatch(toggleMDALoading());
 
-        const res = await DocumentService.update(role,user.id,documentState)
+        const res = await DocumentService.update(user.id,documentState)
 
         if (!res.success) {
             toast.error(res.error.message);
@@ -236,7 +236,7 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
 
         const delete_fileName = documentState.docs[index]?.fileName;
 
-        const res = await DocumentService.delete(user.id, delete_fileName);
+        const res = await DocumentService.deleteDocument(user.id, delete_fileName);
 
         dispatch(toggleMDALoading());
 
@@ -267,8 +267,6 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
         // This save is to
         // edit individual document
 
-        console.log('New file:', file);
-
         // API call here
         // await uploadNewFile(file);
 
@@ -286,7 +284,7 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
 
         dispatch(toggleMDALoading());
 
-        const res = await DocumentService.create(role,user.id, formData);
+        const res = await DocumentService.create(user.id, formData);
 
         dispatch(toggleMDALoading());
         

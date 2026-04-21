@@ -12,6 +12,7 @@ import { ICourseForm } from '@/interfaces/ICourseForm';
 import { IUploadedDoc } from '@/interfaces/IRegister';
 import CourseViewModal from '@/components/ViewCourse.component';
 import NotificationModal from '@/components/Notification/component/NotificationModal';
+import { PaginationDemo } from '@/components/Pagination.c';
 
 const StudentCourse = () => {
     const dispatch = useAppDispatch();
@@ -129,7 +130,7 @@ const StudentCourse = () => {
             ]}
         />
 
-        {/* <Pagination /> */}
+        <PaginationDemo/>
 
         {/* View Modal */}
         <CourseViewModal viewCourse={viewCourse} isModalOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

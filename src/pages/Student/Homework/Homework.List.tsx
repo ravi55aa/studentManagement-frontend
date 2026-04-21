@@ -1,21 +1,21 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { SendHorizontal , Eye, Bell } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
-import { Pagination, TopBar } from '@/components';
 import { toast } from 'react-toastify';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
 import StatusBadge from '@/components/fee/StatusBadge.c';
 import { HomeworkService } from '@/api/Services/Teacher/homework.service';
 import { storeHomeworks } from '@/utils/Redux/Reducer/homework.reducer';
-import { Roles } from '@/constants/role.enum';
 import { IAcademicSubject } from '@/interfaces/ISchool';
 import NotificationModal from '@/components/Notification/component/NotificationModal';
 import { StudentHomeworkService } from '@/api/Services/Student/studentHomeworkService';
 import { IHomework, IHomeworkSubmission } from '@/interfaces/IHomework';
 import { paginationQuery } from '@/constants/pagination';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components';
 
 export default function FeeListPage() {
     const dispatch = useAppDispatch();
@@ -26,27 +26,32 @@ export default function FeeListPage() {
     const [open, setOpen] = useState(false);
     const [mergedHomeworks,setMergedHomeworks]=useState([]);
 
+    const {nextPage,pagination,prevPage,setPagination} = usePagination(fetchHomeworks,8);
+
+    async function fetchHomeworks() {
+        const user=JSON.parse(localStorage.getItem('sectionC'));
+        
+        if(!user){
+            toast.warn('Kindly log in,Auth failed');
+            return;
+        }
+
+        const res = await HomeworkService.getAllWithQuery(paginationQuery,{batch:user.batchId});
+
+        if (!res.success) {
+            toast.error(res.error.message);
+            return 
+        }
+
+        const {data,page,totalPages,total}=res.data.data;
+
+        setPagination({page,totalPages,total});
+
+        dispatch(storeHomeworks(data||[]));
+    }
+
     useEffect(() => {
-        (async () => {
-            const user=JSON.parse(localStorage.getItem('sectionC'));
-            
-            if(!user){
-                toast.warn('Kindly log in,Auth failed');
-                return false;
-            }
-
-            const res = await HomeworkService.getAllWithQuery(paginationQuery,{batch:user.batchId});
-
-            if (!res.success) {
-                toast.error(res.error.message);
-            return res.success;
-            }
-
-            const resData=res.data.data;
-            const homeworksArray=resData.data;
-
-            dispatch(storeHomeworks(homeworksArray));
-        })();
+        fetchHomeworks();
     }, [dispatch]);
 
     useEffect(()=>{
@@ -68,7 +73,7 @@ export default function FeeListPage() {
         }
 
         fetchStudentHomeworkDetails();
-    },[homeworks?.homeworks])
+    },[homeworks?.homeworks]);
 
     useEffect(()=> {
         if (!homeworks.homeworks) return;
@@ -141,7 +146,7 @@ export default function FeeListPage() {
             ]}
         />
 
-        {/* <Pagination /> */}
+        <Pagination pagination={pagination} onLeftClick={prevPage} onRightClick={nextPage} />
         </div>
     );
 }

@@ -55,14 +55,9 @@ const Attendance = () => {
     })();
     }, [dispatch, studentsStore.loading]);
 
-    //Get All Attendances of the above all Students 
-    useEffect(() => {
-        if(!batchId){
-            toast.warn('No batchId, kindly re-login');
-            return;
-        }
+    //Fetch Batch attendance for that day
 
-    (async () => {
+    const fetchBatchAttendance = async () => {
         //Get AttendanceList of particular day
         
         const res = await AttendanceService.getAttendanceOfBatch({batchId:batchId,date:selectedDate});
@@ -95,7 +90,17 @@ const Attendance = () => {
         setAttendanceList(initial);
 
         return res.success;
-    })();
+    };
+
+    useEffect(() => {
+
+        if(!batchId){
+            toast.warn('No batchId, kindly re-login');
+            return;
+        }
+
+        fetchBatchAttendance();
+
     }, [dispatch, studentsStore.loading,selectedDate]);
 
     // Update status
@@ -160,9 +165,7 @@ const Attendance = () => {
         student.email.toLowerCase().includes(search.toLowerCase()),
     );
 
-    const handleLeaveAction = async(leaveDocument:ILeaveDocument ,status:string) => {
-        
-        console.log(leaveDocument);
+    const handleLeaveAction = async(status:string) => {
 
         const query={date:selectedDate,status}
         
@@ -177,7 +180,10 @@ const Attendance = () => {
             return res.success;
         }
 
+        await fetchBatchAttendance();
+
         toast.success(res.data.message);
+
         return res.success;
     };
 

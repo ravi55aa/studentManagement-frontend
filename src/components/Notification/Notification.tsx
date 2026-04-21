@@ -30,7 +30,6 @@ export default function NotificationListPage() {
       const res = await handleApi<null, INotification[]>(config);
 
       if (!res.success) {
-        toast.warn(res.error.message);
         return;
       }
 

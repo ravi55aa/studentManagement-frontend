@@ -4,7 +4,7 @@ import { ActionBtn, Pagination } from '@/components'
 import SearchAndFilter from '@/components/SearchAndFilter'
 import { TableComponent } from '@/components/Table.Component'
 import { paginationQuery } from '@/constants/pagination';
-import { Roles } from '@/constants/role.enum';
+import { usePagination } from '@/hooks/usePagination';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { IBatches } from '@/interfaces/ISchool';
 import { storeBatches } from '@/utils/Redux/Reducer/batchReducer';
@@ -22,13 +22,16 @@ const ListBatches = () => {
     const dispatch = useAppDispatch();
     const navigate=useNavigate();
 
-    useEffect(() => {
+    const {prevPage,nextPage,pagination,setPagination}=usePagination(fetchBatches,8);
 
-    (async () => {
+    async function fetchBatches() {
+        console.log('Fetching batches...');
+
         const teacherId=currentUser.user.id;
+        
         if(!teacherId){
             toast.warn('No teacherId');
-            return false;
+            return;
         }
     
         const res=await TeacherService.getById(teacherId);
@@ -36,25 +39,32 @@ const ListBatches = () => {
 
         if(!res.success || !teacher.center){
             toast.warn(res.error.message);
-            return res.success;
+            return ;
         }
 
         const res2 = await BatchService.getAllWithQuery({center:teacher.center},paginationQuery);
 
         if (!res2.success) {
             toast.warn(res2.error.message);
-            return res2.success;
+            return ;
         }
 
-        const batches = res2.data.data;
-        dispatch(storeBatches(batches));
-        return res.success;
-    })();
-    }, [dispatch]);
+        const {data,page,total,totalPages} = res2.data.data;
+
+        setPagination({page,total,totalPages});
+        
+        dispatch(storeBatches(data||[])); //batches
+
+        return ;
+    }
+
+    useEffect(() => {
+        fetchBatches();
+    }, []);
 
 
     /* ---------- Filtering ---------- */
-    const filteredBatches = batchReduxStore?.batches?.filter(
+    const filteredBatches =  batchReduxStore?.batches && batchReduxStore?.batches?.filter(
     (batch: IBatches) =>
         batch.name.toLowerCase().includes(search.toLowerCase()) ||
         batch.code.toLowerCase().includes(search.toLowerCase()),
@@ -130,7 +140,7 @@ const ListBatches = () => {
             ))}
         </div>
 
-        {/* <Pagination /> */}
+        <Pagination pagination={pagination} onLeftClick={prevPage} onRightClick={nextPage} />
         </div>
     )
 }

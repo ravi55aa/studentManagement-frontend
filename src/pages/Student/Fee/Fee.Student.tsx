@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
 import { storeFees, toggleFeeLoading } from '@/utils/Redux/Reducer/fee.reducer';
-import { Pagination } from '@/components';
 import { toast } from 'react-toastify';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
@@ -17,6 +16,7 @@ import { IStudentFee } from '@/interfaces/IStudent';
 import { Bell } from 'lucide-react';
 import NotificationModal from '@/components/Notification/component/NotificationModal';
 import { paginationQuery } from '@/constants/pagination';
+import { PaginationDemo } from '@/components/Pagination.c';
 
 export default function StudentFeeListPage() {
     const dispatch = useAppDispatch();
@@ -164,7 +164,7 @@ export default function StudentFeeListPage() {
             ]}
         />
 
-        {/* <Pagination /> */}
+        <PaginationDemo />
         </div>
     );
 }

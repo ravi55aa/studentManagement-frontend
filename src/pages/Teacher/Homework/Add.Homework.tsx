@@ -68,8 +68,8 @@ const AddHomework = () => {
                     return res2.success;
                 }
 
-                const batches=res2.data.data||[];
-                dispatch(storeBatches(batches));
+                const {data}=res2.data.data;
+                dispatch(storeBatches(data || []));
 
                 const subjects=res1.data.data||[];
                 dispatch(storeSchoolAcademicSubjects(subjects));

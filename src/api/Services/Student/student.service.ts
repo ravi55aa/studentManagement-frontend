@@ -1,8 +1,6 @@
 import { StudentRouter,AuthRouter } from '@/constants/routes.contants';
-import { HandleApiOptions, handleApi } from '@/api/global.api';
 import { LoginPayloadType } from '@/types/loginType';
 import { IStudent } from '@/interfaces/IStudent';
-import { Roles } from '@/constants/role.enum';
 import { BaseService } from '../Base.Service';
 
 

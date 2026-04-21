@@ -6,11 +6,9 @@ import { useParams } from "react-router-dom";
 import { StudentHomeworkService } from "@/api/Services/Student/studentHomeworkService";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
 import { HomeworkService } from "@/api/Services/Teacher/homework.service";
-import { Roles } from "@/constants/role.enum";
-import HomeworkCard,{IAttachment} from "@/components/HomeworkCard";
+import HomeworkCard from "@/components/HomeworkCard";
 import FormActions from "@/components/FormAction";
 import { useAppSelector } from "@/hooks/useStoreHooks";
-import { IUploadedDoc } from "@/interfaces/IRegister";
 
 
 const HomeworkSubmissionPage = () => {

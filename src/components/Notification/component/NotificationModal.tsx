@@ -18,10 +18,9 @@ export default function NotificationModal({
     const [activeTab, setActiveTab] = useState<"unread" | "read">("unread");
 
         const fetchNotifications=async()=>{
-            const res=await NotificationService.getUserNotifications(user.role,user.id);
+            const res=await NotificationService.getUserNotifications(user.id);
 
             if(!res.success){
-                toast.warn(res.error.message);
                 return res.success;
             }
 
@@ -42,7 +41,7 @@ export default function NotificationModal({
     
 
     const handleMarkAsRead = async (notificationId:string)=>{
-        const res=await NotificationService.markNotificationAsRead(user.role,notificationId);
+        const res=await NotificationService.markNotificationAsRead(notificationId);
 
         if(!res.success){
             toast.warn(res.error.message);

@@ -8,9 +8,19 @@ export const ViewStudentModal = ({viewModal,selectedStudent,setViewModal,leaveHi
         <div>{viewModal && selectedStudent && (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
         <div className="bg-white p-6 rounded-xl w-96">
+
+        <div className="flex justify-between items-center ">
         <h2 className="text-lg font-semibold text-green-700 mb-4">
             Student Info
         </h2>
+
+        <button
+            onClick={() => setViewModal(false)}
+            className=" bg-green-700 cursor-pointer text-sm text-white px-4 rounded"
+        >
+            X
+        </button>
+        </div>
 
         <div className="space-y-2">
             <p><strong>Name:</strong> {selectedStudent.name}</p>
@@ -77,14 +87,14 @@ export const ViewStudentModal = ({viewModal,selectedStudent,setViewModal,leaveHi
                   {/* ACTION BUTTONS */}
             <div className="flex gap-2 mt-2">
                 <button
-                onClick={() => handleLeaveAction(leaveHistory, "approved")}
+                onClick={() => handleLeaveAction("approved")}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs py-2 rounded-lg transition"
                 >
                 Approve
                 </button>
 
                 <button
-                onClick={() => handleLeaveAction(leaveHistory, "rejected")}
+                onClick={() => handleLeaveAction( "rejected")}
                 className="flex-1 bg-red-500 hover:bg-red-600 text-white text-xs py-2 rounded-lg transition"
                 >
                 Reject
@@ -95,12 +105,6 @@ export const ViewStudentModal = ({viewModal,selectedStudent,setViewModal,leaveHi
             </div>
             </div>}
 
-        <button
-            onClick={() => setViewModal(false)}
-            className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
-        >
-            Close
-        </button>
         </div>
     </div>
     )}</div>

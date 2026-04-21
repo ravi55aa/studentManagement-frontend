@@ -9,6 +9,7 @@ import { Roles } from "@/constants/role.enum";
 import { StudentService } from "@/api/Services/Student/student.service";
 import { IStudent } from "@/interfaces/IStudent";
 import { BatchService } from "@/api/Services/batch.service";
+import { paginationQuery } from "@/constants/pagination";
 
 const ChatPage = ({ userId, role }: Record<string,string>) => {
     const [activeTab, setActiveTab] = useState("direct");
@@ -24,7 +25,7 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
                 let user2Id='something';
 
                 if(role==Roles.Student){
-                    const resTeacher=await TeacherService.get(Roles.Student,directChatWith?._id);
+                    const resTeacher=await TeacherService.getById(directChatWith?._id);
 
                     const {teacher}=resTeacher.data?.data;
 
@@ -32,14 +33,14 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
 
                 } else {
                     //role==teacher; then figureout the studentId
-                    const res=await StudentService.get(Roles.Student,directChatWith?._id);
+                    const res=await StudentService.getById(directChatWith?._id);
 
                     const student=res.data?.data;
                     
                     user2Id=student?._id;
                 }
 
-                const res=await ChatService.createDirectChat(role,userId,user2Id);
+                const res=await ChatService.createDirectChat(userId,user2Id);
 
                 if(!res.success){
                     //toast.info(res.error.message);
@@ -62,15 +63,15 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
         let batchId:string='batchId';
 
         if(role==Roles.Teacher){
-            const resTeacher=await TeacherService.get(role,userId);
+            const resTeacher=await TeacherService.getById(userId);
 
             const {teacher}=resTeacher.data.data;
             const teacherId=teacher.teacherId;
             
-            const res=await BatchService.getAllWithQuery(role,{batchCounselor:teacherId});
+            const res=await BatchService.getAllWithQuery({batchCounselor:teacherId},paginationQuery);
 
             if(!res.success){
-                toast.error(res.error.message);
+                //toast.error(res.error.message);
                 return res.success;
             }
 
@@ -80,10 +81,10 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
             
         } else {
             //role==Student; then get the student batch
-            const res=await StudentService.get(role,userId);
+            const res=await StudentService.getById(userId);
             
             if(!res.success){
-                toast.warn(res.error.message);
+                //toast.warn(res.error.message);
                 return res.success;
             }
 
@@ -93,10 +94,10 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
         }
 
         //create batch chat
-        const res= await ChatService.createBatchChat(role,batchId);
+        const res= await ChatService.createBatchChat(batchId);
 
         if(!res.success){
-            toast.info(res.error.message);
+            //toast.info(res.error.message);
 
             return res.success;
         }

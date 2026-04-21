@@ -9,6 +9,7 @@ import { SubjectService } from '@/api/Services/subject.service';
 import { IAcademicSubject } from '@/interfaces/ISchool';
 import { TeacherService } from '@/api/Services/teacher.service';
 import SubjectViewModal from '@/components/ViewSubjectModal';
+import { PaginationDemo } from '@/components/Pagination.c';
 
 const TeacherSubjects = () => {
     const dispatch = useAppDispatch();
@@ -120,7 +121,7 @@ const TeacherSubjects = () => {
             ]}
         />
 
-        {/* <Pagination /> */}
+        <PaginationDemo />
 
         {/* View Modal */}
         <SubjectViewModal viewSubject={viewSubject} isModalOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> 

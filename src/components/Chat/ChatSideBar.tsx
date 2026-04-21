@@ -1,5 +1,6 @@
 import { StudentService } from "@/api/Services/Student/student.service";
 import { TeacherService } from "@/api/Services/teacher.service";
+import { paginationQuery } from "@/constants/pagination";
 import { Roles } from "@/constants/role.enum";
 import { useAppSelector } from "@/hooks/useStoreHooks";
 import { IStudent } from "@/interfaces/IStudent";
@@ -30,9 +31,10 @@ const ChatSidebar = ({
         
         try {
         
-            const res = await TeacherService.getAll(Roles.Student);
+            const res = await TeacherService.getAll(paginationQuery);
+            const resData= res.data.data
 
-            const {teacherBio} = res.data.data;
+            const {teacherBio} = resData.data[0];
 
             setUsers({teachers:teacherBio,students:null}); 
 
@@ -47,7 +49,7 @@ const ChatSidebar = ({
     const fetchStudents = async () => {
         
         try {
-            const res = await StudentService.getALLWithQuery(Roles.Student);
+            const res = await StudentService.getALLWithQuery(paginationQuery);
             
             if(!res.success) {
 
