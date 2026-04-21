@@ -70,12 +70,26 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
             
             const res=await BatchService.getAllWithQuery({batchCounselor:teacherId},paginationQuery);
 
+            console.log('@MainFrame res',res);
+
             if(!res.success){
                 //toast.error(res.error.message);
                 return res.success;
             }
 
-            const batch=res.data?.data[0];
+
+            //Here we are assuming that a teacher can only have one batch, if there are multiple batches then we need to handle that case as well.
+
+            const resData=res.data.data;
+
+            if( resData?.data && resData?.data?.length==0){
+                //toast.info('No batch found for this teacher');
+                return false;
+            }
+
+            const batch=resData?.data[0];
+
+            console.log('@MainFrame batch',batch)
 
             batchId=batch._id; //update with teacher batchId;
             

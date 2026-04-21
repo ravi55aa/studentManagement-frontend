@@ -56,7 +56,7 @@ export const useChat = (userId: string,roomId:string) => {
 
 
     async function loadMessages(roomId: string) {
-        const res = await ChatService.getMessages(user.role,roomId);
+        const res = await ChatService.getMessages(roomId);
         
         if(!res.success){
             toast.warn(res.error.message);
@@ -80,7 +80,7 @@ export const useChat = (userId: string,roomId:string) => {
         // senderId: userId,
         // };
 
-        await ChatService.sendMessage(user.role,roomId,message);
+        await ChatService.sendMessage(roomId,message);
         await loadMessages(roomId);//roomId
     };
 
