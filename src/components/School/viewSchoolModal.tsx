@@ -1,9 +1,12 @@
-import { IDocument, IUploadedDoc } from "@/interfaces/IRegister";
+import {  IUploadedDoc } from "@/interfaces/IRegister";
+import { useState } from "react";
+import PreviewModal from "../PreviewModa";
 
 export const SchoolViewModal = ({ viewSchool, isModalOpen, onClose }) => {
     if (!isModalOpen || !viewSchool) return null;
 
     const {meta,address,documents}=viewSchool
+    const [utils,setUtils] = useState({selectedUrl:'',isOpen:false});
 
     return (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
@@ -32,10 +35,17 @@ export const SchoolViewModal = ({ viewSchool, isModalOpen, onClose }) => {
             <div>
             <h2 className="font-bold text-lg mb-2">Documents</h2>
             {documents.docs?.map((doc:IUploadedDoc)=>
-            { return (<> <a href={doc?.url} target="_blank">
-                        {doc?.fileName}
-                    </a>
-                    <br />
+            { return (
+            <> 
+            <button
+                type="button" 
+                onClick={()=>setUtils({selectedUrl:doc.url,isOpen:true})}
+                className="bg-gray-100 mb-1 hover:bg-gray-200 px-3 py-1 rounded-md text-gray-700">
+
+                {doc?.fileName}
+            </button>
+            <br />
+
                 </>)
                 }
             )}
@@ -43,6 +53,12 @@ export const SchoolViewModal = ({ viewSchool, isModalOpen, onClose }) => {
             {documents.docs.length==0 && <p>No documents</p>}
 
             </div>
+
+            <PreviewModal 
+            isOpen={utils.isOpen} 
+            onClose={()=>setUtils({isOpen:false,selectedUrl:''})} 
+            url={utils.selectedUrl} 
+        />
 
             <button
             onClick={onClose}

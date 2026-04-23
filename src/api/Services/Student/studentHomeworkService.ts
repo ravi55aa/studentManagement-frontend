@@ -8,7 +8,7 @@ import { BaseService } from '../Base.Service';
 export class StudentHomeworkService extends BaseService {
 
   static submit(formData: FormData, homeworkId: string) {
-    return this.post<FormData, IHomework>(
+    return this.post<FormData, IHomeworkSubmission>(
       `${StudentHomeworkRoute.submit}/${homeworkId}`,
       formData
     );
@@ -50,8 +50,8 @@ export class StudentHomeworkService extends BaseService {
     );
   }
 
-  static update(id: string, formData: IHomeworkSubmission) {
-    return this.put<IHomeworkSubmission, IHomeworkSubmission>(
+  static update(id: string, formData: FormData) {
+    return this.put<FormData, IHomeworkSubmission>(
       `${StudentHomeworkRoute.update}/${id}`,
       formData
     );

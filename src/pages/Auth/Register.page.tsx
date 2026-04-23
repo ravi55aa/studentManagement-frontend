@@ -29,7 +29,7 @@ const Login = () => {
           <p className="text-xs text-gray-500 mt-6">
             Have an account?{' '}
             <span
-              onClick={(): void | Promise<void> => navigate('/login')}
+              onClick={(): void | Promise<void> => navigate('/admin/login')}
               className="text-green-700 cursor-pointer"
             >
               Sign In

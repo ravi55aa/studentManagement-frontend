@@ -12,7 +12,7 @@ export const schoolMetaDataValidate = z
     reEnter: z.string(),
     profile: z.any().optional(),
     subdomain:z.string()
-    .min(6, 'Subdomain must be 3+ characters')
+    .min(4, 'Subdomain must be 4+ characters')
     .max(10, 'Subdomain must not be greater tha 10 characters'),
     
     phone: z

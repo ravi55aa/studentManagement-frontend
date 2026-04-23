@@ -15,6 +15,7 @@ import { handleSchoolSignIn } from '@/api/school.api';
 import { useAppDispatch } from '@/hooks/useStoreHooks';
 import { storeCurrentUser } from '@/utils/Redux/Reducer/currentUser.reducer';
 import { Roles } from '@/constants/role.enum';
+import { toast } from 'react-toastify';
 
 const SignInSchool = () => {
   const navigate = useNavigate();
@@ -45,7 +46,9 @@ const SignInSchool = () => {
 
     //here update the new code
     if (!res.success) {
+      toast.error(res.error.message,{closeOnClick:true});
       setError(res.error.message);
+      return res.success;
     }
 
     const schoolData=res.data?.data;

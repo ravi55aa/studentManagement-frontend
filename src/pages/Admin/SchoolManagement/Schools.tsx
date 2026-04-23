@@ -5,8 +5,6 @@ import { SchoolService } from '@/api/Services/school.service';
 import { toast } from 'react-toastify';
 import { Eye } from 'lucide-react';
 
-
-
 import { ISchoolFormData } from '@/interfaces/IRegister';
 import { TableComponent } from '@/components/Table.Component';
 import { SchoolViewModal } from '@/components/School/viewSchoolModal';
@@ -14,6 +12,7 @@ import { Pagination } from '@/components';
 import { toggleSchoolLoading } from '@/utils/Redux/Reducer/allSchool.redcuer';
 import { setSchools, updateSchoolStatusLocal } from '@/utils/Redux/Reducer/schools.reducer';
 import { schoolStatus } from '@/types/types';
+import PreviewModal from '@/components/PreviewModa';
 
 const AdminSchoolList = () => {
     const dispatch = useAppDispatch();
@@ -21,6 +20,7 @@ const AdminSchoolList = () => {
 
     const [viewSchool, setViewSchool] = useState<any>();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    
 
     
     useEffect(() => {
@@ -101,6 +101,14 @@ const AdminSchoolList = () => {
                 accessor: 'schoolName',
             },
             {
+                header: 'Mail',
+                accessor: 'email',
+            },
+            {
+                header: 'Phone',
+                accessor: 'phone',
+            },
+            {
                 header: 'Admin',
                 accessor: 'adminName',
             },
@@ -129,7 +137,7 @@ const AdminSchoolList = () => {
             },
             {
                 header: 'Actions',
-                align: 'center',
+                align: 'left',
                 render: (school) => (
                 <Eye
                     onClick={() => handleView(school._id)}
@@ -148,6 +156,7 @@ const AdminSchoolList = () => {
             isModalOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
         />
+        
         </div>
     );
 };

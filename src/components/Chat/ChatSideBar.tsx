@@ -122,21 +122,6 @@ const ChatSidebar = ({
 
             </div>
         )}
-
-        {/*  OTHER TABS → Show Rooms */}
-        {/* {activeTab !== "direct" && (
-            <div className="mt-6 space-y-2">
-            {rooms.map((room: any) => (
-                <div
-                key={room?._id}
-                onClick={() => onSelectRoom(room?._id)}
-                className="p-2 rounded-md hover:bg-green-50 cursor-pointer text-sm"
-                >
-                {room?.name || "Chat"}
-                </div>
-            ))}
-            </div>
-        )} */}
         </div>
     );
 };

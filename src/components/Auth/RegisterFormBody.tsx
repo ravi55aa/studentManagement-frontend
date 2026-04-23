@@ -84,9 +84,9 @@ const RegisterFormBody = () => {
 
     const responseObj = await handleAdminRegister(payload);
     if (responseObj.success) {
-      navigate('/login');
+      navigate('/admin/login');
     } else {
-      navigate('/register');
+      navigate('/admin/register');
     }
     return responseObj.success;
   };

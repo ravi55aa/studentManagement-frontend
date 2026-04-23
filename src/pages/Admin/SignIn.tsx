@@ -56,7 +56,7 @@ const SignIn = () => {
         {/* Footer */}
         <p className="text-xs text-gray-500 mt-6">
           Don't have an account?{' '}
-          <Link to="/register" className="text-green-700 font-semibold">
+          <Link to="/admin/register" className="text-green-700 font-semibold">
             Register
           </Link>
         </p>

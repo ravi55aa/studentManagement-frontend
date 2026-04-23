@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useChat } from "@/hooks/useChat"; 
 import {ChatHeader,ChatInput,ChatMessages,ChatSidebar} from "./index";
 import { ChatService } from "@/api/Services/other/chat.service";
-import { toast } from "react-toastify";
 import { ITeacherBio } from "@/interfaces/ITeacher";
 import { TeacherService } from "@/api/Services/teacher.service";
 import { Roles } from "@/constants/role.enum";
@@ -32,7 +31,8 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
                     user2Id=teacher?.teacherId;
 
                 } else {
-                    //role==teacher; then figureout the studentId
+                    
+                    //role==teacher; then figure out the studentId
                     const res=await StudentService.getById(directChatWith?._id);
 
                     const student=res.data?.data;
@@ -77,7 +77,6 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
                 return res.success;
             }
 
-
             //Here we are assuming that a teacher can only have one batch, if there are multiple batches then we need to handle that case as well.
 
             const resData=res.data.data;
@@ -88,8 +87,9 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
             }
 
             const batch=resData?.data[0];
-
-            console.log('@MainFrame batch',batch)
+            
+            setDirectChatWith((prev)=>({...prev,firstName:batch.name}));
+            //batch name and id;
 
             batchId=batch._id; //update with teacher batchId;
             
@@ -141,18 +141,25 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
             setActiveTab={setActiveTab}
             onStartDirectChat={handleOnStartDirectChat}
             rooms={rooms}
-        />
+            />
 
         <div className="flex-1 flex flex-col">
-            <ChatHeader name={directChatWith?.firstName || directChatWith?.name} title={activeTab.toUpperCase()} />
+            <ChatHeader 
+                name={directChatWith?.firstName || directChatWith?.name} 
+                title={activeTab.toUpperCase()} 
+                />
 
-            <ChatMessages messages={messages} userId={userId} />
+            <ChatMessages 
+                messages={messages} 
+                userId={userId} 
+                />
 
             {/* Center restriction */}
             <ChatInput
-            onSend={sendMessage}
-            disabled={activeTab === "center" && role === "Student"}
-            />
+                onSend={sendMessage}
+                disabled={activeTab === "center" && role === "Student"}
+                />
+
         </div>
         </div>
     );

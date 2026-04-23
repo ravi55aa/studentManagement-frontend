@@ -5,9 +5,16 @@ const ChatHeader = ({ title,name }: { title: string,name:string }) => {
 
     return (
         <div className="p-4 border-b bg-white">
-        <h3 className="font-semibold text-green-700">{title} Chat</h3>
-        {title=='DIRECT' && name && <span className="font-bold">{name?.toUpperCase()}
-        </span>}
+        <h3 className="font-semibold text-green-700">{title} CHAT</h3>
+
+        {
+            title=='DIRECT' 
+            && 
+            name && 
+            <span className="font-bold">{name?.toUpperCase()}</span>
+        }
+        {title=='BATCH' && name && <span className="font-bold">{name?.toUpperCase()}</span>}
+
         </div>
     );
 };

@@ -18,4 +18,5 @@ const ProtectedRoute = ({ redirectPath = `/${parentPath}/login` }: ProtectedRout
   return <Outlet />;
 };
 
+
 export default ProtectedRoute;

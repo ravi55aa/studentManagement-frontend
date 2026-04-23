@@ -85,9 +85,14 @@ const App = () => {
         {/*.*/}
         
         <Route path="*" element={<NotFound />} />
+        
+        <Route element={<PublicRoute redirectPath='/admin/dashboard' />}>
+          <Route path="/login" element={<SuperAdminLogin />} />
+        </Route>
+
+
         <Route element={<PublicRoute />}>
           {/* SuperAdminLogin */}
-          <Route path="/login" element={<SuperAdminLogin />} />
 
 
           {/* admin login */}
@@ -119,18 +124,6 @@ const App = () => {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/payment-status" element={<PaymentSuccess />} />
 
-        {/*.*/}
-        {/* SuperAdmin */}
-        <Route path="/admin/dashboard" element={<SuperAdminDashboard />} >
-            <Route index element={<DashboardHome />} />
-            
-            <Route path='plans' >
-              <Route index element={<Subscriptions />} />
-              <Route path='add' element={<AddSubscription />} />  
-              <Route path='edit/:planId' element={<AddSubscription />} />  
-            </Route>
-            <Route path='schools' element={<SuperAdminSchools />} />
-        </Route>
         
         {/*.*/}
         {/* SCHOOL */}
@@ -229,6 +222,21 @@ const App = () => {
           <Route path="fee" element={<StudentFee />} />
           <Route path="chat" element={<StudentChat />} />
           <Route path="setting" element={<StudentSettingsPage />} />
+        </Route>
+        </Route>
+
+        {/*.*/}
+        {/* SuperAdmin */}
+        <Route element={<ProtectedRoute redirectPath='/login' />} >
+        <Route path="/admin/dashboard" element={<SuperAdminDashboard />} >
+            <Route index element={<DashboardHome />} />
+            
+            <Route path='plans' >
+              <Route index element={<Subscriptions />} />
+              <Route path='add' element={<AddSubscription />} />  
+              <Route path='edit/:planId' element={<AddSubscription />} />  
+            </Route>
+            <Route path='schools' element={<SuperAdminSchools />} />
         </Route>
         </Route>
         

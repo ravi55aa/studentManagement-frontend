@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { Attachment, IHomework } from "@/interfaces/IHomework";
+import { Attachment, IHomework, IHomeworkSubmission } from "@/interfaces/IHomework";
 import { useParams } from "react-router-dom";
 import { StudentHomeworkService } from "@/api/Services/Student/studentHomeworkService";
 import { useAppNavigate } from "@/hooks/useNavigate.hook";
@@ -9,6 +9,8 @@ import { HomeworkService } from "@/api/Services/Teacher/homework.service";
 import HomeworkCard from "@/components/HomeworkCard";
 import FormActions from "@/components/FormAction";
 import { useAppSelector } from "@/hooks/useStoreHooks";
+import { success, unknown } from "zod";
+import { IResponse } from "@/interfaces/IResponse";
 
 
 const HomeworkSubmissionPage = () => {
@@ -17,21 +19,31 @@ const HomeworkSubmissionPage = () => {
     const [attachments, setAttachments] = useState<Attachment[]>([]);
     const [link, setLink] = useState("");
     const {homeworkId}=useParams();
+    const studentSubmitHomeworkId=useRef<string>(homeworkId);
+
     const {goBack} =useAppNavigate()
     const {user}=useAppSelector((state)=>state.currentUser);
+    let _typeOfAction=useRef<'add'|'edit'>('add');
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     const MAX_VIDEO_SIZE = 15 * 1024 * 1024; // 15MB
 
     const fetchStudentHomeworkInfo=async()=>{
         const res=await StudentHomeworkService.getById(homeworkId);
-
+        
+        if(Object.keys(res.data?.data || {}).length > 0){
+            _typeOfAction.current='edit';
+        }
+        
         if(!res.success){
             console.log(res.error.message);
             return res.success;
         }
-
+        
+        
         const homework=res.data?.data;
+
+        studentSubmitHomeworkId.current=homework?._id||'';
 
         setNote(homework.note);
         setLink(homework.links.join(" "));
@@ -83,7 +95,8 @@ const HomeworkSubmissionPage = () => {
     };
 
     const handleSubmit = async() => {
-        if(attachments.length<=0 || link.length<=0 || note.trim().length<=10){
+
+        if( note.trim().length<=10){
             toast.warn('Not valid submission, Fill fields');
             return false
         }
@@ -97,17 +110,31 @@ const HomeworkSubmissionPage = () => {
         });
 
         if (link) {
-        formData.append("link", link);
+        formData.append("links", link);
         }
 
-        const res=await StudentHomeworkService.submit(formData,homeworkId);
+        let res: {
+        success: boolean;
+        data?: IResponse<IHomeworkSubmission>;
+        error?: {
+            message?: string;
+            field?: string;
+            code?: number;
+        };
+        } | null = null;
+
+        if(_typeOfAction.current==='add'){
+            res=await StudentHomeworkService.submit(formData,homeworkId);
+        } else {
+            res=await StudentHomeworkService.update(studentSubmitHomeworkId.current,formData);
+        }
         
         if(!res.success){
             toast.error(res.error?.message);
             return res.success;
         }
 
-        toast.success('Home Submitted successfully');
+        toast.success(res.data?.message);
         goBack();
         return res.success;
     };

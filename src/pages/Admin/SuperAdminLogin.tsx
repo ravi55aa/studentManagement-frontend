@@ -4,9 +4,13 @@ import { signInSchema } from '@/validation/register.schema';
 import { handleValidationOF } from '@/validation/validateFormData';
 import Login from '@/components/Auth/Login.component';
 import { handleAdminSignIn } from '@/api/auth.api';
+import { storeCurrentUser } from '@/utils/Redux/Reducer/currentUser.reducer';
+import { useAppDispatch } from '@/hooks/useStoreHooks';
+import { Roles } from '@/constants/role.enum';
 
 const SignIn = () => {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const [form, setForm] = useState({
         email: '',
@@ -23,20 +27,31 @@ const SignIn = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         const formIsValidated = handleValidationOF(signInSchema, form);
+
         if (!formIsValidated) {
-        return false;
+            return false;
         }
 
         setError('');
 
         const res = await  handleAdminSignIn(form,'SuperAdmin');
 
-        if (res.success) {
-        navigate('/admin/dashboard');
+        console.log('@SuperAdminLogin res', res);
+
+        if (!res.success) {
+            setError(res.error.message);
+            return res.success;
         }
 
-        setError(res.error.message);
+        const adminData=res.data?.data;
+    
+        const user = { id: adminData?._id, role: form.userType };
+        dispatch(storeCurrentUser(user));
+        
+        navigate('/admin/dashboard');
+
         return res.success;
     };
 

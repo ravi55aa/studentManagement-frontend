@@ -17,7 +17,7 @@ export const axiosBaseURL = axios.create({
   headers: {
     'contentType': 'application/json',
     'role':userType.charAt(0).toUpperCase() + userType.slice(1), //student/teacher/
-  },
+  }
 });
 
 axiosBaseURL.interceptors.request.use(
@@ -38,7 +38,7 @@ axiosBaseURL.interceptors.response.use(
   async function (error) {
     if (error.response?.status === 401) {
       //UnAuthorized
-      window.location.href = '/login';
+      window.location.href = 'login'; //go back to previous page
     }
 
     return Promise.reject(error);

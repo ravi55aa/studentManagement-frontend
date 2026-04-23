@@ -50,7 +50,8 @@ export default function HomeworkCard({
 
             <PreviewModal 
             isOpen={utils.isOpen} 
-            onClose={()=>setUtils({isOpen:false,selectedUrl:''})} url={utils.selectedUrl} />
+            onClose={()=>setUtils({isOpen:false,selectedUrl:''})} 
+            url={utils.selectedUrl} />
 
             <div className="flex flex-wrap gap-2">
                 {attachments.map((file, index) => (
@@ -88,3 +89,4 @@ export default function HomeworkCard({
         </div>
     );
 }
+

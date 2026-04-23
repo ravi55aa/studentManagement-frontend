@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify"; 
 import HomeworkCard from "@/components/HomeworkCard";
 import { HomeworkService } from "@/api/Services/Teacher/homework.service";
+import PreviewModal from "@/components/PreviewModa";
 
 
 const statusColors: Record<HomeworkSubmitStatus, string> = {
@@ -23,6 +24,7 @@ const VerifyHomeworkSubmissions = () => {
     const [status, setStatus] = useState<HomeworkSubmitStatus>("pending");
     const [remark, setRemark] = useState("");
     const [homework,setHomework]=useState<IHomework>();
+    const [utils,setUtils] = useState({selectedUrl:'',isOpen:false});
 
     const dispatch=useAppDispatch();
     const {homeworkId}=useParams();
@@ -201,7 +203,7 @@ const VerifyHomeworkSubmissions = () => {
             <div className="bg-gray-100 p-2">
 
                 <h3 className="text-xl font-semibold text-green-700 mb-4">
-                {selected.studentId?.name}'s Submission
+                {selected.studentId?.name}'s Submission 
                 </h3>
 
                 {/* NOTE */}
@@ -216,19 +218,11 @@ const VerifyHomeworkSubmissions = () => {
                 <div className="mb-4">
                 <h4 className="font-medium mb-1">Links</h4>
                 {selected.links?.length ? (
-                    <ul className="space-y-1">
-                    {selected.links.map((link, i) => (
-                        <li key={i}>
-                        <a
-                            href={link}
-                            target="_blank"
-                            className="text-green-600 underline"
+                    <button
+                            className="text-gray-600"
                         >
-                            {link}
-                        </a>
-                        </li>
-                    ))}
-                    </ul>
+                            {selected.links.join(' ')}
+                        </button>
                 ) : (
                     <p className="text-gray-400 text-sm">No links</p>
                 )}
@@ -245,13 +239,12 @@ const VerifyHomeworkSubmissions = () => {
                         className="flex justify-between bg-green-50 px-3 py-2 rounded"
                         >
                         <span>{file.fileName}</span>
-                        <a
-                            href={file.url}
-                            target="_blank"
+                        <button
+                            onClick={() => setUtils({isOpen:true,selectedUrl:file.url})}
                             className="text-green-700"
                         >
                             View
-                        </a>
+                        </button>
                         </li>
                     ))}
                     </ul>
@@ -310,6 +303,12 @@ const VerifyHomeworkSubmissions = () => {
             </div>
             </div>
         )}
+
+        <PreviewModal 
+            isOpen={utils.isOpen} 
+            onClose={()=>setUtils({isOpen:false,selectedUrl:''})} 
+            url={utils.selectedUrl} />
+
         </div>
     );
 };
