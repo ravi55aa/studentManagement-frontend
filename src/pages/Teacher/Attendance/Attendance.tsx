@@ -11,7 +11,7 @@ import { ILeaveDocument, IStudentAttendance } from '@/interfaces/IAttendance';
 import { IStudent } from '@/interfaces/IStudent';
 import { AttendanceStatus } from '@/types/student.types';
 import { storeStudents } from '@/utils/Redux/Reducer/students.reducer';
-import { Bell } from 'lucide-react';
+import { Bell,BadgeInfo } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -31,6 +31,8 @@ const Attendance = () => {
     const [selectedDate, setSelectedDate] = useState(
         new Date().toISOString().split("T")[0]
     );
+
+    const [BatchLeaveHistory,setBatchLeaveHistory] = useState<string[]>([]);
 
     const dispatch = useAppDispatch();
     const {batchId}=useParams();
@@ -53,7 +55,34 @@ const Attendance = () => {
         const students = res.data.data;
         dispatch(storeStudents(students));
     })();
+
     }, [dispatch, studentsStore.loading]);
+
+
+    //will set the leave history of the batch
+    useEffect(() => {
+
+        const fetchStudentsLeaveHistory = async () => {
+            
+            const studentIdArray:string[]=studentsStore.students.map(student => student?._id);
+
+            const leaveHistory = await Promise.all(
+                studentIdArray.map(async (studentId)=>{
+                    const res=await AttendanceService.getLeaveHistory(studentId,selectedDate);
+                    
+                    if(res?.data?.data) return studentId;
+                })
+            )
+
+            const result = leaveHistory.filter((id)=>id);
+            
+            setBatchLeaveHistory(result);
+
+            return result;
+        }
+
+        fetchStudentsLeaveHistory();
+    },[]);
 
     //Fetch Batch attendance for that day
 
@@ -134,13 +163,20 @@ const Attendance = () => {
     };
 
     // View student
-    const handleViewStudent = async (student: IStudent) => {
+    async function handleViewStudent(student: IStudent){
         
         //here fetchThe studentLeave
         const res=await AttendanceService.getLeaveHistory(student._id,selectedDate);
+
+        if(!res.success){
+            console.log(res.success);
+            return res.success;
+        }
         
+        const data=res.data?.data[0];
         setViewModal(true);
-        setSelectedStudent({student,leaveHistory:res?.data?.data[0]});
+        
+        setSelectedStudent({student,leaveHistory:data});
 
         return res.success;
     };
@@ -209,7 +245,7 @@ const Attendance = () => {
                 <option>Female</option>
             </select>
 
-            <input
+            <input 
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
@@ -282,9 +318,13 @@ const Attendance = () => {
                 render: (student) => (
                     <button
                     onClick={() => handleViewStudent(student)}
-                    className="text-green-700 hover:underline"
+                    className="text-green-700 relative hover:underline"
                     >
-                    View
+                        View
+                    {
+                        BatchLeaveHistory.includes(student?._id) && 
+                        <BadgeInfo className=' ml-0.5 absolute h-3 w-3 inline-block rounded-full'/>   
+                    }
                     </button>
                 ),
                 },
