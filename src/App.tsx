@@ -228,7 +228,7 @@ const App = () => {
         {/*.*/}
         {/* SuperAdmin */}
         <Route element={<ProtectedRoute redirectPath='/login' />} >
-        <Route path="/admin/dashboard" element={<SuperAdminDashboard />} >
+        <Route path="/dashboard" element={<SuperAdminDashboard />} >
             <Route index element={<DashboardHome />} />
             
             <Route path='plans' >

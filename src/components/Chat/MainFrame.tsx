@@ -15,7 +15,7 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
     const [roomId, setRoomId] = useState<string>();
     const [directChatWith, setDirectChatWith] = useState<ITeacherBio|IStudent|null>(null);
 
-    useEffect(()=>{
+    useEffect(  ()=> {
 
         const switchTab=async()=>{
             

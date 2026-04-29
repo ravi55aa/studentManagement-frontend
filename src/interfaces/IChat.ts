@@ -16,6 +16,7 @@ export interface IMessage {
 
     isBroadcast?: boolean; // for center messages
     updateAT?: string; // for center messages
+    _id?:string;
 }
 
 export interface IChatRoom  {

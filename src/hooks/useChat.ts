@@ -10,12 +10,13 @@ import { SocketMessages } from "@/constants/messages";
 import { ChatService } from "@/api/Services/other/chat.service";
 import { toast } from "react-toastify";
 import { useAppSelector } from "./useStoreHooks";
-
+import { IMessage } from "@/interfaces/IChat";
 
 export const useChat = (userId: string,roomId:string) => {
-    const [messages, setMessages] = useState<any[]>([]);
+    const [messages, setMessages] = useState<IMessage[]>([]);
     const [currentRoom, setCurrentRoom] = useState<string>("");
     const socket=useSocket();
+
     const {user}=useAppSelector((state)=>state.currentUser);
 
     useEffect(() => {
@@ -24,23 +25,25 @@ export const useChat = (userId: string,roomId:string) => {
             return;
         }
 
+        console.log('socket.id',socket.id);
+
         socket.on("receiveMessage", (data) => {
-        setMessages((prev) => [...prev, data]);
+            setMessages((prev) => [...prev, data]);
         });
 
         const handleLoadMessages=async()=>{
-            await loadMessages(roomId);
+            await loadMessages(roomId); 
         }
         handleLoadMessages();
 
         return () => {
         socket.disconnect();
         };//!receive message is not working
-    }, [userId]);
+    }, [socket?.id]);
 
     useEffect(()=>{
 
-        if(!socket){
+        if(!socket){  
             return;
         }
 
@@ -52,7 +55,7 @@ export const useChat = (userId: string,roomId:string) => {
             await loadMessages(roomId);//roomId
         }
         fetchMessages();
-    },[roomId]);
+    },[roomId,socket?.id]);
 
 
     async function loadMessages(roomId: string) {
@@ -71,16 +74,19 @@ export const useChat = (userId: string,roomId:string) => {
         console.log('hi',RoomId);
     };
 
-    const sendMessage = async(message: string) => {
-        if (!message.trim()) return;
+    const sendMessage = async(message: FormData) => {
+        if (!message.get("message") && !message.get("docs")) return;
 
         // const data = {
         // roomId: currentRoom,
         // message,
         // senderId: userId,
         // };
+        socket.emit("sendMessage", {chatRoomId: currentRoom, message: message.get("message")});
 
-        await ChatService.sendMessage(roomId,message);
+
+        message.append("chatRoomId", roomId);
+        await ChatService.sendMessage(message);
         await loadMessages(roomId);//roomId
     };
 

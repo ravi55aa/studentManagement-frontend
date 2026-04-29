@@ -24,13 +24,12 @@ export class ChatService extends BaseService {
     );
   }
 
-  static sendMessage(chatRoomId: string, message: string) {
-    return this.post<
-      { chatRoomId: string; message: string },
-      unknown
-    >(
+  static sendMessage(message: FormData) {
+    console.log('ChatService sendMessage', { message });
+
+    return this.post <FormData ,unknown> (
       ChatRouter.sendMessage,
-      { chatRoomId, message }
+      message
     );
   }
 
