@@ -64,7 +64,7 @@ import {
 
 } from '@/pages/index';
 
-import {TeacherDashboard,HomeworkAdd} from '@/pages/Teacher/index'
+import {TeacherDashboardMain,HomeworkAdd, TeacherDashboard} from '@/pages/Teacher/index'
 
 import { Routes, Route } from 'react-router-dom';
 
@@ -126,8 +126,10 @@ const App = () => {
 
         
         {/*.*/}
-        {/* SCHOOL */}
         <Route element={<ProtectedRoute />} >
+
+        {/* SCHOOL */}
+
           <Route path="/school/dashboard" element={<Dashboard />}>
             <Route index element={<DashboardHome />} />
             <Route path="centers" element={<Centers />} />
@@ -181,12 +183,11 @@ const App = () => {
             </Route>
           </Route>
 
-        
 
         {/* TEACHER */}
-        
-        <Route path='/teacher/dashboard' element={<TeacherDashboard/>} > 
-          <Route index element={<DashboardHome />} />
+
+        <Route path='/teacher/dashboard' element={<TeacherDashboardMain/>} > 
+          <Route index element={<TeacherDashboard />} />
 
           <Route path="homework" >
             <Route index element={<TeacherHomeworks />} />

@@ -49,6 +49,16 @@ export class AttendanceService extends BaseService {
     );
   }
 
+  static getAttendanceOfAcademicYear(
+    batchId:string,
+    academicYear:  number
+  ) {
+    return this.get<Partial<IStudentAttendanceMain | null>>(
+      `${StudentRouter.getBatchAttendance}/${batchId}`,
+      {academicYear:academicYear}
+    );
+  }
+
   static getByQuery(
     query: {
       studentId: string;
