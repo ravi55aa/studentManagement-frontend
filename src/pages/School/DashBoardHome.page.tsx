@@ -1,48 +1,46 @@
 // import { FaUserShield, FaChalkboardTeacher, FaUserGraduate } from "react-icons/fa";
-import { UserSearchIcon } from 'lucide-react';
+import { GraduationCap, School, UserSearchIcon } from 'lucide-react';
 
-export default function DashboardHome() {
+export default function DashboardSection() {
   return (
-    <div className="flex-1 p-10">
-      <h1 className="text-3xl font-semibold text-center text-gray-800">
-        Welcome to your dashboard, Udemy school
-      </h1>
-
-      <p className="text-center text-gray-600 text-lg mt-2">Uyo/school/@teachable.com</p>
+    <div className="flex-1 p-5">
 
       {/* ACTIONS SECTION */}
-      <div className="max-w-3xl mx-auto mt-12 space-y-10">
+      <div className="bg-white flex gap-2 mx-auto mt-12 space-y-10">
+        
         {/* Add Admins */}
         <DashboardAction
           icon={<UserSearchIcon className="text-xl text-black" />}
-          title="Add other admins"
-          description="Create rich course content and coaching products for your students. 
-                When you give them a pricing plan, they'll appear on your site!"
+          title="Add Teacher"
+          description="Adding teachers to a digital dashboard for enhancing classroom efficiency, 
+            as it streamlines administrative tasks, allowing educators to focus on instruction."
         />
 
         {/* Add Classes */}
         <DashboardAction
-          icon={<UserSearchIcon className="text-xl text-black" />}
-          title="Add classes"
-          description="Create rich course content and coaching products for your students. 
-                When you give them a pricing plan, they'll appear on your site!"
+          icon={<School className="text-xl text-black" />}
+          title="Add Classes"
+          description="Create rich course classes and coaching products for your school. 
+                When you give them a good and monitor class, they'll appear on your site!"
         />
 
         {/* Add Students */}
         <DashboardAction
-          icon={<UserSearchIcon className="text-xl text-black" />}
-          title="Add students"
-          description="Create rich course content and coaching products for your students. 
-                When you give them a pricing plan, they'll appear on your site!"
+          icon={<GraduationCap className="text-xl text-black" />}
+          title="Add Students"
+          description="
+                The Student Dashboard learners one place to manage everything about their learning. They log in, see the courses they're working through, check progress, and review certificates they've earned along the way!"
         />
+
       </div>
+      
     </div>
   );
 }
 
 function DashboardAction({ icon, title, description }) {
   return (
-    <div className="flex items-start space-x-4">
+    <div className="flex p-5 gap-2 m-1 hover:shadow-md transition items-start space-x-4">
       <div className="bg-blue-100 p-3 rounded-xl">{icon}</div>
 
       <div>

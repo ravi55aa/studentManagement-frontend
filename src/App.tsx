@@ -14,7 +14,8 @@ import {
   CreateSchool,
   AddAddress,
   DocumentUpload,
-  DashboardHome,
+  DashboardSection1,
+  SchoolDashboardMainSection,
   Dashboard,
   ViewSchool,
   Fees,
@@ -54,6 +55,7 @@ import {
   StudentLogin,
   AddStudent,
   StudentDashboard,
+  StudentDashboardMain,
   HomeworkList,
   HomeworkSubmit,
   StudentSettingsPage,
@@ -131,7 +133,7 @@ const App = () => {
         {/* SCHOOL */}
 
           <Route path="/school/dashboard" element={<Dashboard />}>
-            <Route index element={<DashboardHome />} />
+            <Route index element={<SchoolDashboardMainSection />} />
             <Route path="centers" element={<Centers />} />
             <Route path="centers/add" element={<AddCenter />} />
             <Route path="centers/edit/:id" element={<EditCenter />} />
@@ -212,8 +214,8 @@ const App = () => {
 
         {/* STUDENT */}
 
-        <Route path='/student/dashboard' element={<StudentDashboard/>}>
-          <Route index element={<DashboardHome/>} />
+        <Route path='/student/dashboard' element={<StudentDashboardMain/>}>
+          <Route index element={<StudentDashboard/>} />
           <Route path="homework"  >
             <Route index element={<HomeworkList />} />
             <Route path="add/:homeworkId" element={<HomeworkSubmit />} />
@@ -230,7 +232,7 @@ const App = () => {
         {/* SuperAdmin */}
         <Route element={<ProtectedRoute redirectPath='/login' />} >
         <Route path="/dashboard" element={<SuperAdminDashboard />} >
-            <Route index element={<DashboardHome />} />
+            <Route index element={<DashboardSection1 />} />
             
             <Route path='plans' >
               <Route index element={<Subscriptions />} />

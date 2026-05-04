@@ -10,8 +10,9 @@ export { default as 'CreateSchool' } from './School/CreateSchool';
 export { default as 'AddAddress' } from './School/AddAddress.page';
 export { default as 'DocumentUpload' } from './School/DocumentUpload.page';
 
-export { default as 'DashboardHome' } from './School/DashBoardHome.page';
-export { default as 'Dashboard' } from './School/DashBoard.page';
+export { default as 'SchoolDashboardMainSection' } from './School/Dashboard/Dashboard.section.tsx';
+export { default as 'DashboardSection1' } from './School/DashBoardHome.page.tsx';
+export { default as 'Dashboard' } from './School/DashBoard.page.tsx';
 
 export { default as 'ViewSchool' } from './School/ViewSchool.page';
 
@@ -62,7 +63,8 @@ export { default as 'MarkAttendance' } from './Teacher/Attendance/Attendance.tsx
 /*************** STUDENT ****************/
 export { default as 'StudentLogin' } from './Auth/Student.sign';
 export {default as "AddStudent"} from "./Student/Add.Student";
-export {default as 'StudentDashboard'} from "./Student/Student.Dashboard"
+export {default as 'StudentDashboardMain'} from "./Student/Student.Dashboard"
+export {default as 'StudentDashboard'} from "./Student/Dashboard/StudentDashboard.tsx"
 export {default as 'HomeworkList'} from "./Student/Homework/Homework.List.tsx"
 export {default as 'HomeworkSubmit'} from "./Student/Homework/Homework.Submit.tsx"
 export {default as 'StudentSettingsPage'} from "./Student/Profile.Student"

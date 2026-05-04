@@ -11,7 +11,7 @@ data: { name: string; value: number }[];
 
 const SimpleLineChart = ({ data }: Props) => {
     return (
-        <div className="h-20">
+        <div className="h-20 hover:shadow-md transition duration-200">
         <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
             <Tooltip />

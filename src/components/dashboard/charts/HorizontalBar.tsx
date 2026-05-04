@@ -14,7 +14,7 @@ interface Props {
 
 const HorizontalBarChart = ({ data, title }: Props) => {
     return (
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-green-100">
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-green-100 hover:shadow-md transition duration-200">
         {title && (
             <h3 className="text-md font-semibold text-gray-700 mb-4">
             {title}
