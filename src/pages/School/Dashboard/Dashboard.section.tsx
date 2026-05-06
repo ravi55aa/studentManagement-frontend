@@ -16,8 +16,12 @@ import { StudentService } from "@/api/Services/Student/student.service";
 import { AttendanceService } from "@/api/Services/Student/attendanceService";
 
 import { IStudent } from "@/interfaces/IStudent";
-import { IAcademicSubject } from "@/interfaces/ISchool";
+import { IAcademicSubject, IBatches } from "@/interfaces/ISchool";
 import DashboardSection from "../DashBoardHome.page";
+import { TeacherService } from "@/api/Services/teacher.service";
+import { paginationQuery } from "@/constants/pagination";
+import { IGetAllTeachers } from "@/interfaces/ITeacher";
+import { SubjectService } from "@/api/Services/subject.service";
 
 const SchoolDashboard = () => {
     const { user } = useAppSelector((state) => state.currentUser);
@@ -25,10 +29,18 @@ const SchoolDashboard = () => {
     const [chartData, setChartData] = useState<{
         students: IStudent[];
         subjects: IAcademicSubject[];
+        teachers: IGetAllTeachers;
+        batches: IBatches[];
     }>({
         students: [],
         subjects: [],
+        teachers: null,
+        batches : [],
     });
+
+    const [otherChartData,setOtherChartData]=useState<{name:string,value:number}[]>([]);
+
+    const [cardData,setCardData]=useState<{bestBatch:string,lastBatch:string,activeDays:number}>();
 
     const [selectedYear, setSelectedYear] = useState("2026");
     const [selectedBatch, setSelectedBatch] = useState("all");
@@ -43,18 +55,26 @@ const SchoolDashboard = () => {
 
             const batch = res.data.data.data[0];
 
-            const [studentResponse] = await Promise.all([
-            StudentService.getALLWithQuery({ batch: batch._id }),
-            AttendanceService.getAttendanceOfAcademicYear(
-                batch._id,
-                Number(selectedYear)
-            ),
+            const [studentResponse,teacherResponse,batchResponse,subjectResponse] = await Promise.all([
+                StudentService.getALLWithQuery({
+                    batch: batch._id }),
+                TeacherService.getAll(paginationQuery),
+                BatchService.getAll(paginationQuery),
+                SubjectService.getAll(),
             ]);
 
-            setChartData({
-            students: studentResponse.data.data,
-            subjects: [],
-            });
+            setChartData(
+                { 
+                    students: studentResponse.data.data, 
+                    teachers: teacherResponse.data.data.data[0], 
+                    batches: batchResponse.data.data.data, 
+                    subjects: subjectResponse?.data?.data||[],
+                });
+
+
+                //after every successful render 
+                //call this below function
+
         } catch (err) {
             console.error(err);
         }
@@ -63,24 +83,82 @@ const SchoolDashboard = () => {
         fetchChartData();
     }, [selectedYear, selectedBatch]);
 
+    useEffect(()=>{
+        (async()=>{
+            await handleBatchPerformanceData();
+            handleCardData();
+
+        })()
+    },[chartData.batches]);
+
     //  Derived values
-    const totalStudents = chartData.students.length;
-    const totalStaff = 85;
-    const totalBatches = 32;
+    const totalStudents = chartData.students?.length ||0;
+    const totalStaff = chartData.teachers?.teacherBio?.length||0;
+    const totalBatches = chartData.batches?.length||0;
 
-    // mock data (replace with API later)
-    const studentBatchData = [
-        { name: "Batch A", value: 40 },
-        { name: "Batch B", value: 35 },
-        { name: "Batch C", value: 50 },
-    ];
+    //row1
+    const handleStudentsBatchData = () => {
+        const batchMap: Record<string, number> = {};
 
-    const performanceData = [
-        { name: "Batch A", value: 78 },
-        { name: "Batch B", value: 85 },
-        { name: "Batch C", value: 72 },
-    ];
+        //  Create quick lookup (O(1) instead of find)
+        const batchLookup: Record<string, string> = {};
 
+        chartData.batches.forEach((batch) => {
+            batchLookup[batch._id] = batch.name;
+        });
+
+        //  Count students per batch
+        chartData.students.forEach((student: IStudent) => {
+            const batchName = batchLookup[student.batch];
+
+            if (batchName) {
+            batchMap[batchName] = (batchMap[batchName] || 0) + 1;
+            }
+        });
+        
+        return handlePaginateValue(batchMap) as {name:string,value:number}[];
+    };
+    
+    function handlePaginateValue(data):{name:string,value:unknown}[]{
+        //  Convert to array
+        let result = Object.entries(data).map(([name, value]) => ({
+            name,
+            value,
+        }));
+
+        //  Limit to top 10
+        result = result.slice(0, 10);
+
+        return result;
+    }
+    
+    async function handleBatchPerformanceData() {
+
+        const batchesPerformance = await Promise.all(
+            chartData.batches?.map(async (batch) => {
+                const res = await AttendanceService.getAttendanceOfAcademicYear(
+                    batch._id,
+                    Number(selectedYear)
+                );
+
+                if (res.success) {
+                    const data=res?.data?.data[0];
+                    const percent=data?.attendancePercentage
+
+                    return {name:batch.name,value:Number(Math.floor(percent))};
+                }
+
+                return null;
+            })
+        );
+
+        const filteredData = batchesPerformance?.filter(Boolean);
+
+        setOtherChartData(filteredData);
+        return [];
+    };
+    
+    //row2
     const attendanceTrend = [
         { name: "Jan", value: 80 },
         { name: "Feb", value: 85 },
@@ -88,16 +166,68 @@ const SchoolDashboard = () => {
         { name: "Apr", value: 88 },
     ];
 
-    const teacherData = [
-        { name: "Math", value: 10 },
-        { name: "Science", value: 8 },
-        { name: "English", value: 6 },
-    ];
+    const handleSubjectDistribution = () => {
+
+        if(!chartData.teachers || !chartData.subjects) return;
+
+        const subjectMap={};
+
+        //  Create quick lookup (O(1) instead of find)
+        const subjectLookup: Record<string, string> = {};
+
+        chartData.subjects?.forEach((subject) => {
+            subjectLookup[subject._id] = subject.name;
+        });
+
+        //  Count students per batch
+        chartData.teachers.teachersSchoolData?.forEach((teacher)=>{
+
+            for(let subjectId of teacher?.assignedSubjects){
+                const subject = subjectLookup[subjectId];
+
+
+                if (subject) {
+                subjectMap[subject] = (subjectMap[subject] || 0) + 1;
+                }
+            }
+        });
+
+        for(let [key,val] of Object.entries(subjectLookup)){
+            if(!subjectMap[val]){
+                subjectMap[val]=0;
+            }
+        }
+
+        return handlePaginateValue(subjectMap);
+    }
+
+    function handleCardData(){
+        if(!otherChartData.length){ //base-case
+            return;
+        }
+
+        const sortData=Array.from(otherChartData)?.sort((a,b)=>a.value-b.value);
+        let n=otherChartData?.length;
+
+        const bestBatchCardData=sortData[n-1]?.name;
+        const lastBatchCardData=sortData[0]?.name;
+
+        const activeDaysCardData=sortData?.reduce((acc,val)=>acc+val.value,0);
+        
+        setCardData({
+            bestBatch:bestBatchCardData,
+            lastBatch:lastBatchCardData,
+            activeDays:activeDaysCardData,
+        });
+
+        return true; 
+    }
+
 
     return (
         <div className="p-5 bg-gray-50 min-h-screen space-y-6">
         {/*  HERO HEADER */}
-        <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white p-6 rounded-2xl shadow-md">
+        <div className="bg-linear-to-r from-green-600 to-emerald-500 text-white p-6 rounded-2xl shadow-md">
             <h1 className="text-2xl font-bold">School Dashboard</h1>
             <p className="text-sm opacity-90">
             Monitor performance, attendance, and overall analytics
@@ -161,17 +291,17 @@ const SchoolDashboard = () => {
 
             <div className="bg-green-100 p-4 rounded-xl">
             <p className="text-sm text-gray-600">Best Batch</p>
-            <h3 className="text-lg font-semibold text-green-700">Batch B</h3>
+            <h3 className="text-lg font-semibold text-green-700">{cardData?.bestBatch || "Batch A"}</h3>
             </div>
 
             <div className="bg-yellow-100 p-4 rounded-xl">
             <p className="text-sm text-gray-600">Low Attendance</p>
-            <h3 className="text-lg font-semibold text-yellow-700">Batch C</h3>
+            <h3 className="text-lg font-semibold text-yellow-700">{cardData?.lastBatch || "Batch C"}</h3>
             </div>
 
             <div className="bg-blue-100 p-4 rounded-xl">
             <p className="text-sm text-gray-600">Active Today</p>
-            <h3 className="text-lg font-semibold text-blue-700">980</h3>
+            <h3 className="text-lg font-semibold text-blue-700">{cardData?.activeDays || '980'}</h3>
             </div>
 
         </div>
@@ -181,13 +311,15 @@ const SchoolDashboard = () => {
 
             <div className="bg-white p-5 rounded-2xl border border-green-100 shadow-sm hover:shadow-md transition">
             <SectionWrapper title="Students per Batch">
-                <SubjectBarChart data={studentBatchData} />
+                <SubjectBarChart title="Students Distribution" 
+                data={handleStudentsBatchData()} />
             </SectionWrapper>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-green-100 shadow-sm hover:shadow-md transition">
             <SectionWrapper title="Batch Performance">
-                <SubjectBarChart data={performanceData} />
+                {otherChartData.length &&
+                <SubjectBarChart title="Batch Distribution" data={otherChartData} />}
             </SectionWrapper>
             </div>
 
@@ -206,7 +338,7 @@ const SchoolDashboard = () => {
 
             <div className="bg-white p-5 rounded-2xl border border-green-100 shadow-sm hover:shadow-md transition">
             <SectionWrapper title="Teacher Allocation">
-                <PieChart data={teacherData} />
+                <PieChart data={handleSubjectDistribution()} />
             </SectionWrapper>
             </div>
 

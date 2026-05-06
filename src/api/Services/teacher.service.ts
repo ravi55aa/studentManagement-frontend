@@ -48,6 +48,13 @@ export class TeacherService extends BaseService {
     );
   }
 
+  static getAllWithQuery(paginationQuery: TPaginationQuery,query:Record<string,number|string>) {
+    return this.get<TPaginationResult<IGetAllTeachers>>(
+      TeacherRoute.getAll,
+      {...query,...paginationQuery}
+    );
+  }
+
   static editBio(id: string, formData: FormData) {
     return this.patch<FormData, unknown>(
       `${TeacherRoute.updateBio}/${id}`,

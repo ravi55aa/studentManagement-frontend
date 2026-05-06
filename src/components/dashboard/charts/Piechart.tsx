@@ -25,7 +25,7 @@ const TeacherPieChart = ({ data }: any) => {
                 outerRadius={100}
                 label
                 >
-                {data.map((entry: any, index: number) => (
+                {data?.map((entry: any, index: number) => (
                     <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
                 </Pie>
