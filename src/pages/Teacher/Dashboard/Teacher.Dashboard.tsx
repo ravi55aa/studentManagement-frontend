@@ -11,17 +11,32 @@ import { Users, BookOpen,MapPlus  } from "lucide-react";
 import { BatchService } from "@/api/Services/batch.service";
 import { StudentService } from "@/api/Services/Student/student.service";
 import { IStudent } from "@/interfaces/IStudent";
-import { IAcademicSubject } from "@/interfaces/ISchool";
+import { IAcademicCourse, IAcademicSubject } from "@/interfaces/ISchool";
 import { AttendanceService } from "@/api/Services/Student/attendanceService";
+import { IHomework } from "@/interfaces/IHomework";
+import { HomeworkService } from "@/api/Services/Teacher/homework.service";
+import { paginationQuery } from "@/constants/pagination";
+import { CourseService } from "@/api/Services/course.service";
+import { SubjectService } from "@/api/Services/subject.service";
+import { TeacherService } from "@/api/Services/teacher.service";
+import { Teachers } from "@/types/types";
 
 const TeacherDashboard = () => {
     //Store Teachers
     const {user}=useAppSelector((state)=>state.currentUser);
-    const teacherInfo=useRef<{bio:ITeacherBio|{},professional:ITeacher|{}}>({bio:{},professional:{}});
+    const teacherInfo=useRef<Teachers>({teacherBio:null,teacher:null});
 
-    const [chartData,setChartData]=useState<{students:IStudent[],subjects:IAcademicSubject[]}>({
+    const [chartData,setChartData]=useState<
+    {
+        students:IStudent[],
+        subjects:IAcademicSubject[],
+        homeworks:IHomework[],
+        courses:IAcademicCourse[]}>
+        ({
         students:[],
-        subjects:[]
+        subjects:[],
+        homeworks:[],    
+        courses:[],    
     });
 
     const [batchData,SetBatchData] = useState <{ 
@@ -50,28 +65,35 @@ const TeacherDashboard = () => {
             const {data}=res.data.data;
             const batch=data[0];
 
-            const [studentResponse,attendance]=await Promise.all([
+            const [teacherRes,studentResponse,attendance,homeworkRes,coursesRes,subjectRes]=await Promise.all([
+                TeacherService.getById(user.id),
                 StudentService.getALLWithQuery({batch:batch._id}),
-                AttendanceService.getAttendanceOfAcademicYear(batch?._id,2026)//update with current batchId
+                AttendanceService.getAttendanceOfAcademicYear(batch?._id,2026),
+                HomeworkService.getAllWithQuery(paginationQuery,{teacherId:user?.id,status:'pending'}),
+                CourseService.getAll(),
+                SubjectService.getAll(),
             ]);
 
-            const studentsData=studentResponse.data.data;
-            setChartData((prev)=>({...prev,students:studentsData}));
+            teacherInfo.current=teacherRes.data.data; //set the teacher
 
-            console.log('@attendanceService attendance',attendance);
+            const studentsData=studentResponse.data.data;
+            const homeworks=homeworkRes.data.data;
+            const courses=coursesRes.data.data;
+            const subjects=subjectRes.data.data;
+
+            setChartData((prev)=>(
+                {...prev,
+                    students:studentsData,
+                    homeworks:homeworks.data,
+                    courses:courses.courses,
+                    subjects:subjects
+                }));
 
             return studentsData;
         }
 
         fetchChartData();
     },[]);
-
-    //This requires some of the mock data to be in the given field
-    // attendanceData,
-    // batchData,
-    // subjectData,
-    // courseData,
-    // Pending Homeworks 
 
   //  mock data (replace with API)
     const attendanceData = [
@@ -89,80 +111,240 @@ const TeacherDashboard = () => {
         { name: "Physics", value: 20 },
     ];
 
-    const pendingHomework = [
-        { student: "Rahul", subject: "Math", due: "Today" },
-        { student: "Anu", subject: "Science", due: "Tomorrow" },
-    ];
+    const structurePendingHomeworks=()=>{
+        if(chartData.homeworks.length < 0){
+            return;
+        }
 
-    const assignments = [
-        { course: "Math", title: "Algebra Test", date: "10 Apr" },
-        { course: "Science", title: "Lab Work", date: "12 Apr" },
-    ];
+        const pendingHomeworks=chartData.homeworks?.map((homework)=>{
+            return {
+                subject:homework?.subjectId?.name, 
+                title:homework?.title, 
+                due:String(homework.dueDate).slice(0,10)}
+        });
 
-    // const fetchStudentsCount=async()=>{
-    //     await 
-    // };
+        return pendingHomeworks;
+    }
+    
+    const handleStructureCourses=()=>{
+        if(chartData.courses.length < 0){
+            return;
+        }
+
+        const structureCourses=chartData.courses?.map((course)=>{
+            return {
+                course:course?.name, 
+                code:course?.code, 
+                date:String(course.schedule.startDate).slice(0,10)}
+        });
+
+        return structureCourses;
+    }
+
+    function handlePaginateValue(data):{name:string,value:unknown}[]{
+        //  Convert to array
+        let result = Object.entries(data).map(([name, value]) => ({
+            name,
+            value,
+        }));
+
+        //  Limit to top 10
+        result = result.slice(0, 10);
+
+        return result;
+    }
+
+    //Shape the subject
+    const handleSubjectDistribution = () => {
+
+            if (!user || !chartData.subjects?.length) return [];
+
+            const subjectMap: Record<string, number> = {};
+
+            const teacherSubjects =
+                teacherInfo.current?.teacher?.assignedSubjects || [];
+
+            // Quick lookup
+            const subjectLookup: Record<string, string> = {};
+
+            chartData.subjects.forEach((subject) => {
+                subjectLookup[subject._id] = subject.name;
+            });
+            
+            // Count subjects
+            for (const subjectId of teacherSubjects) {
+                console.log('subjectId',subjectId)
+
+                
+                const subjectName = subjectLookup[subjectId._id];
+                
+                if (subjectName) {
+                    console.log('subjectId',subjectId);
+                    subjectMap[subjectName] =
+                        (subjectMap[subjectName] || 0) + 10;
+                }
+            }
+
+            // Add missing subjects with 0
+            Object.values(subjectLookup).forEach((subjectName) => {
+
+                if (!(subjectName in subjectMap)) {
+                    subjectMap[subjectName] = 0;
+                }
+            });
+
+            return handlePaginateValue(subjectMap);
+    };
 
     return (
-        <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-        
-        {/*  Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-emerald-50 p-4 md:p-8">
             
-            <OverviewCard
-                title="Total Students"
-                value={chartData.students?.length||'100'}
-                icon={<Users className="text-green-600" />}
-            >
+            {/* Header */}
+            <div className="mb-8 flex flex-col gap-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-800">
+                Teacher Dashboard
+            </h1>
 
-            <SimpleLineChart data={attendanceData} />
+            <p className="text-slate-500 text-sm md:text-base">
+                Monitor students, assignments, attendance and academic progress.
+            </p>
+            </div>
 
-            </OverviewCard>
-            
-            <OverviewCard
-                title="Assigned Subjects Overview"
-                value="1"
-                icon={<BookOpen className="text-green-600" />}
-            >
-                <SubjectBarChart data={subjectData} />
-            </OverviewCard>
+            {/* Overview Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <OverviewCard
-                title="Batches per Teacher"
-                value="1"
-                icon={<MapPlus  className="text-green-600" />}
-            >
+            {/* Total Students */}
+            <div className="group rounded-3xl border border-white/40 bg-white/70 backdrop-blur-lg shadow-md hover:shadow-2xl transition-all duration-300 p-5">
+                
+                <div className="flex items-center justify-between mb-4">
+                <div>
+                    <p className="text-slate-500 text-sm font-medium">
+                    Total Students
+                    </p>
+
+                    <h2 className="text-4xl font-bold text-slate-800 mt-1">
+                    {chartData.students?.length || "100"}
+                    </h2>
+                </div>
+
+                <div className="h-14 w-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                    <Users className="text-emerald-600 w-7 h-7" />
+                </div>
+                </div>
+
+                <div className="mt-6">
+                <SimpleLineChart data={attendanceData} />
+                </div>
+            </div>
+
+            {/* Subjects */}
+            <div className="group rounded-3xl border border-white/40 bg-white/70 backdrop-blur-lg shadow-md hover:shadow-2xl transition-all duration-300 p-5">
+                
+                <div className="flex items-center justify-between mb-4">
+                <div>
+                    <p className="text-slate-500 text-sm font-medium">
+                    Assigned Subjects
+                    </p>
+
+                    <h2 className="text-4xl font-bold text-slate-800 mt-1">
+                    1
+                    </h2>
+                </div>
+
+                <div className="h-14 w-14 rounded-2xl bg-indigo-100 flex items-center justify-center">
+                    <BookOpen className="text-indigo-600 w-7 h-7" />
+                </div>
+                </div>
+
+                <div className="mt-6">
+                <SubjectBarChart data={handleSubjectDistribution()} />
+                </div>
+            </div>
+
+            {/* Batches */}
+            <div className="group rounded-3xl border border-white/40 bg-white/70 backdrop-blur-lg shadow-md hover:shadow-2xl transition-all duration-300 p-5">
+                
+                <div className="flex items-center justify-between mb-4">
+                <div>
+                    <p className="text-slate-500 text-sm font-medium">
+                    Batches Overview
+                    </p>
+
+                    <h2 className="text-4xl font-bold text-slate-800 mt-1">
+                    1
+                    </h2>
+                </div>
+
+                <div className="h-14 w-14 rounded-2xl bg-orange-100 flex items-center justify-center">
+                    <MapPlus className="text-orange-600 w-7 h-7" />
+                </div>
+                </div>
+
+                <div className="mt-6">
                 <ScatterChart data={batchData} />
-            </OverviewCard>
+                </div>
+            </div>
+            </div>
 
+            {/* Bottom Sections */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+
+            {/* Pending Homework */}
+            <div className="rounded-3xl bg-white shadow-md border border-slate-200 overflow-hidden">
+
+                <div className="border-b border-slate-100 px-6 py-5 flex items-center justify-between">
+                <div>
+                    <h2 className="text-xl font-semibold text-slate-800">
+                    Pending Homeworks
+                    </h2>
+
+                    <p className="text-sm text-slate-500 mt-1">
+                    Track upcoming homework deadlines.
+                    </p>
+                </div>
+                </div>
+
+                <div className="p-4">
+                <DataTable
+                    columns={[
+                    { key: "subject", label: "Subject" },
+                    { key: "title", label: "Title" },
+                    { key: "due", label: "Due" },
+                    ]}
+                    data={structurePendingHomeworks() || []}
+                />
+                </div>
+            </div>
+
+            {/* Course Assignments */}
+            <div className="rounded-3xl bg-white shadow-md border border-slate-200 overflow-hidden">
+
+                <div className="border-b border-slate-100 px-6 py-5 flex items-center justify-between">
+                <div>
+                    <h2 className="text-xl font-semibold text-slate-800">
+                    Course Assignments
+                    </h2>
+
+                    <p className="text-sm text-slate-500 mt-1">
+                    Academic courses assigned for the term.
+                    </p>
+                </div>
+                </div>
+
+                <div className="p-4">
+                <DataTable
+                    columns={[
+                    { key: "course", label: "Course" },
+                    { key: "code", label: "Code" },
+                    { key: "date", label: "Date" },
+                    ]}
+                    data={handleStructureCourses() || []}
+                />
+                </div>
+            </div>
+            </div>
         </div>
-
-        {/*  Pending Homework */}
-        <SectionWrapper title="Pending Homeworks">
-            <DataTable
-            columns={[
-                { key: "student", label: "Student" },
-                { key: "subject", label: "Subject" },
-                { key: "due", label: "Due" },
-            ]}
-            data={pendingHomework}
-            />
-        </SectionWrapper>
-
-        {/*  Course Assignments */}
-        <SectionWrapper title="Course Assignments">
-            <DataTable
-            columns={[
-                { key: "course", label: "Course" },
-                { key: "title", label: "Title" },
-                { key: "date", label: "Date" },
-            ]}
-            data={assignments}
-            />
-        </SectionWrapper>
-
-        </div>
-    );
+        );
 };
 
 export default TeacherDashboard;
