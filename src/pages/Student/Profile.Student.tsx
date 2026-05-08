@@ -1,6 +1,11 @@
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
-import { Lock, Trash } from 'lucide-react';
+import { Camera,
+    Lock,
+    Mail,
+    User2,
+    Upload,
+    Trash2 } from 'lucide-react';
 import  React, { ChangeEvent, useEffect, useState } from 'react';
 import { IResetPassword } from '@/interfaces/ISchool';
 
@@ -191,61 +196,199 @@ const StudentSettingsPage = () => {
     };
 
     return (
-        <div className="p-6 bg-white min-h-screen max-w-6xl space-y-6">
+        <div className="p-6 bg-white min-h-screen max-w-auto space-y-6">
         {/* ================= SCHOOL PROFILE ================= */}
 
         <Card title="Student Profile">
-            <div className="flex items-center gap-6">
-            {/* Logo */}
+
+        <div className="flex flex-col xl:flex-row gap-10 xl:items-center">
+
+            {/* ---------- Profile Image ---------- */}
+            <div className="relative flex flex-col items-center">
+
+            {/* Outer Glow */}
             <div className="relative">
+
+                {/* Ring */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 blur-md opacity-20 scale-110" />
+
+                {/* Image */}
+                <div className="relative h-36 w-36 rounded-full border-[5px] border-white shadow-xl overflow-hidden">
+
                 <img
-                src={image.preview !== '/school/profile_image.jpg' ?  image?.preview:user?.profile?user?.profile:'/school/profile_image.jpg' }
-                className="w-24 h-24 rounded-full border object-cover"
+                    src={
+                    image.preview !== "/school/profile_image.jpg"
+                        ? image?.preview
+                        : user?.profile
+                        ? user?.profile
+                        : "/school/profile_image.jpg"
+                    }
+                    className="h-full w-full object-cover"
                 />
-                <input
-                type="file"  
-                onChange={(e) => handleImageChange(e)}
-                placeholder="change"
-                className="absolute w-20 text-center h-7 text-sm bottom-0 right-0 bg-green-700 p-1 rounded-full text-white"
-                />
-
-                {/* buttons */}
-                {image.preview !== '/school/profile_image.jpg' && (
-                <div className="flex gap-3">
-                    {/* ADD */}
-                    <button
-                    onClick={handleUpdateProfile}
-                    className="bg-green-600 text-white px-4 py-1 rounded-full text-sm hover:bg-green-700 m-1 transition"
-                    >
-                    {loading ? 'Updating...' : 'Update'}
-                    </button>
-
-                    {/* REMOVE */}
-                    <button
-                    onClick={() => setImage({ preview: '/school/profile_image.jpg', file: null })}
-                    className="bg-red-600 text-white px-4 me-25 py-1 rounded-full text-sm m-1 hover:bg-red-700 transition"
-                    >
-                    Remove
-                    </button>
                 </div>
-                )}
+
+                {/* Camera Icon */}
+                <div className="absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-100 bg-white shadow-md">
+                <Camera className="w-5 h-5 text-emerald-700" />
+                </div>
             </div>
 
-            {/* Info */}
-            <div className="flex-1 space-y-2">
-                <p className="text-gray-800 font-medium text-lg">{user?.name}</p>
+            {/* Upload Button */}
+            <label
+                className="
+                mt-5
+                flex cursor-pointer items-center gap-2
+                rounded-2xl border border-emerald-100
+                bg-emerald-50 px-5 py-3
+                text-sm font-semibold text-emerald-700
+                transition-all duration-300
+                hover:bg-emerald-100
+                "
+            >
+                <Upload className="w-4 h-4" />
 
-                <p className="text-sm text-gray-500">{user?.email}</p>
+                Change Photo
 
+                <input
+                type="file"
+                hidden
+                onChange={(e) => handleImageChange(e)}
+                />
+            </label>
+
+            {/* Action Buttons */}
+            {image.preview !== "/school/profile_image.jpg" && (
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+
+                {/* Update */}
                 <button
-                onClick={() => setShowResetModal(true)}
-                className="mt-3 inline-flex items-center gap-2 text-green-700 text-sm font-medium hover:underline"
+                    onClick={handleUpdateProfile}
+                    className="
+                    rounded-2xl
+                    bg-gradient-to-r from-emerald-600 to-green-600
+                    px-5 py-3
+                    text-sm font-semibold text-white
+                    shadow-md
+                    transition-all duration-300
+                    hover:scale-[1.03]
+                    hover:shadow-lg
+                    "
                 >
-                <Lock size={16} />
-                Change Password
+                    {loading ? "Updating..." : "Update"}
                 </button>
+
+                {/* Remove */}
+                <button
+                    onClick={() =>
+                    setImage({
+                        preview: "/school/profile_image.jpg",
+                        file: null,
+                    })
+                    }
+                    className="
+                    flex items-center gap-2
+                    rounded-2xl border border-red-100
+                    bg-red-50 px-5 py-3
+                    text-sm font-semibold text-red-600
+                    transition-all duration-300
+                    hover:bg-red-100
+                    "
+                >
+                    <Trash2 className="w-4 h-4" />
+
+                    Remove
+                </button>
+                </div>
+            )}
             </div>
+
+            {/* ---------- User Info ---------- */}
+            <div className="flex-1">
+
+            {/* Welcome */}
+            <div className="mb-8">
+
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 border border-emerald-100">
+                Student Portal
+                </div>
+
+                <h1 className="mt-4 text-3xl font-bold text-slate-800">
+                {user?.name}
+                </h1>
+
+                <p className="mt-2 text-slate-500">
+                Manage your academic profile and account settings
+                </p>
             </div>
+
+            {/* Info Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {/* Name */}
+                <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
+
+                <div className="flex items-center gap-3">
+
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+                    <User2 className="w-5 h-5 text-emerald-700" />
+                    </div>
+
+                    <div>
+                    <p className="text-sm text-slate-500">
+                        Full Name
+                    </p>
+
+                    <h3 className="font-semibold text-slate-800">
+                        {user?.name}
+                    </h3>
+                    </div>
+                </div>
+                </div>
+
+                {/* Email */}
+                <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
+
+                <div className="flex items-center gap-3">
+
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+                    <Mail className="w-5 h-5 text-emerald-700" />
+                    </div>
+
+                    <div>
+                    <p className="text-sm text-slate-500">
+                        Email Address
+                    </p>
+
+                    <h3 className="font-semibold text-slate-800 break-all">
+                        {user?.email}
+                    </h3>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            {/* Password */}
+            <button
+                onClick={() => setShowResetModal(true)}
+                className="
+                mt-8
+                inline-flex items-center gap-3
+                rounded-2xl
+                border border-emerald-100
+                bg-gradient-to-r from-emerald-50 to-green-50
+                px-5 py-4
+                text-sm font-semibold text-emerald-700
+                transition-all duration-300
+                hover:scale-[1.02]
+                hover:shadow-md
+                "
+            >
+                <Lock size={18} />
+
+                Change Password
+            </button>
+            </div>
+        </div>
         </Card>
 
         {/* ================= EMAIL VERIFICATION ================= */}
@@ -273,17 +416,6 @@ const StudentSettingsPage = () => {
             loading={loading} 
             utils={utils} setUtils={setUtils}  
         />
-
-        {/* ================= DELETE SCHOOL =================
-        <div className="flex justify-end">
-            <button
-            onClick={handleDeleteSchool}
-            className="ml-5 mt-3 inline-flex border px-5 py-2 hover:bg-red-950 hover:text-white items-center gap-2 text-red-700 text-sm font-medium hover:underline"
-            >
-            <Trash size={16} />
-            Delete 
-            </button>
-        </div> */}
 
         {/* ================= PASSWORD RESET MODAL ================= */}
         

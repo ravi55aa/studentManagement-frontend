@@ -76,7 +76,6 @@ const ListBatches = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
             <div className="flex gap-3">
-            <button className="border px-4 py-2 rounded-md text-sm bg-white">Export CSV</button>
             <button className="bg-green-700 text-white px-4 py-2 rounded-md text-sm hover:bg-green-800">
                 <Link to="add">Add Batch</Link>
             </button>

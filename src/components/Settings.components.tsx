@@ -14,6 +14,17 @@ import { Roles } from "@/constants/role.enum";
 import InputField from "./inputField";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import {
+    MapPin,
+    Building2,
+    Globe2,
+    Landmark,
+    Mailbox,
+    Pencil,
+    FileText,
+    Upload,
+    FolderOpen,
+} from "lucide-react";
 
 
 /******* ADDRESS *******/
@@ -89,21 +100,175 @@ export const ProfileAddressComponent=({role,loading,setUtils,utils})=>{
 
     return (
     <div>
-        <Card title="Address">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-            <Info label="Street" value={form?.street} />
-            <Info label="City" value={form?.city} />
-            <Info label="State" value={form?.state} />
-            <Info label="Zip" value={form?.zip} />
-            <Info label="Country" value={form?.country} />
-        </div>
+        <Card title="Address Information">
 
-        <button
-            onClick={() => setUtils((prev) => ({ ...prev, isOpen: true }))}
-            className="mt-4 text-green-700 text-sm font-medium hover:underline"
-        >
-            {loading ? 'Editing' : 'Edit Address'}
-            </button>
+        <div className="flex flex-col xl:flex-row gap-8">
+
+          {/* Left Illustration */}
+            <div className="xl:w-[280px]">
+
+                <div className="rounded-[28px] border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-green-50 p-6 h-full">
+
+                <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-100 shadow-sm">
+                    <MapPin className="w-8 h-8 text-emerald-700" />
+                </div>
+
+                <h2 className="mt-6 text-2xl font-bold text-slate-800">
+                    Student Address
+                </h2>
+
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                    Manage and update your residential and
+                    location details for academic communication.
+                </p>
+
+                <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-sm font-medium text-emerald-700">
+                    Secure Information
+                </div>
+                </div>
+            </div>
+
+            {/* Right Content */}
+            <div className="flex-1">
+
+                {/* Address Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                {/* Street */}
+                <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
+
+                    <div className="flex items-start gap-4">
+
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+                        <Building2 className="w-5 h-5 text-emerald-700" />
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-slate-500">
+                        Street
+                        </p>
+
+                        <h3 className="mt-1 font-semibold text-slate-800">
+                        {form?.street || "Not Added"}
+                        </h3>
+                    </div>
+                    </div>
+                </div>
+
+                {/* City */}
+                <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
+
+                    <div className="flex items-start gap-4">
+
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+                        <Landmark className="w-5 h-5 text-emerald-700" />
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-slate-500">
+                        City
+                        </p>
+
+                        <h3 className="mt-1 font-semibold text-slate-800">
+                        {form?.city || "Not Added"}
+                        </h3>
+                    </div>
+                    </div>
+                </div>
+
+                {/* State */}
+                <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
+
+                    <div className="flex items-start gap-4">
+
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+                        <MapPin className="w-5 h-5 text-emerald-700" />
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-slate-500">
+                        State
+                        </p>
+
+                        <h3 className="mt-1 font-semibold text-slate-800">
+                        {form?.state || "Not Added"}
+                        </h3>
+                    </div>
+                    </div>
+                </div>
+
+                {/* Zip */}
+                <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5">
+
+                    <div className="flex items-start gap-4">
+
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+                        <Mailbox className="w-5 h-5 text-emerald-700" />
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-slate-500">
+                        ZIP Code
+                        </p>
+
+                        <h3 className="mt-1 font-semibold text-slate-800">
+                        {form?.zip || "Not Added"}
+                        </h3>
+                    </div>
+                    </div>
+                </div>
+
+                {/* Country */}
+                <div className="rounded-3xl border border-slate-200 bg-slate-50/70 p-5 md:col-span-2">
+
+                    <div className="flex items-start gap-4">
+
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+                        <Globe2 className="w-5 h-5 text-emerald-700" />
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-slate-500">
+                        Country
+                        </p>
+
+                        <h3 className="mt-1 font-semibold text-slate-800">
+                        {form?.country || "Not Added"}
+                        </h3>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                {/* Edit Button */}
+                <button
+                onClick={() =>
+                    setUtils((prev) => ({
+                    ...prev,
+                    isOpen: true,
+                    }))
+                }
+                className="
+                    mt-8
+                    inline-flex items-center gap-3
+                    rounded-2xl
+                    bg-gradient-to-r from-emerald-600 to-green-600
+                    px-6 py-4
+                    text-sm font-semibold text-white
+                    shadow-md
+                    transition-all duration-300
+                    hover:scale-[1.02]
+                    hover:shadow-lg
+                "
+                >
+                <Pencil className="w-4 h-4" />
+
+                {loading
+                    ? "Editing..."
+                    : "Edit Address"}
+                </button>
+            </div>
+            </div>
         </Card>
 
       {/* MODAL */}
@@ -316,38 +481,138 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
     />
     )}
     <Card title="Documents">
-            <div className="space-y-3">
-                {/* Uploaded Files List */}
-                <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
-                <h3 className="text-gray-700 font-semibold mb-1">Uploaded Files</h3>
-    
-                <button
-                    onClick={() => setUtils((prev) => ({ ...prev, isOpenUploadDocument: true }))}
-                    type="button"
-                    className="mb-1 text-green-500 text-sm underline"
-                >
-                    Upload
-                </button>
-    
-                <div className="overflow-y-auto max-h-60">
-                    {!loading && documentState.docs?.length > 0 ? (
-                    documentState?.docs?.map((file: IUploadedDoc, index: number) => (
-                        <DocumentRow
-                            file={file}
-                            removeAFile={handleRemoveAFile}
-                            key={index}
-                            index={index}
-                        />
-                    ))
-                    ) : (
-                    <p className="text-gray-500 font-semibold text-sm mb-3">
-                        No Documents are available
+
+        <div className="space-y-5">
+
+            {/* Top Section */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+            {/* Upload Button */}
+            <button
+                onClick={() =>
+                setUtils((prev) => ({
+                    ...prev,
+                    isOpenUploadDocument: true,
+                }))
+                }
+                type="button"
+                className="
+                inline-flex items-center gap-2
+                rounded-2xl
+                border border-emerald-100
+                bg-emerald-50
+                px-5 py-3
+                text-sm font-semibold text-emerald-700
+                transition-all duration-200
+                hover:bg-emerald-100
+                "
+            >
+                <Upload className="w-4 h-4" />
+
+                Upload Document
+            </button>
+            </div>
+
+            {/* Document Container */}
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
+
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/70 px-5 py-4">
+
+                <div className="flex items-center gap-3">
+
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100">
+                    <FolderOpen className="w-5 h-5 text-emerald-700" />
+                </div>
+
+                <div>
+                    <p className="font-semibold text-slate-800">
+                    Files
                     </p>
-                    )}
+
+                    <p className="text-xs text-slate-500">
+                    {documentState.docs?.length || 0} Documents
+                    </p>
                 </div>
                 </div>
             </div>
-            </Card>
+
+            {/* Documents */}
+            <div className="max-h-[320px] overflow-y-auto">
+
+                {!loading &&
+                documentState.docs?.length > 0 ? (
+
+                <div className="divide-y divide-slate-100">
+
+                    {documentState?.docs?.map(
+                    (
+                        file: IUploadedDoc,
+                        index: number
+                    ) => (
+
+                        <div
+                        key={index}
+                        className="
+                            flex items-center justify-between
+                            px-5 py-4
+                            transition-colors duration-200
+                            hover:bg-slate-50/70
+                        "
+                        >
+
+                        {/* Left */}
+                        <div className="flex items-center gap-4">
+
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50">
+                            <FileText className="w-5 h-5 text-emerald-700" />
+                            </div>
+
+                            <div>
+                            <p className="font-medium text-slate-700">
+                                {file?.fileName ||
+                                `Document ${index + 1}`}
+                            </p>
+
+                            <p className="text-sm text-slate-400">
+                                Uploaded document
+                            </p>
+                            </div>
+                        </div>
+
+
+                        {/* Right */}
+                        <DocumentRow
+                            file={file}
+                            removeAFile={handleRemoveAFile}
+                            index={index}
+                        />
+                        </div>
+                    )
+                    )}
+                </div>
+                ) : (
+
+                /* Empty State */
+                <div className="flex flex-col items-center justify-center px-6 py-14 text-center">
+
+                    <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-100">
+                    <FolderOpen className="w-10 h-10 text-slate-400" />
+                    </div>
+
+                    <h3 className="mt-5 text-lg font-semibold text-slate-700">
+                    No Documents Uploaded
+                    </h3>
+
+                    <p className="mt-2 text-sm text-slate-400">
+                    Upload files to keep your records organized
+                    </p>
+                </div>
+                )}
+            </div>
+            </div>
+        </div>
+        </Card>
     
 
     
@@ -401,3 +666,15 @@ export const ProfileDocumentsComponent=({role,setUtils,utils,loading})=>{
             )}
     </div>)
 }
+
+
+
+
+
+
+
+
+
+
+
+

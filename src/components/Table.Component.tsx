@@ -20,7 +20,7 @@ export function TableComponent<T>({
     <div className="overflow-hidden rounded-[28px] bg-white border border-slate-200 shadow-[0px_10px_40px_rgba(15,23,42,0.06)]">
 
       {/* Top Header */}
-      <div className="flex items-center justify-between px-6 md:px-8 py-5 border-b border-slate-100 bg-gradient-to-r from-indigo-50 via-white to-emerald-50">
+      {/* <div className="flex items-center justify-between px-6 md:px-8 py-5 border-b border-slate-100 bg-gradient-to-r from-indigo-50 via-white to-emerald-50">
 
         <div className="flex items-center gap-4">
 
@@ -46,7 +46,7 @@ export function TableComponent<T>({
             {Date().toString().slice(0,15)}
           </span>
         </div>
-      </div>
+      </div> */}
 
       {/* Table */}
       <div className="overflow-x-auto">

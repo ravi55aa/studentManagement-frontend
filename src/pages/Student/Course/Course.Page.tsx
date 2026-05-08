@@ -3,7 +3,6 @@ import { CourseService } from '@/api/Services/course.service';
 import { Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
-import { Roles } from '@/constants/role.enum';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { storeSchoolAcademicCourses, storeSchoolAcademicCoursesMeta, toggleAcademicCourseLoading } from '@/utils/Redux/Reducer/courses.reducer';
 import { Bell, Eye  } from 'lucide-react';
@@ -87,8 +86,22 @@ const StudentCourse = () => {
         <div className="flex justify-between items-center mb-4">
             <span></span>
 
-            <Bell className="text-green-700 cursor-pointer" 
-            onClick={() => setOpen(true)} />
+            <button
+                onClick={() => setOpen(true)}
+                className="
+                relative
+                flex h-12 w-12 items-center justify-center
+                rounded-2xl
+                border border-emerald-100
+                bg-emerald-50
+                transition-all duration-300
+                hover:bg-emerald-100
+                "
+            >
+                <Bell className="w-5 h-5 text-emerald-700" />
+
+                <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-green-500" />
+            </button>
         </div>
 
         

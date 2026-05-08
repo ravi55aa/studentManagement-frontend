@@ -1,14 +1,37 @@
 import { DocumentRowProps, IUploadedDoc } from '@/interfaces/IRegister';
 import { IResetPassword } from '@/interfaces/ISchool';
-import { Pencil, X } from 'lucide-react';
+import {
+  Pencil, X,
+} from "lucide-react";
 import React, { useState } from 'react';
 import InputField from '../inputField';
 
-export function Card({ title, children }: { title: string; children: React.ReactNode }) {
+export function Card({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="border rounded-lg p-6 bg-white shadow-sm">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">{title}</h2>
-      {children}
+    <div className="overflow-hidden rounded-[30px] border border-emerald-100 bg-white shadow-[0px_10px_40px_rgba(16,185,129,0.08)]">
+
+      {/* Header */}
+      <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-50 via-white to-green-50 px-6 md:px-8 py-5">
+
+        <h2 className="text-2xl font-bold text-slate-800">
+          {title}
+        </h2>
+
+        <p className="mt-1 text-sm text-slate-500">
+          Manage your personal profile information
+        </p>
+      </div>
+
+      {/* Content */}
+      <div className="p-6 md:p-8">
+        {children}
+      </div>
     </div>
   );
 }

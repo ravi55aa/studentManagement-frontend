@@ -1,6 +1,8 @@
 import React from "react";
 import { IAttachment } from "../HomeworkCard";
 import PreviewModal from "../PreviewModa";
+import { Trash2 } from "lucide-react";
+
 
 interface Props {
   file: File | IAttachment;
@@ -17,14 +19,14 @@ export default function DocumentRow({ file, index, removeAFile }: Props) {
       ?
       <span className="text-sm truncate">{file?.name }</span>
       :
-      <button onClick={() => setIsOpen(true)} className="text-sm truncate">
+      <button onClick={() => setIsOpen(true)} className="text-sm truncate mr-1">
         {file?.fileName}
       </button>
       }
       
 
       <button onClick={() => removeAFile(index)} className="text-red-500 text-sm hover:underline">
-        Remove
+        <Trash2 className="h-4 w-4" />
       </button>
 
       {isOpen && 

@@ -13,17 +13,6 @@ export default function TopBar({ to }: { to: string }) {
           Add New
         </button>
       </div>
-
-      <div className="flex gap-4 ml-3 mb-6">
-        <button className="px-4 py-2 border rounded-md text-sm bg-white">Add Filter</button>
-
-        <input
-          type="text"
-          placeholder="Search"
-          value=""
-          className="flex-1 border rounded-md px-4 py-2 text-sm"
-        />
-      </div>
     </>
   );
 }
