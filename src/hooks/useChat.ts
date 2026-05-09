@@ -19,42 +19,47 @@ export const useChat = (userId: string,roomId:string) => {
 
     const {user}=useAppSelector((state)=>state.currentUser);
 
-    useEffect(() => {
-        if(!socket?.id) {
-            console.log(SocketMessages.SocketNotConnected);
-            return;
-        }
 
-        console.log('socket.id',socket.id);
+    useEffect(() => {
+
+        if (!socket?.id) return;
+
+        socket.off("receiveMessage");
 
         socket.on("receiveMessage", (data) => {
-            setMessages((prev) => [...prev, data]);
+
+            setMessages((prev) => {
+
+                const exists = prev.some(
+                    (msg) => msg?._id === data?._id
+                );
+
+                if (exists) return prev;
+
+                return [...prev, data];
+            });
         });
 
-        const handleLoadMessages=async()=>{
-            await loadMessages(roomId); 
-        }
-        handleLoadMessages();
-
         return () => {
-        socket.disconnect();
-        };//!receive message is not working
+            socket.off("receiveMessage");
+        };
+
     }, [socket?.id]);
 
     useEffect(()=>{
 
-        if(!socket){  
+        if(!socket || !roomId){  
             return;
         }
 
-        const fetchMessages=async()=>{ //setCurrentRoom
-            socket.emit("joinRoom", roomId);
-            setCurrentRoom(roomId);
-            setMessages([]);
-    
-            await loadMessages(roomId);//roomId
-        }
-        fetchMessages();
+        socket.emit("joinRoom", roomId);
+        
+        setCurrentRoom(roomId);
+        
+        // setMessages([]);
+
+        loadMessages(roomId);//roomId
+
     },[roomId,socket?.id]);
 
 
@@ -77,17 +82,26 @@ export const useChat = (userId: string,roomId:string) => {
     const sendMessage = async(message: FormData) => {
         if (!message.get("message") && !message.get("docs")) return;
 
-        // const data = {
-        // roomId: currentRoom,
-        // message,
-        // senderId: userId,
-        // };
-        socket.emit("sendMessage", {chatRoomId: currentRoom, message: message.get("message")});
-
+        //@data  
+        /* 
+        const data = {
+                roomId: currentRoom,
+                message,
+                senderId: userId,
+        };
+        */
 
         message.append("chatRoomId", roomId);
-        await ChatService.sendMessage(message);
-        await loadMessages(roomId);//roomId
+
+        const res=await ChatService.sendMessage(message);
+
+        if(!res.success){
+            console.log('ChatService sendMessage error',res.error)
+            return res.success;
+        }
+        
+        return res.success;
+        
     };
 
     return {

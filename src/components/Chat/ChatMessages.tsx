@@ -1,4 +1,5 @@
 import { IMessage } from "@/interfaces/IChat";
+import { useEffect, useRef, useState } from "react";
 
 const ChatMessages = ({
     messages,
@@ -7,6 +8,20 @@ const ChatMessages = ({
     messages: IMessage[];
     userId: string;
     }) => {
+
+    const [previewFile, setPreviewFile] = useState<{
+        url: string;
+        type: string;
+        fileName?: string;
+    } | null>(null);
+
+    const bottomRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({
+            behavior: "smooth",
+        });
+    }, [messages]);
     
     const formatTime = (date: string | Date) => {
         const d = new Date(date);
@@ -16,8 +31,9 @@ const ChatMessages = ({
         });
     };
 
+
     const getFileType = (fileName: string, url: string) => {
-        const ext = (fileName || url).split(".").pop()?.toLowerCase();
+        const ext = (fileName || url)?.split(".").pop()?.toLowerCase();
 
         if (!ext) return "other";
 
@@ -29,12 +45,17 @@ const ChatMessages = ({
     };
 
 
+return (
+    <>
+        {/* ---------- Chat Container ---------- */}
+        <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5 bg-gradient-to-b from-slate-50 to-white">
 
-    return (
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages?.map((msg: IMessage, i: number) => {
-            
-            const senderId= typeof msg?.senderId === "string" ?  msg?.senderId : msg?.senderId?._id;
+
+            const senderId =
+            typeof msg?.senderId === "string"
+                ? msg?.senderId
+                : msg?.senderId?._id;
 
             const isOwn = senderId === userId;
 
@@ -42,95 +63,274 @@ const ChatMessages = ({
             <div
                 key={i}
                 className={`flex flex-col ${
-                isOwn ? "items-end" : "items-start"
+                isOwn
+                    ? "items-end"
+                    : "items-start"
                 }`}
             >
-                {/* 👤 Name */}
+
+                {/* ---------- Sender Name ---------- */}
                 {!isOwn && (
-                <span className="text-xs text-gray-500 mb-1">
-                    {msg?.senderId?.firstName || msg?.senderId?.name  || "User"}
+                <span className="mb-2 px-1 text-xs font-medium text-slate-500">
+                    {msg?.senderId?.firstName ||
+                    msg?.senderId?.name ||
+                    "User"}
                 </span>
                 )}
 
-                {/*  Message Bubble */}
+                {/* ---------- Message Bubble ---------- */}
                 <div
-                className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
+                className={`
+                    relative
+                    max-w-[85%] md:max-w-[70%]
+                    rounded-3xl
+                    px-4 py-3
+                    shadow-sm
+                    transition-all duration-200
+                    ${
                     isOwn
-                    ? "bg-green-700 text-white"
-                    : "bg-gray-200 text-black"
-                }`}
+                        ? "bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-br-md"
+                        : "bg-white border border-slate-200 text-slate-700 rounded-bl-md"
+                    }
+                `}
                 >
-                {msg.message}
 
-                {/* //Attachment */}
+                {/* Message */}
+                {msg?.message && (
+                    <p className="text-sm leading-6 whitespace-pre-wrap break-words">
+                    {msg?.message}
+                    </p>
+                )}
 
-                {msg.attachments?.length > 0 && (
-                <div className="space-y-2">
-                    {msg.attachments.map((file: any, idx: number) => {
-                        const type = getFileType(file.fileName, file.url);
+                {/* ---------- Attachments ---------- */}
+                {msg?.attachments?.length > 0 && (
+                    <div className="mt-3 space-y-3">
 
+                    {msg.attachments.map(
+                        (file: any, idx: number) => {
+
+                        const type = getFileType(
+                            file.fileName,
+                            file.url
+                        );
+
+                        /* ---------- IMAGE ---------- */
                         if (type === "image") {
-                        return (
-                            <img
-                            key={idx}
-                            src={file.url}
-                            alt={file.fileName}
-                            onClick={()=>console.log('hii')}
-                            className="w-40 rounded-md object-cover cursor-pointer"
-                            />
-                        );
+                            return (
+                            <div
+                                key={idx}
+                                className="group relative overflow-hidden rounded-2xl border border-white/10"
+                            >
+
+                                <img
+                                src={file.url}
+                                alt={file.fileName}
+                                onClick={() =>
+                                    setPreviewFile({
+                                    url: file.url,
+                                    type: "image",
+                                    fileName:
+                                        file.fileName,
+                                    })
+                                }
+                                className="
+                                    max-h-[240px]
+                                    w-full
+                                    cursor-pointer
+                                    object-cover
+                                    transition-transform duration-300
+                                    group-hover:scale-[1.02]
+                                "
+                                />
+
+                                {/* Overlay */}
+                                <div className="absolute inset-0 bg-black/0 transition-all duration-300 group-hover:bg-black/10" />
+                            </div>
+                            );
                         }
 
+                        /* ---------- VIDEO ---------- */
                         if (type === "video") {
-                        return (
-                            <video
-                            key={idx}
-                            src={file.url}
-                            controls
-                            className="w-48 rounded-md"
-                            />
-                        );
+                            return (
+                            <div
+                                key={idx}
+                                className="overflow-hidden rounded-2xl border border-white/10 bg-black"
+                            >
+                                <video
+                                src={file.url}
+                                controls
+                                className="max-h-[280px] w-full"
+                                />
+                            </div>
+                            );
                         }
 
+                        /* ---------- PDF ---------- */
                         if (type === "pdf") {
+                            return (
+                            <button
+                                key={idx}
+                                onClick={() =>
+                                setPreviewFile({
+                                    url: file.url,
+                                    type: "pdf",
+                                    fileName:
+                                    file.fileName,
+                                })
+                                }
+                                className={`
+                                flex w-full items-center gap-4
+                                rounded-2xl border
+                                px-4 py-3
+                                text-left
+                                transition-all duration-200
+                                ${
+                                    isOwn
+                                    ? "border-white/20 bg-white/10 hover:bg-white/20"
+                                    : "border-slate-200 bg-slate-50 hover:bg-slate-100"
+                                }
+                                `}
+                            >
+
+                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-600">
+                                📄
+                                </div>
+
+                                <div className="flex-1 overflow-hidden">
+                                <p className="truncate text-sm font-semibold">
+                                    {file.fileName ||
+                                    "Document.pdf"}
+                                </p>
+
+                                <p
+                                    className={`text-xs ${
+                                    isOwn
+                                        ? "text-emerald-100"
+                                        : "text-slate-400"
+                                    }`}
+                                >
+                                    Click to preview
+                                </p>
+                                </div>
+                            </button>
+                            );
+                        }
+
+                        /* ---------- OTHER FILE ---------- */
                         return (
                             <a
                             key={idx}
                             href={file.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block px-3 py-2 bg-black/10 rounded-md text-xs underline"
+                            className={`
+                                flex items-center gap-4
+                                rounded-2xl border
+                                px-4 py-3
+                                transition-all duration-200
+                                ${
+                                isOwn
+                                    ? "border-white/20 bg-white/10 hover:bg-white/20"
+                                    : "border-slate-200 bg-slate-50 hover:bg-slate-100"
+                                }
+                            `}
                             >
-                            📄 {file.fileName || "Open PDF"}
+
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+                                📎
+                            </div>
+
+                            <div className="overflow-hidden">
+                                <p className="truncate text-sm font-semibold">
+                                {file.fileName ||
+                                    "Attachment"}
+                                </p>
+
+                                <p
+                                className={`text-xs ${
+                                    isOwn
+                                    ? "text-emerald-100"
+                                    : "text-slate-400"
+                                }`}
+                                >
+                                Download file
+                                </p>
+                            </div>
                             </a>
                         );
                         }
-
-                        // fallback
-                        return (
-                        <a
-                            key={idx}
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block px-3 py-2 bg-black/10 rounded-md text-xs underline"
-                        >
-                            📎 {file.fileName || "Download file"}
-                        </a>
-                        );
-                    })}
+                    )}
                     </div>
                 )}
                 </div>
 
-                {/*  Time */}
-                <span className="text-[10px] text-gray-400 mt-1">
-                {formatTime(msg.createdAt)}
+                {/* ---------- Time ---------- */}
+                <span className="mt-2 px-1 text-[11px] text-slate-400">
+                {formatTime(msg?.createdAt)}
                 </span>
             </div>
             );
         })}
+
+        <div ref={bottomRef} />
         </div>
+
+        {/* ---------- Preview Modal ---------- */}
+        {previewFile && (
+
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+
+            <div className="relative w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl">
+
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+
+                <div>
+                <h3 className="font-semibold text-slate-800">
+                    {previewFile.fileName || "Preview"}
+                </h3>
+
+                <p className="text-sm text-slate-400">
+                    Attachment Preview
+                </p>
+                </div>
+
+                <button
+                onClick={() => setPreviewFile(null)}
+                className="
+                    flex h-10 w-10 items-center justify-center
+                    rounded-2xl bg-slate-100
+                    text-slate-600 transition-all
+                    hover:bg-slate-200
+                "
+                >
+                ✕
+                </button>
+            </div>
+
+            {/* Body */}
+            <div className="max-h-[85vh] overflow-auto bg-slate-50 p-4">
+
+                {/* Image */}
+                {previewFile.type === "image" && (
+                <img
+                    src={previewFile.url}
+                    className="max-h-[80vh] w-full rounded-2xl object-contain"
+                />
+                )}
+
+                {/* PDF */}
+                {previewFile.type === "pdf" && (
+                <iframe
+                    src={previewFile.url}
+                    className="h-[80vh] w-full rounded-2xl bg-white"
+                />
+                )}
+            </div>
+            </div>
+        </div>
+        )}
+    </>
     );
 };
 
