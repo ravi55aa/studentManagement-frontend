@@ -22,11 +22,17 @@ interface IPageData {
 const SuperAdminDashboard = () => {
     const [pageData,setPageData] = useState<IPageData>();
     
+    //Fetch belongings
     useEffect(()=>{
+
         const fetchDetails = async () => {
+            
             const [schoolRes,planRes] = await Promise.all([
+                
                 SchoolService.getAllSchool(),
+
                 PlanService.getAll({isActive:true}),
+
             ]);
 
             //handle failures  
@@ -39,6 +45,7 @@ const SuperAdminDashboard = () => {
         fetchDetails();
     },[]);
 
+
     /* Mock Analytics */
     const schoolGrowth = [
         { name: "Jan", value: 5 },
@@ -48,7 +55,7 @@ const SuperAdminDashboard = () => {
         { name: "May", value: 20 },
     ];
 
-    const filterPlanDistribution = () => {
+    const filterPlanDistribution = ():{name:string,value:number}[] => {
 
         if(!pageData?.plans?.length) {
             return;
@@ -65,11 +72,11 @@ const SuperAdminDashboard = () => {
             value,
         }));
 
-        return planDistribution;
+        return planDistribution as {name:string,value:number}[];
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 p-4 md:p-7">
+        <div className="min-h-screen bg-linear-to-br from-emerald-50 via-white to-green-50 p-4 md:p-7">
 
         {/* ---------- Header ---------- */}
         <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
