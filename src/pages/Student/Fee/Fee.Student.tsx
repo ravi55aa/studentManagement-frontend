@@ -16,7 +16,9 @@ import { IStudentFee } from '@/interfaces/IStudent';
 import { Bell } from 'lucide-react';
 import NotificationModal from '@/components/Notification/component/NotificationModal';
 import { paginationQuery } from '@/constants/pagination';
-import { PaginationDemo } from '@/components/Pagination.c';
+import Pagination from '@/components/Pagination.c';
+import { TPaginationQuery } from '@/types/paginationTypes';
+import { usePagination } from '@/hooks/usePagination';
 
 export default function StudentFeeListPage() {
     const dispatch = useAppDispatch();
@@ -28,8 +30,9 @@ export default function StudentFeeListPage() {
 
     //Notification
     const [open, setOpen] = useState(false);
+    const {pagination,nextPage,prevPage,setPagination}=usePagination(handleGetStudentFees,paginationQuery.limit);
 
-    const handleGetStudentFees = async () => {
+    async function handleGetStudentFees (paginationQuery:TPaginationQuery) {
         dispatch(toggleFeeLoading(true));
 
         //  Make sure to update into
@@ -42,10 +45,13 @@ export default function StudentFeeListPage() {
             return;
         }
 
-        const resData = res.data?.data;
+        const {data,page,total,totalPages} = res.data?.data;
+        
+        setPagination({page,total,totalPages});
 
         dispatch(toggleFeeLoading(false));
-        dispatch(storeFees(resData.data || []));
+        dispatch(storeFees(data || []));
+        return;
     };
 
     const handleGetStudentPaidFeeDetail=async()=>{
@@ -62,7 +68,7 @@ export default function StudentFeeListPage() {
     }
 
     useEffect(() => {
-            handleGetStudentFees();
+            handleGetStudentFees(paginationQuery);
             handleGetStudentPaidFeeDetail();
     }, []);
 
@@ -164,7 +170,7 @@ export default function StudentFeeListPage() {
             ]}
         />
 
-        <PaginationDemo />
+        <Pagination pagination={pagination} onLeftClick={prevPage} onRightClick={nextPage} />
         </div>
     );
 }

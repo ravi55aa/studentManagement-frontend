@@ -15,6 +15,7 @@ import { IAcademicSubject } from '@/interfaces/ISchool';
 import Swal from "sweetalert2";
 import { paginationQuery } from '@/constants/pagination';
 import { usePagination } from '@/hooks/usePagination';
+import { TPaginationQuery } from '@/types/paginationTypes';
 
 // const statusColors = {
 //     pending: "bg-gray-200 text-gray-700",
@@ -30,11 +31,11 @@ const TeacherHomeworkTable = () => {
     
     const homeworks = useAppSelector((state) =>state.homeworks);
     
-    const {user}=useAppSelector((state)=>state.currentUser);
+    const {user}=useAppSelector((state)=>state?.currentUser);
 
-    const {nextPage,prevPage,pagination,setPagination} = usePagination(fetchHomeworks,8);
+    const {nextPage,prevPage,pagination,setPagination} = usePagination(fetchHomeworks,paginationQuery.limit);
 
-    async function fetchHomeworks() {
+    async function fetchHomeworks(paginationQuery:TPaginationQuery) {
         if(!user){
             toast.warn('Kindly log in,Auth failed');
             return;
@@ -65,7 +66,7 @@ const TeacherHomeworkTable = () => {
     };
 
     useEffect(() => {
-        fetchHomeworks();
+        fetchHomeworks(paginationQuery);
     }, [dispatch]);
 
     const handleDelete = async (id: string) => { //have to reload page

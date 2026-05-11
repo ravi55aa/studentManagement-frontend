@@ -14,6 +14,7 @@ import { AcademicYearService } from '@/api/Services/year.service';
 import { toast } from 'react-toastify';
 import { paginationQuery } from '@/constants/pagination';
 import { usePagination } from '@/hooks/usePagination';
+import { TPaginationQuery } from '@/types/paginationTypes';
 
 
 const AcademicYearsPage = () => {
@@ -23,9 +24,10 @@ const AcademicYearsPage = () => {
   const dispatch = useAppDispatch();
   const { years, loading } = useAppSelector((state) => state.schoolYear);
 
-  const {pagination,setPagination,prevPage,nextPage,}= usePagination(fetchAcademicYears,8);
+  const {pagination,setPagination,prevPage,nextPage,}= usePagination(fetchAcademicYears,paginationQuery.limit);
 
-  async function fetchAcademicYears() {
+  async function fetchAcademicYears (paginationQuery:TPaginationQuery) {
+
     dispatch(toggleAcademicLoading(true));
     const res = await AcademicYearService.getAll(paginationQuery);
 
@@ -33,18 +35,20 @@ const AcademicYearsPage = () => {
       return 
     }
 
-    const resData = res?.data?.data;
+    const {data,page,total,totalPages} = res?.data?.data;
 
     dispatch(toggleAcademicLoading(false));
     
-    dispatch(storeSchoolAcademicYears(resData?.data));
+    dispatch(storeSchoolAcademicYears(data||[]));
 
     //setPagination
-    setPagination({page:resData.page,total:resData.total,totalPages:resData.totalPages}); 
+    setPagination({page,total,totalPages}); 
+
+    return;
   };
 
   useEffect(() => {
-    fetchAcademicYears();
+    fetchAcademicYears(paginationQuery);
   }, [dispatch]);
 
   /* ---------- Filtering ---------- */
@@ -77,7 +81,9 @@ const AcademicYearsPage = () => {
       toast.error(res.error.message);
       return res.success;
     }
+
     await AcademicYearService.getAll(paginationQuery);
+    
 
     toast.success('Deleted Successfully');
     dispatch(toggleAcademicLoading(false));

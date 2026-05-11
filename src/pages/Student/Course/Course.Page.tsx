@@ -15,7 +15,7 @@ import { PaginationDemo } from '@/components/Pagination.c';
 
 const StudentCourse = () => {
     const dispatch = useAppDispatch();
-    const { courses, loading } = useAppSelector((state) => state.courses);
+    const { courses, loading } = useAppSelector((state) => state?.courses);
     const [ viewCourse, setViewCourse ] = useState<ICourseForm>();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -143,7 +143,7 @@ const StudentCourse = () => {
             ]}
         />
 
-        <PaginationDemo/>
+        {courses?.length && <PaginationDemo/> }
 
         {/* View Modal */}
         <CourseViewModal viewCourse={viewCourse} isModalOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

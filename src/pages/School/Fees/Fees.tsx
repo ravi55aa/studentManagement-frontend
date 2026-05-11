@@ -32,13 +32,13 @@ export default function FeeListPage() {
       return ;
     }
 
-    const resData=res.data.data;
+    const {data,page,total,totalPages}=res.data.data;
 
     dispatch(toggleFeeLoading(false));
 
-    dispatch(storeFees(resData.data.reverse()));
+    dispatch(storeFees(data?.reverse() || [] ));
 
-    setPagination({page:resData.page,totalPages:resData.totalPages,total:resData.total}) ;
+    setPagination({page,totalPages,total});
 
     return;
   };
@@ -78,7 +78,7 @@ export default function FeeListPage() {
         >
           Watch Students
         </button>
-       
+
         <TopBar to="add" />
       </div>
 

@@ -121,7 +121,7 @@ const TeacherSubjects = () => {
             ]}
         />
 
-        <PaginationDemo />
+        {subjects?.length && <PaginationDemo /> }
 
         {/* View Modal */}
         <SubjectViewModal viewSubject={viewSubject} isModalOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> 

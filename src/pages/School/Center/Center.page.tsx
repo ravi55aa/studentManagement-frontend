@@ -13,6 +13,7 @@ import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
 import { AddressRoute } from '@/constants/routes.contants';
 import { CenterService } from '@/api/Services/center.service';
+import { PaginationDemo } from '@/components/Pagination.c';
 //import { useAppNavigate } from "@/hooks/navigate.hook";
 
 const CentersPage = () => {
@@ -156,6 +157,7 @@ const CentersPage = () => {
       </div>
 
       {/* <Pagination /> */}
+      {filteredCenters.length && <PaginationDemo /> } 
     </div>
   );
 };

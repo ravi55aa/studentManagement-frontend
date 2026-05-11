@@ -12,6 +12,7 @@ import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
 import { SubjectService } from '@/api/Services/subject.service';
 import { Roles } from '@/constants/role.enum';
+import { PaginationDemo } from '@/components/Pagination.c';
 
 const SubjectsPage = () => {
   //const [search, setSearch] = useState("");
@@ -98,6 +99,7 @@ const SubjectsPage = () => {
       />
 
       {/* <Pagination /> */}
+      {subjectStore.subjects?.length && <PaginationDemo /> }
     </div>
   );
 };

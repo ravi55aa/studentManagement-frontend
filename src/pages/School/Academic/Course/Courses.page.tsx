@@ -1,4 +1,4 @@
-import { Pencil, Ban, Trash2, Bell } from 'lucide-react';
+import { Pencil, Ban, Trash2} from 'lucide-react';
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
@@ -8,11 +8,11 @@ import {
   storeSchoolAcademicCoursesMeta,
   toggleAcademicCourseLoading,
 } from '@/utils/Redux/Reducer/courses.reducer';
-import { Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
 import { CourseService } from '@/api/Services/course.service';
 import { toast } from 'react-toastify';
+import { PaginationDemo } from '@/components/Pagination.c';
 
 const CourseListPage = () => {
   const dispatch = useAppDispatch();
@@ -124,7 +124,8 @@ const CourseListPage = () => {
         ]}
       />
 
-      {/* <Pagination /> */}
+        {courses?.length && <PaginationDemo />}
+      
     </div>
   );
 };

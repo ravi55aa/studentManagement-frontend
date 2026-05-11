@@ -16,6 +16,7 @@ import { IHomework, IHomeworkSubmission } from '@/interfaces/IHomework';
 import { paginationQuery } from '@/constants/pagination';
 import { usePagination } from '@/hooks/usePagination';
 import { Pagination } from '@/components';
+import { TPaginationQuery } from '@/types/paginationTypes';
 
 export default function FeeListPage() {
     const dispatch = useAppDispatch();
@@ -26,9 +27,9 @@ export default function FeeListPage() {
     const [open, setOpen] = useState(false);
     const [mergedHomeworks,setMergedHomeworks]=useState([]);
 
-    const {nextPage,pagination,prevPage,setPagination} = usePagination(fetchHomeworks,8);
+    const {nextPage,pagination,prevPage,setPagination} = usePagination(fetchHomeworks,1);
 
-    async function fetchHomeworks() {
+    async function fetchHomeworks(paginationQuery:TPaginationQuery) {
         const user=JSON.parse(localStorage.getItem('sectionC'));
         
         if(!user){
@@ -51,7 +52,7 @@ export default function FeeListPage() {
     }
 
     useEffect(() => {
-        fetchHomeworks();
+        fetchHomeworks(paginationQuery);
     }, [dispatch]);
 
     useEffect(()=>{
