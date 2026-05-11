@@ -209,7 +209,7 @@ const AddPlanPage = () => {
             {/*  Submit */}
             <button
             type="submit"
-            className="bg-green-700 text-white px-4 py-2 rounded col-span-2"
+            className="bg-green-700 max-w-25 max-h-12 text-white px-4 py-2 rounded col-span-2"
             >
             {planId ?  'Edit Plan' : 'Create Plan'}
             </button>

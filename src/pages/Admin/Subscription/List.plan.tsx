@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import { PlanService } from '@/api/Services/Admin/plan.service';
 import { toast } from 'react-toastify';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
-import { Pagination, TopBar } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
 
 import {
@@ -17,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { IPlan } from '@/interfaces/IPlan';
 import Swal from 'sweetalert2';
 import { PlanViewModal } from '@/components/plan/plan.view.modal';
+import { PaginationDemo } from '@/components/Pagination.c';
 
 const UserPlanList = () => {
 
@@ -186,7 +186,7 @@ const UserPlanList = () => {
             <PlanViewModal plan={utils.plan} isOpen={utils.modalIsOpen} onClose={()=>setUtils({plan:null,modalIsOpen:false})} />
         }
 
-        {/* <Pagination /> */}
+        {plans?.length && <PaginationDemo /> }
         </div>
     );
 };

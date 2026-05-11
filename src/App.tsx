@@ -2,6 +2,7 @@ import {
   /*Super Admin */
   SuperAdminLogin,
   SuperAdminDashboard,
+  SuperAdminDashboardHome,
   AddSubscription,
   Subscriptions,
   SuperAdminSchools,
@@ -88,14 +89,13 @@ const App = () => {
         
         <Route path="*" element={<NotFound />} />
         
+        {/* SuperAdminLogin */}
         <Route element={<PublicRoute redirectPath='/admin/dashboard' />}>
           <Route path="/login" element={<SuperAdminLogin />} />
         </Route>
 
 
         <Route element={<PublicRoute />}>
-          {/* SuperAdminLogin */}
-
 
           {/* admin login */}
           <Route path="/" element={<HomePage />} />
@@ -211,7 +211,6 @@ const App = () => {
         </Route>
 
 
-
         {/* STUDENT */}
 
         <Route path='/student/dashboard' element={<StudentDashboardMain/>}>
@@ -230,9 +229,10 @@ const App = () => {
 
         {/*.*/}
         {/* SuperAdmin */}
+
         <Route element={<ProtectedRoute redirectPath='/login' />} >
         <Route path="/dashboard" element={<SuperAdminDashboard />} >
-            <Route index element={<DashboardSection1 />} />
+            <Route index element={<SuperAdminDashboardHome />} />
             
             <Route path='plans' >
               <Route index element={<Subscriptions />} />

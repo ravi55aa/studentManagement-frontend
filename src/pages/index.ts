@@ -58,8 +58,6 @@ export { default as 'ListBatches' } from './Teacher/Attendance/ListBatches.tsx';
 export { default as 'MarkAttendance' } from './Teacher/Attendance/Attendance.tsx';
 
 
-
-
 /*************** STUDENT ****************/
 export { default as 'StudentLogin' } from './Auth/Student.sign';
 export {default as "AddStudent"} from "./Student/Add.Student";
@@ -74,13 +72,13 @@ export {default as 'StudentCourse'} from "./Student/Course/Course.Page.tsx"
 export {default as 'StudentChat'} from "./Student/Chat/StudentChat.tsx"
 
 
-
-
 /*************** Super-Admin ****************/
-
 export { default as 'SuperAdminLogin' } from './Admin/SuperAdminLogin.tsx';
-//subscription
+
 export { default as 'SuperAdminDashboard' } from './Admin/Dashboard.tsx';
+export { default as 'SuperAdminDashboardHome' } from './Admin/Dashboard/Dashboard.tsx';
+
 export { default as 'Subscriptions' } from './Admin/Subscription/List.plan.tsx';
 export { default as 'AddSubscription' } from './Admin/Subscription/Add.plan.tsx';
+
 export { default as 'SuperAdminSchools' } from './Admin/SchoolManagement/Schools.tsx';

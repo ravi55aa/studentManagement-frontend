@@ -75,10 +75,10 @@ export const superAdminSidebar=[
   },
   {
     label: 'Schools',
-    path: 'schools',
+    path: '/schools',
   },
   {
     label: 'Plans',
-    path: 'plans',
+    path: '/plans',
   },
 ]

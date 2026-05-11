@@ -13,6 +13,7 @@ import { toggleSchoolLoading } from '@/utils/Redux/Reducer/allSchool.redcuer';
 import { setSchools, updateSchoolStatusLocal } from '@/utils/Redux/Reducer/schools.reducer';
 import { schoolStatus } from '@/types/types';
 import PreviewModal from '@/components/PreviewModa';
+import { PaginationDemo } from '@/components/Pagination.c';
 
 const AdminSchoolList = () => {
     const dispatch = useAppDispatch();
@@ -156,6 +157,8 @@ const AdminSchoolList = () => {
             isModalOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
         />
+
+        {schools?.length && <PaginationDemo /> }
         
         </div>
     );
