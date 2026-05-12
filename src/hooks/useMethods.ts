@@ -1,12 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAppSelector } from "./useStoreHooks";
-import { NotificationService } from "@/api/Services/notification.service";
-import { toast } from "react-toastify";
+
 
 export function useCommonMethods () {
 
-    const {user}=useAppSelector((state)=>state.currentUser);
     const navigate=useNavigate();
     
     const useHandleLogout=async(to:string)=>{

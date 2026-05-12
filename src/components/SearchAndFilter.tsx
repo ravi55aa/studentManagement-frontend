@@ -1,6 +1,64 @@
 import { Search, SlidersHorizontal } from "lucide-react";
+import { useDebounce } from "@/hooks/useDebounce";
+import React, { useState } from "react";
 
-const SearchAndFilter = () => {
+
+interface IProps{
+  filterField:string,
+  filterValues: {name:string,value:string}[] ,
+  
+  searchField:string,
+
+  placeHolder:string,
+
+  setSearchQuery: React.Dispatch<
+    React.SetStateAction<Record<string, string | number>>
+  >;
+}
+
+const SearchAndFilter = (props:IProps) => {
+
+  const {debounce} = useDebounce();
+  const [filterValues,setFilterValues]=useState<Record<string,string|number>>({});
+
+  const handleOnChange=(e:React.ChangeEvent<HTMLInputElement|HTMLSelectElement>)=>{
+    const {name,value} = e.target;
+    
+    setFilterValues((prev)=>({...prev,[name]:value}));
+
+    return;
+  }
+
+  const handleSearch = () => {
+    const formattedQuery = {
+      ...filterValues,
+
+      // convert search field into regex search format
+      [props.searchField]: filterValues[props.searchField]
+        ? {
+            $regex: filterValues[props.searchField],
+            $options: "i",
+          }
+        : undefined,
+    };
+
+    // remove empty/undefined values
+    const cleanedQuery = Object.fromEntries(
+      Object.entries(formattedQuery).filter(
+        ([_, value]) =>
+          value !== undefined &&
+          value !== null &&
+          value !== ""
+      )
+    );
+
+    props.setSearchQuery(
+      cleanedQuery as Record<string, string | number>
+    );
+
+    return;
+  };
+
   return (
     <div className="mb-6">
 
@@ -18,6 +76,9 @@ const SearchAndFilter = () => {
           <div className="relative min-w-[180px]">
 
             <select
+              name={props?.filterField}
+              onChange={handleOnChange}
+              value={filterValues[props?.filterField]||''}
               className="
                 w-full
                 appearance-none
@@ -34,9 +95,10 @@ const SearchAndFilter = () => {
                 hover:bg-slate-50
               "
             >
-              <option>Add Filter</option>
-              <option>Male</option>
-              <option>Female</option>
+              <option value='' >Add Filter</option>
+              { props?.filterValues && props?.filterValues?.map((val)=>
+              <option value={val?.value} >{val.name?.toUpperCase()}</option>
+              )}
             </select>
 
             {/* Custom Arrow */}
@@ -59,7 +121,10 @@ const SearchAndFilter = () => {
 
           <input
             type="text"
-            placeholder="Search students, assignments, courses..."
+            value={filterValues[props?.searchField]}
+            name={props.searchField}
+            onChange={handleOnChange}
+            placeholder={props.placeHolder+'....'}
             className="
               w-full
               rounded-2xl
@@ -79,9 +144,10 @@ const SearchAndFilter = () => {
 
         {/* Optional Action */}
         <button
+          onClick={()=>debounce(handleSearch)}
           className="
             rounded-2xl
-            bg-gradient-to-r
+            bg-linear-to-r
             from-green-600
             to-green-500
             px-6 py-3

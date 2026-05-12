@@ -38,7 +38,11 @@ const SuperAdminDashboard = () => {
             //handle failures  
             //___-__//
 
-            setPageData({schools:schoolRes.data.data||[], plans:planRes.data.data||[]});
+            setPageData({
+                schools:schoolRes.data.data||[], 
+                plans:planRes.data.data||[]
+            });
+
             return true;
         };
 

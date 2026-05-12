@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { SendHorizontal , Eye, Bell } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
 import { toast } from 'react-toastify';
@@ -17,9 +17,17 @@ import { paginationQuery } from '@/constants/pagination';
 import { usePagination } from '@/hooks/usePagination';
 import { Pagination } from '@/components';
 import { TPaginationQuery } from '@/types/paginationTypes';
+import { SubjectService } from '@/api/Services/subject.service';
+import { BatchService } from '@/api/Services/batch.service';
+import { IStudent } from '@/interfaces/IStudent';
+import { removeEmptyFields } from '@/hooks/useDebounce';
 
 export default function FeeListPage() {
     const dispatch = useAppDispatch();
+    
+    const [filterValues,setFilterValues]=useState<{name:string,value:string}[]>();
+    const [searchQuery,SetSearchQuery] = useState<Record<string,string|number>>();
+
     const homeworks = useAppSelector((state) => state.homeworks);
     const [submissions,setSubmissions]=useState<IHomeworkSubmission[]>([]);
 
@@ -28,8 +36,9 @@ export default function FeeListPage() {
     const [mergedHomeworks,setMergedHomeworks]=useState([]);
 
     const {nextPage,pagination,prevPage,setPagination} = usePagination(fetchHomeworks,1);
-
+    
     async function fetchHomeworks(paginationQuery:TPaginationQuery) {
+        
         const user=JSON.parse(localStorage.getItem('sectionC'));
         
         if(!user){
@@ -37,7 +46,11 @@ export default function FeeListPage() {
             return;
         }
 
-        const res = await HomeworkService.getAllWithQuery(paginationQuery,{batch:user.batchId});
+
+        console.log('@homeworkList searchQuery',searchQuery)
+        const res = await HomeworkService.getAllWithQuery(paginationQuery,
+            {batch:user.batchId,...removeEmptyFields(searchQuery)}
+        );
 
         if (!res.success) {
             toast.error(res.error.message);
@@ -49,11 +62,13 @@ export default function FeeListPage() {
         setPagination({page,totalPages,total});
 
         dispatch(storeHomeworks(data||[]));
+
+        return;
     }
 
     useEffect(() => {
         fetchHomeworks(paginationQuery);
-    }, [dispatch]);
+    }, [dispatch,searchQuery]);
 
     useEffect(()=>{
 
@@ -92,6 +107,40 @@ export default function FeeListPage() {
         setMergedHomeworks(homeworkDetails);
     }, [homeworks.homeworks, submissions]);
 
+    const handleSubjectsMapper=(subjects:IAcademicSubject[])=>{
+        if(subjects.length<=0) return; //base-case
+
+        const subjectsMapped=subjects?.map(sub => {
+            return {name:sub?.name,value:sub._id}
+        });
+
+        return subjectsMapped;
+    }
+
+    useEffect(()=>{
+        
+        const handleFetchValues=async() => {
+
+            const user:IStudent=JSON.parse(localStorage.getItem('sectionC'));
+            
+            const batchRes=await BatchService.getById(user.batch);
+            const  batchData=batchRes.data?.data;
+
+            //{className:batch-name[0],tenantId} query tenantId
+
+            const subjectRes=await SubjectService.getAllWithQuery({
+                className:batchData.name[0],tenantId:batchData.tenantId
+            });
+
+            const subjects=subjectRes.data.data;
+
+            //mapper
+            const mappedSubjects= handleSubjectsMapper(subjects);
+            setFilterValues(mappedSubjects);
+        }
+        handleFetchValues();
+    },[]);
+
 
     const handleSubmit = async (id: string) => {
         console.log('submit');
@@ -113,7 +162,15 @@ export default function FeeListPage() {
             onClose={() => setOpen(false)}
         />
 
-        <SearchAndFilter />
+        <SearchAndFilter 
+            filterField='subjectId'
+            filterValues={filterValues}
+            
+            searchField='title'
+            placeHolder='Search homework using title' 
+
+            setSearchQuery={SetSearchQuery}
+        />
 
         <TableComponent
             data={mergedHomeworks ?? []}
@@ -135,7 +192,8 @@ export default function FeeListPage() {
                     <Eye className="w-4 h-4 text-green-600 hover:text-green-800 hover:underline cursor-pointer" />
                     </Link>
                     
-                    <div className='flex gap-1 justify-end'><SendHorizontal
+                    <div className='flex gap-1 justify-end'>
+                        <SendHorizontal
                     className="w-4 h-4 text-red-600 hover:text-red-800  hover:underline cursor-pointer"
                     onClick={() => handleSubmit(homework?._id)}
                     />
