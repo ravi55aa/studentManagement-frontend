@@ -25,8 +25,11 @@ import { removeEmptyFields } from '@/hooks/useDebounce';
 export default function FeeListPage() {
     const dispatch = useAppDispatch();
     
-    const [filterValues,setFilterValues]=useState<{name:string,value:string}[]>();
-    const [searchQuery,SetSearchQuery] = useState<Record<string,string|number>>();
+    //Filter + Search query
+    const [filterValues,setFilterValues]=useState<{
+        filterValue:{name:string,value:string}[],
+        searchQuery:Record<string,string|number> 
+    }>();
 
     const homeworks = useAppSelector((state) => state.homeworks);
     const [submissions,setSubmissions]=useState<IHomeworkSubmission[]>([]);
@@ -43,13 +46,12 @@ export default function FeeListPage() {
         
         if(!user){
             toast.warn('Kindly log in,Auth failed');
+            dispatch(storeHomeworks([]));
             return;
         }
 
-
-        console.log('@homeworkList searchQuery',searchQuery)
         const res = await HomeworkService.getAllWithQuery(paginationQuery,
-            {batch:user.batchId,...removeEmptyFields(searchQuery)}
+            {batch:user.batchId,...removeEmptyFields(filterValues.searchQuery)}
         );
 
         if (!res.success) {
@@ -68,7 +70,7 @@ export default function FeeListPage() {
 
     useEffect(() => {
         fetchHomeworks(paginationQuery);
-    }, [dispatch,searchQuery]);
+    }, [dispatch,filterValues.searchQuery]);
 
     useEffect(()=>{
 
@@ -136,8 +138,13 @@ export default function FeeListPage() {
 
             //mapper
             const mappedSubjects= handleSubjectsMapper(subjects);
-            setFilterValues(mappedSubjects);
+            
+            setFilterValues((prev)=>({
+                ...prev,
+                filterValue:mappedSubjects
+            }));
         }
+
         handleFetchValues();
     },[]);
 
@@ -164,12 +171,12 @@ export default function FeeListPage() {
 
         <SearchAndFilter 
             filterField='subjectId'
-            filterValues={filterValues}
+            filterValues={filterValues.filterValue}
             
             searchField='title'
-            placeHolder='Search homework using title' 
+            placeHolder='Search using Homework title' 
 
-            setSearchQuery={SetSearchQuery}
+            setSearchQuery={setFilterValues}
         />
 
         <TableComponent

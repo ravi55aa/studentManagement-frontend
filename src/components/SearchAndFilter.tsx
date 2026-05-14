@@ -12,8 +12,10 @@ interface IProps{
   placeHolder:string,
 
   setSearchQuery: React.Dispatch<
-    React.SetStateAction<Record<string, string | number>>
-  >;
+    React.SetStateAction<
+    {
+        filterValue:{name:string,value:string}[],searchQuery:Record<string,string|number> 
+    }>>;
 }
 
 const SearchAndFilter = (props:IProps) => {
@@ -34,11 +36,15 @@ const SearchAndFilter = (props:IProps) => {
       ...filterValues,
 
       // convert search field into regex search format
+      // [props.searchField]: filterValues[props.searchField]
+      //   ? {
+      //       $regex: filterValues[props.searchField],
+      //       $options: "i",
+      //     }
+      //   : undefined,
+
       [props.searchField]: filterValues[props.searchField]
-        ? {
-            $regex: filterValues[props.searchField],
-            $options: "i",
-          }
+        ? filterValues[props.searchField]
         : undefined,
     };
 
@@ -52,9 +58,10 @@ const SearchAndFilter = (props:IProps) => {
       )
     );
 
-    props.setSearchQuery(
-      cleanedQuery as Record<string, string | number>
-    );
+    props.setSearchQuery((prev)=>({
+      ...prev,
+      searchQuery:cleanedQuery as Record<string, string | number>
+    }));
 
     return;
   };

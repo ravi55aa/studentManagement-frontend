@@ -19,6 +19,7 @@ import { paginationQuery } from '@/constants/pagination';
 import Pagination from '@/components/Pagination.c';
 import { TPaginationQuery } from '@/types/paginationTypes';
 import { usePagination } from '@/hooks/usePagination';
+import { filter_Fee_Types } from '@/constants/feesTypes';
 
 export default function StudentFeeListPage() {
     const dispatch = useAppDispatch();
@@ -27,6 +28,15 @@ export default function StudentFeeListPage() {
     const [studentFeeDetails, setStudentFeeDetails] = useState<IStudentFee[]>([]);
     const [mergedFees, setMergedFees] = useState<IFee[]>([]);
     const navigate = useNavigate();
+
+    //search+filter
+    const [filterValues,setFilterValues]=useState<{
+        filterValue: { name:string,value:string }[],
+        searchQuery: Record<string,string|number> 
+    }>  ({
+            filterValue:filter_Fee_Types,
+            searchQuery:{}
+    });
 
     //Notification
     const [open, setOpen] = useState(false);
@@ -38,10 +48,14 @@ export default function StudentFeeListPage() {
         //  Make sure to update into
         //  filtering the query, by the there are specific
         //  center, course may vary.  
-        const res = await FeeService.getAll(paginationQuery); 
+        const res = await FeeService.getAllWithQuery(paginationQuery,
+            {...filterValues.searchQuery}); 
+        
+        dispatch(toggleFeeLoading(false));
 
         if (!res.success) {
             toast.error(res.error.message);
+            dispatch(storeFees( []));
             return;
         }
 
@@ -49,8 +63,8 @@ export default function StudentFeeListPage() {
         
         setPagination({page,total,totalPages});
 
-        dispatch(toggleFeeLoading(false));
         dispatch(storeFees(data || []));
+        
         return;
     };
 
@@ -70,7 +84,7 @@ export default function StudentFeeListPage() {
     useEffect(() => {
             handleGetStudentFees(paginationQuery);
             handleGetStudentPaidFeeDetail();
-    }, []);
+    }, [filterValues.searchQuery]);
 
     const handlePay = (feeAmount: number,feeId: string) => {
         const locationState={
@@ -116,7 +130,15 @@ export default function StudentFeeListPage() {
                     onClose={() => setOpen(false)}
                 />
 
-        <SearchAndFilter />
+        <SearchAndFilter
+            filterField='type'
+            filterValues={filterValues.filterValue}
+            
+            searchField='name'
+            placeHolder='Search homework using fee names' 
+
+            setSearchQuery={setFilterValues}
+        />
 
         <TableComponent
             data={mergedFees ?? []}

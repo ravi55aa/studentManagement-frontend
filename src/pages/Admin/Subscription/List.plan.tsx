@@ -24,6 +24,17 @@ const UserPlanList = () => {
         {modalIsOpen:false,plan:null}
     )
 
+    //search + filter
+    const [filterValues,setFilterValues]=useState<{
+        filterValue:{name:string,value:string}[],
+        searchQuery:Record<string,string|number> 
+    }>(
+        {
+            filterValue:[],
+            searchQuery:{}
+        }
+    );
+
     const dispatch = useAppDispatch();
     
     const { plans, loading } = useAppSelector((state) => state.subscriptionPlans);
@@ -32,10 +43,15 @@ const UserPlanList = () => {
 
     //  Fetch Plans
     const fetchPlans = async () => {
+        
         try {
+
             dispatch(togglePlansLoading(true));
 
-            const res = await PlanService.getAll({ isActive: true });
+            const res = await PlanService.getAll({ 
+                isActive: true,
+                ...filterValues.searchQuery
+            });
 
             if (!res.success) {
             toast.error(res.error.message);
@@ -101,7 +117,14 @@ const UserPlanList = () => {
             Add New
         </button>
 
-        <SearchAndFilter />
+        <SearchAndFilter
+            filterField='starter'
+            searchField='description'
+            placeHolder='Search using Plan description' 
+            setSearchQuery={setFilterValues}
+            
+            filterValues={filterValues.filterValue}
+        />
 
         <TableComponent
             data={plans ?? []}

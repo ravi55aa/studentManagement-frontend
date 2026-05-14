@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Pencil, Trash2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
 import { storeFees, toggleFeeLoading } from '@/utils/Redux/Reducer/fee.reducer';
@@ -14,27 +14,41 @@ import StatusBadge from '@/components/fee/StatusBadge.c';
 import { FeeService } from '@/api/Services/fee.service';
 import { usePagination } from '@/hooks/usePagination';
 import { paginationQuery } from '@/constants/pagination';
+import { filter_Fee_Types } from '@/constants/feesTypes';
 
-export default function FeeListPage() {
+export default function FeeListPage () {
+
   const dispatch = useAppDispatch();
   const feeStore = useAppSelector((state) => state.fees);
   const navigate = useNavigate();
 
+  //search+filter
+  const [filterValues,setFilterValues] = useState<{
+      filterValue: { name:string,value:string }[],
+      searchQuery: Record<string,string|number> 
+  }>  ({
+          filterValue:filter_Fee_Types,
+          searchQuery:{}
+  });
+
   const {nextPage,pagination,prevPage,setPagination}= usePagination(handleGetAllFess,8);
 
   async function handleGetAllFess () {
+    
     dispatch(toggleFeeLoading(true));
 
     const res = await FeeService.getAll(paginationQuery);
 
+    dispatch(toggleFeeLoading(false));
+
     if (!res.success) {
       toast.error(res.error.message);
+      dispatch ( storeFees( [] ));
       return ;
     }
 
     const {data,page,total,totalPages}=res.data.data;
 
-    dispatch(toggleFeeLoading(false));
 
     dispatch(storeFees(data?.reverse() || [] ));
 
@@ -50,23 +64,27 @@ export default function FeeListPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
+
     const result = await deleteSwal();
+    
     if (!result.isConfirmed) return result.isConfirmed;
 
+    
     dispatch(toggleFeeLoading(true));
-
     const res = await FeeService.deleteFee(id);
+    dispatch(toggleFeeLoading(false));
 
     if (!res.success) {
       toast.warn(res.error.message);
       return res.success;
     }
 
-    dispatch(toggleFeeLoading(false));
-
     await handleGetAllFess();
+    
     toast.success('Fee Deleted Successfully');
+
     return res.success;
+
   };
 
   return (
@@ -82,7 +100,16 @@ export default function FeeListPage() {
         <TopBar to="add" />
       </div>
 
-      <SearchAndFilter />
+      <SearchAndFilter
+          filterField='type'
+          filterValues={filterValues.filterValue}
+          
+          searchField='name'
+          placeHolder='Search homework using fee names' 
+
+          setSearchQuery={setFilterValues}
+      />
+
 
       <TableComponent
         data={feeStore?.fees ?? []}

@@ -21,3 +21,9 @@ export const department_Array: string[] = [
   'physical education',
   'arts',
 ];
+
+
+export const department_filter_values = department_Array.map( (department)=>{
+                                  return {
+                                    name:department.toUpperCase(),value:department
+                                  }});

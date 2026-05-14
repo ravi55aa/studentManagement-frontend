@@ -16,12 +16,22 @@ import { TeacherService } from '@/api/Services/teacher.service';
 import { BatchService } from '@/api/Services/batch.service';
 import { paginationQuery } from '@/constants/pagination';
 import { usePagination } from '@/hooks/usePagination';
+import { filter_values_batches } from '@/constants/batch';
 
 const BatchesPage = () => {
   const [search, setSearch] = useState('');
   
   const dispatch = useAppDispatch();
-  const navigate=useNavigate()
+
+  //Filter + Search query
+  const [filterValues,setFilterValues]=useState<{
+      filterValue:{name:string,value:string}[],
+      searchQuery:Record<string,string|number> 
+  }>({
+      filterValue:filter_values_batches,
+      searchQuery:{}
+  });
+  
 
   const batchReduxStore = useAppSelector((state) => state.batch);
   const [unAssignedTeachers, setUnAssignedTeachers] = useState<ITeacherBio[] | []>([]);
@@ -32,8 +42,9 @@ const BatchesPage = () => {
 
   const {pagination,setPagination,prevPage,nextPage,}=usePagination(fetchBatches,8);
 
+
   async function fetchBatches(): Promise<void> {
-    const res = await BatchService.getAll(paginationQuery);
+    const res = await BatchService.getAllWithQuery({...filterValues.searchQuery},paginationQuery);;
 
     if (!res.success) {
       toast.warn(res.error.message);
@@ -54,7 +65,7 @@ const BatchesPage = () => {
 
   useEffect(() => {
     fetchBatches();
-  }, [dispatch, batchReduxStore.loading]);
+  }, [dispatch, batchReduxStore.loading,filterValues.searchQuery]);
 
 
 
@@ -134,7 +145,14 @@ const BatchesPage = () => {
         <Bell className="text-green-700 w-5 h-5" />
       </div>
 
-      <SearchAndFilter />
+      <SearchAndFilter 
+            setSearchQuery={setFilterValues}
+            searchField='code'
+            placeHolder='Search using batch code' 
+            filterField='status'
+            
+            filterValues={filterValues.filterValue}
+        />
 
       <TableComponent
         data={filteredBatches ?? []}

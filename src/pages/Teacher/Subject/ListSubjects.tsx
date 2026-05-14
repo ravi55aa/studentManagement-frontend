@@ -10,6 +10,7 @@ import { IAcademicSubject } from '@/interfaces/ISchool';
 import { TeacherService } from '@/api/Services/teacher.service';
 import SubjectViewModal from '@/components/ViewSubjectModal';
 import { PaginationDemo } from '@/components/Pagination.c';
+import { department_filter_values } from '@/constants/deparment';
 
 const TeacherSubjects = () => {
     const dispatch = useAppDispatch();
@@ -19,6 +20,17 @@ const TeacherSubjects = () => {
     const { user } = useAppSelector((state) => state.currentUser);
 
     const [ viewSubject, setViewSubject ] = useState<IAcademicSubject>();
+
+    //search + filter
+    const [filterValues,setFilterValues]=useState<{
+        filterValue:{name:string,value:string}[],
+        searchQuery:Record<string,string|number> 
+    }>(
+        {
+            filterValue:department_filter_values,
+            searchQuery:{}
+        }
+    );
     
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -38,6 +50,10 @@ const TeacherSubjects = () => {
         
                 for(let _subjectId of teacher?.assignedSubjects){
                     const res = await SubjectService.getById(_subjectId?._id);
+                    
+                    // query : {...filterValues.searchQuery}
+                    // PASS THE 2ND PARAM AS SEARCH BY QUERY
+                    // SEARCH BY QUERY IS FOR FILTER VALUES
 
                     if (!res.success) {
                         toast.error(res.error.message);
@@ -48,8 +64,7 @@ const TeacherSubjects = () => {
                     subjectArray.push(subject);
                 }
         
-        
-                dispatch(storeSchoolAcademicSubjects(subjectArray));
+                dispatch ( storeSchoolAcademicSubjects ( subjectArray ) );
                 
             } catch (err) {
                 toast.error(err.message);
@@ -59,32 +74,31 @@ const TeacherSubjects = () => {
             };
         
             fetchSubjects();
-        }, [dispatch]);
+        }, [dispatch]); //filterValues.searchQuery
 
     const handleView = async (id: string) => {
-    try {
-        dispatch(toggleAcademicSubLoading(true));
+        try {
+            dispatch(toggleAcademicSubLoading(true));
 
-        const res = await SubjectService.getById( id);
+            const res = await SubjectService.getById( id);
 
-        if (!res.success) {
-            toast.error(res.error.message);
-            return;
+            if (!res.success) {
+                toast.error(res.error.message);
+                return;
+            }
+
+            if (!res.data.data) return;
+
+            const subject = res.data.data;
+
+            setViewSubject(subject);
+            setIsModalOpen(true); 
+        } catch (err) {
+            toast.error(err.message);
+        } finally {
+            dispatch(toggleAcademicSubLoading(false));
         }
-
-        if (!res.data.data) return;
-
-        const subject = res.data.data;
-
-        setViewSubject(subject);
-        setIsModalOpen(true); 
-    } catch (err) {
-        toast.error(err.message);
-    } finally {
-        dispatch(toggleAcademicSubLoading(false));
-    }
     };
-
 
     return (
     <div className="p-6 bg-white min-h-screen">
@@ -94,7 +108,14 @@ const TeacherSubjects = () => {
             <Bell className="w-5 h-5 text-green-700 cursor-pointer" />
         </div>
 
-        <SearchAndFilter />
+        <SearchAndFilter
+            filterField='department'
+            searchField='description'
+            placeHolder='Search using subject description' 
+            setSearchQuery={setFilterValues}
+            
+            filterValues={filterValues.filterValue}
+        />
 
         <TableComponent
             data={subjects ?? []}
@@ -124,7 +145,12 @@ const TeacherSubjects = () => {
         {subjects?.length && <PaginationDemo /> }
 
         {/* View Modal */}
-        <SubjectViewModal viewSubject={viewSubject} isModalOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> 
+        <SubjectViewModal 
+            viewSubject={viewSubject} 
+            isModalOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)} 
+            />
+            
         </div>
     );
 }

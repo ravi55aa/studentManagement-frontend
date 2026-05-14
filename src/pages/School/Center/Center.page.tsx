@@ -14,17 +14,49 @@ import { TableComponent } from '@/components/Table.Component';
 import { AddressRoute } from '@/constants/routes.contants';
 import { CenterService } from '@/api/Services/center.service';
 import { PaginationDemo } from '@/components/Pagination.c';
-//import { useAppNavigate } from "@/hooks/navigate.hook";
 
 const CentersPage = () => {
   const [search, setSearch] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  //search + filter
+    const [filterValues,setFilterValues]=useState<{
+        filterValue:{name:string,value:string}[],
+        searchQuery:Record<string,string|number> 
+    }>();
+
   const dispatch = useAppDispatch();
   const centerReduxStore = useAppSelector((store) => store.center);
   //const addressReduxStore=useAppSelector((store)=>store.address);
 
+
+  //useEffect for store filter values
+  useEffect(()=>{
+    (async()=>{
+      
+      const res = await CenterService.getAll();
+      
+      if(!res.success){
+        setFilterValues((prev)=>({...prev,filterValue:[]}));
+        return;
+      }
+
+      const centers = res?.data?.data;
+
+      const filter_values = centers.map((center)=> {
+        return {
+          name:center.code,
+          value:center.code
+        }});
+
+        setFilterValues((prev)=>({...prev,filterValue:filter_values}));
+
+        return;
+    })()
+  })
+
   useEffect(() => {
+    
     (async () => {
       //All Centers fetch
 
@@ -39,12 +71,16 @@ const CentersPage = () => {
       };
 
       const fetchedAllAddress = await handleApi<null, IAddress[]>(config2);
+
       dispatch(storeAddress(fetchedAllAddress?.data?.data));
+
       dispatch(setCenters(fetchAllCenters.data.data));
 
       setSearch('');
       setError('');
+
     })();
+
   }, [dispatch]);
 
   /* ---------- Search Handling ---------- */
@@ -102,7 +138,14 @@ const CentersPage = () => {
         <Bell className="text-green-700 w-5 h-5" />
       </div>
 
-      <SearchAndFilter />
+      <SearchAndFilter
+            searchField='name'
+            placeHolder='Search using Center name' 
+            setSearchQuery={setFilterValues}
+            
+            filterField='code'
+            filterValues={filterValues.filterValue}
+        />
 
       <TableComponent
         data={filteredCenters ?? []}

@@ -3,6 +3,7 @@ import { TeacherService } from '@/api/Services/teacher.service';
 import { ActionBtn, Pagination } from '@/components'
 import SearchAndFilter from '@/components/SearchAndFilter'
 import { TableComponent } from '@/components/Table.Component'
+import { filter_values_batches } from '@/constants/batch';
 import { paginationQuery } from '@/constants/pagination';
 import { usePagination } from '@/hooks/usePagination';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
@@ -10,7 +11,7 @@ import { IBatches } from '@/interfaces/ISchool';
 import { storeBatches } from '@/utils/Redux/Reducer/batchReducer';
 import { Bell } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const ListBatches = () => {
@@ -20,12 +21,19 @@ const ListBatches = () => {
     const currentUser = useAppSelector((state) => state.currentUser);
 
     const dispatch = useAppDispatch();
-    const navigate=useNavigate();
 
-    const {prevPage,nextPage,pagination,setPagination}=usePagination(fetchBatches,8);
+    //Filter + Search query
+    const [filterValues,setFilterValues]=useState<{
+        filterValue:{name:string,value:string}[],
+        searchQuery:Record<string,string|number> 
+    }>({
+        filterValue:filter_values_batches,
+        searchQuery:{}
+    });
+
+    const { prevPage,nextPage,pagination,setPagination } = usePagination(fetchBatches,8);
 
     async function fetchBatches() {
-        console.log('Fetching batches...');
 
         const teacherId=currentUser.user.id;
         
@@ -42,7 +50,7 @@ const ListBatches = () => {
             return ;
         }
 
-        const res2 = await BatchService.getAllWithQuery({center:teacher.center},paginationQuery);
+        const res2 = await BatchService.getAllWithQuery({center:teacher.center,...filterValues.searchQuery},paginationQuery);
 
         if (!res2.success) {
             toast.warn(res2.error.message);
@@ -60,7 +68,7 @@ const ListBatches = () => {
 
     useEffect(() => {
         fetchBatches();
-    }, []);
+    }, [dispatch, filterValues.searchQuery]);
 
 
     /* ---------- Filtering ---------- */
@@ -84,7 +92,14 @@ const ListBatches = () => {
             <Bell className="text-green-700 w-5 h-5" />
         </div>
 
-        <SearchAndFilter />
+        <SearchAndFilter 
+            setSearchQuery={setFilterValues}
+            searchField='code'
+            placeHolder='Search using batch code' 
+            filterField='status'
+            
+            filterValues={filterValues.filterValue}
+        />
 
         <TableComponent
             data={filteredBatches ?? []}

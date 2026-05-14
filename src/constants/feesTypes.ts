@@ -1,9 +1,16 @@
 const feeType = {
-  COURSE: 'Course',
-  ANNUAL: 'School',
-  EXAM: 'Exam',
-  CENTER: 'Center',
-  OTHER: 'Custom',
+  COURSE: 'COURSE',
+  ANNUAL: 'ANNUAL',
+  EXAM: 'EXAM',
+  CENTER: 'CENTER',
+  OTHER: 'OTHER',
 };
 
-export default Object.freeze(feeType);
+const feeTypes=Object.freeze(feeType);
+
+const filter_Fee_Types = Object.entries(feeTypes)
+                            .map(([name,value])=>{ 
+                              return { name, value}
+                            });
+
+export {feeTypes,filter_Fee_Types}; 

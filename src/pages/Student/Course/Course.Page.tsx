@@ -1,6 +1,5 @@
 import  { useEffect, useState } from 'react'
 import { CourseService } from '@/api/Services/course.service';
-import { Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
@@ -19,33 +18,45 @@ const StudentCourse = () => {
     const [ viewCourse, setViewCourse ] = useState<ICourseForm>();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    //searchQuery
+    const [filterValues,setFilterValues]=useState<{
+        filterValue:{name:string,value:string}[],searchQuery:Record<string,string|number> 
+    }>();
+
     //Notification
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const fetchCourses = async () => {
             try {
+                
                 dispatch(toggleAcademicCourseLoading(true));
-        
+
                 const res = await CourseService.getAll();
+
+                dispatch(toggleAcademicCourseLoading(false));
         
                 if (!res.success) {
-                toast.error(res.error.message);
-                return ;
+                    toast.error(res.error.message);
+                    dispatch(storeSchoolAcademicCourses([]));
+                    
+                    dispatch(storeSchoolAcademicCoursesMeta([]));
+                    return;
                 }
         
                 const { courses, courses_meta } = res.data.data;
+                
                 dispatch(storeSchoolAcademicCourses(courses));
+                
                 dispatch(storeSchoolAcademicCoursesMeta(courses_meta));
+
             } catch (err) {
                 toast.error(err.message);
-            } finally {
-                dispatch(toggleAcademicCourseLoading(false));
             }
-            };
+        };
         
             fetchCourses();
-        }, [dispatch]);
+        }, [dispatch,filterValues.searchQuery]);
 
     const handleView = async (id: string) => {
     try {
@@ -110,7 +121,17 @@ const StudentCourse = () => {
             onClose={() => setOpen(false)}
         />
 
-        <SearchAndFilter />
+        <SearchAndFilter
+            filterField='classes'
+            searchField='name'
+            placeHolder='search for course using name'
+            setSearchQuery={setFilterValues}
+            
+            filterValues={filterValues.filterValue}
+            // FIGURE OUT THE FILTER VALUES {name:string,value:string}[] for FILTER{}
+            // PROBLEM IS TWO COLLECTION [COURSE AND COURSE_META]
+            // NEED TO QUERY ON ONLY ONE EITHER COURSE OR C_META
+        />
 
         <TableComponent
             data={courses ?? []}

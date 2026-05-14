@@ -12,8 +12,8 @@ import { Pagination } from '@/components';
 import { toggleSchoolLoading } from '@/utils/Redux/Reducer/allSchool.redcuer';
 import { setSchools, updateSchoolStatusLocal } from '@/utils/Redux/Reducer/schools.reducer';
 import { schoolStatus } from '@/types/types';
-import PreviewModal from '@/components/PreviewModa';
 import { PaginationDemo } from '@/components/Pagination.c';
+import { school_filter_Types } from '@/constants/school';
 
 const AdminSchoolList = () => {
     const dispatch = useAppDispatch();
@@ -22,6 +22,14 @@ const AdminSchoolList = () => {
     const [viewSchool, setViewSchool] = useState<any>();
     const [isModalOpen, setIsModalOpen] = useState(false);
     
+    //search+filter
+    const [filterValues,setFilterValues]=useState<{
+        filterValue: { name:string,value:string }[],
+        searchQuery: Record<string,string|number> 
+    }>  ({
+            filterValue:school_filter_Types,
+            searchQuery:{}
+    });
 
     
     useEffect(() => {
@@ -85,7 +93,16 @@ const AdminSchoolList = () => {
 
     return (
         <div className="p-6 bg-white min-h-screen">
-        <SearchAndFilter />
+        
+        <SearchAndFilter
+            filterField='status'
+            filterValues={filterValues.filterValue}
+            
+            searchField='schoolName'
+            placeHolder='Search by School name' 
+
+            setSearchQuery={setFilterValues}
+        />
 
         <TableComponent
             data={schools}

@@ -1,5 +1,5 @@
 import { Pencil, Ban, Trash2} from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
 import Swal from 'sweetalert2';
@@ -13,36 +13,41 @@ import { TableComponent } from '@/components/Table.Component';
 import { CourseService } from '@/api/Services/course.service';
 import { toast } from 'react-toastify';
 import { PaginationDemo } from '@/components/Pagination.c';
+import { filter_values_batches } from '@/constants/batch';
 
 const CourseListPage = () => {
   const dispatch = useAppDispatch();
   const { courses, loading } = useAppSelector((state) => state.courses);
 
-  // const [search, setSearch] = useState("");
-  // const [filter, setFilter] = useState("");
-  //const [courses, setCourses] = useState(dummy_courses);
+  //Filter + Search query
+      const [filterValues,setFilterValues] = useState<{
+          filterValue:{name:string,value:string}[],
+          searchQuery:Record<string,string|number> 
+      }>({
+        filterValue:filter_values_batches,
+        searchQuery:{}
+      });
 
   //Fetches Courses from Backend
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        dispatch(toggleAcademicCourseLoading(true));
+      const fetchCourses = async () => {
+        try {
+          dispatch(toggleAcademicCourseLoading(true));
 
-        const res = await CourseService.getAll();
+          const res = await CourseService.getAll();
+          dispatch(toggleAcademicCourseLoading(false));
 
-        if (!res.success) {
-          toast.error(res.error.message);
-          return ;
+          if (!res.success) {
+            toast.error(res.error.message);
+            return ;
+          }
+
+          const { courses, courses_meta } = res.data.data;
+          dispatch(storeSchoolAcademicCourses(courses));
+          dispatch(storeSchoolAcademicCoursesMeta(courses_meta));
+        } catch (err) {
+          toast.error(err.message);
         }
-
-        const { courses, courses_meta } = res.data.data;
-        dispatch(storeSchoolAcademicCourses(courses));
-        dispatch(storeSchoolAcademicCoursesMeta(courses_meta));
-      } catch (err) {
-        toast.error(err.message);
-      } finally {
-        dispatch(toggleAcademicCourseLoading(false));
-      }
     };
 
     fetchCourses();
@@ -85,7 +90,14 @@ const CourseListPage = () => {
         </Link>
       </div>
 
-      <SearchAndFilter />
+      <SearchAndFilter 
+        searchField='name'
+        placeHolder='Search using course name' 
+        setSearchQuery={setFilterValues}
+
+            filterField='status'      
+            filterValues={filterValues.filterValue}
+        />
 
       <TableComponent
         data={courses ?? []}

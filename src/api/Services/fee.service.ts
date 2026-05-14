@@ -26,6 +26,13 @@ export class FeeService extends BaseService {
     );
   }
 
+  static getAllWithQuery(paginationQuery: TPaginationQuery,query:Partial<IFee>) {
+    return this.get<TPaginationResult<IFee>>(
+      FeeRoute.getAll,
+      {...paginationQuery,...query}
+    );
+  }
+
   static update(id: string, form: object) {
     return this.patch<object, IFee>(
       `${FeeRoute.edit}/${id}`,

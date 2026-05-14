@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Pencil, Trash2, Bell } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStoreHooks';
@@ -15,11 +15,21 @@ import { toast } from 'react-toastify';
 import { paginationQuery } from '@/constants/pagination';
 import { usePagination } from '@/hooks/usePagination';
 import { TPaginationQuery } from '@/types/paginationTypes';
+import { filter_values_batches } from '@/constants/batch';
 
 
 const AcademicYearsPage = () => {
-  //const [search, setSearch] = useState("");
-  //const [error, setError] = useState("");
+  
+  //search + filter
+    const [filterValues,setFilterValues] = useState<{
+        filterValue:{name:string,value:string}[],
+        searchQuery:Record<string,string|number> 
+    }>(
+        {
+            filterValue:filter_values_batches,
+            searchQuery:{}
+        }
+    );
 
   const dispatch = useAppDispatch();
   const { years, loading } = useAppSelector((state) => state.schoolYear);
@@ -32,7 +42,7 @@ const AcademicYearsPage = () => {
     const res = await AcademicYearService.getAll(paginationQuery);
 
     if (!res.success) {
-      return 
+      return ;
     }
 
     const {data,page,total,totalPages} = res?.data?.data;
@@ -101,7 +111,14 @@ const AcademicYearsPage = () => {
         <Bell className="text-green-700 w-5 h-5" />
       </div>
 
-      <SearchAndFilter />
+      <SearchAndFilter
+            searchField='code'
+            placeHolder='Search using Year code' 
+            setSearchQuery={setFilterValues}
+            
+            filterField='status'
+            filterValues={filterValues.filterValue}
+        />
 
       <TableComponent
         data={years ?? []}

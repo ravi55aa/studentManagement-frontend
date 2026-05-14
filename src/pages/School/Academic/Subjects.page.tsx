@@ -1,31 +1,48 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Pencil, Trash2, Bell } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
-import {
-  storeSchoolAcademicSubjects,
-  toggleAcademicSubLoading,
-} from '@/utils/Redux/Reducer/subjectReducer';
 import Swal from 'sweetalert2';
 import { Pagination } from '@/components';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import { TableComponent } from '@/components/Table.Component';
 import { SubjectService } from '@/api/Services/subject.service';
-import { Roles } from '@/constants/role.enum';
 import { PaginationDemo } from '@/components/Pagination.c';
+import { department_filter_values } from '@/constants/deparment';
+import {
+  storeSchoolAcademicSubjects,
+  toggleAcademicSubLoading,
+} from '@/utils/Redux/Reducer/subjectReducer';
 
 const SubjectsPage = () => {
-  //const [search, setSearch] = useState("");
+  
+  //search + filter
+    const [filterValues,setFilterValues] = useState<{
+        filterValue:{name:string,value:string}[],
+        searchQuery:Record<string,string|number> 
+    }>(
+        {
+            filterValue:department_filter_values,
+            searchQuery:{}
+        }
+  );
+
   const dispatch = useAppDispatch();
   const subjectStore = useAppSelector((state) => state.schoolSubject);
 
   useEffect(() => {
+    
     (async () => {
-      const res = await SubjectService.getAll();
+
+      const res = await SubjectService.getAllWithQuery({...filterValues.searchQuery});
+
       const subjects = res.data?.data || [];
-      dispatch(storeSchoolAcademicSubjects(subjects));
+
+      dispatch(storeSchoolAcademicSubjects(subjects || []));
+
     })();
-  }, [dispatch, subjectStore.loading]);
+
+  }, [dispatch, subjectStore.loading,filterValues.searchQuery]);
 
   const handleDelete = async (id: string) => {
     const result = await Swal.fire({
@@ -66,7 +83,14 @@ const SubjectsPage = () => {
         <Bell className="text-green-700 w-5 h-5" />
       </div>
 
-      <SearchAndFilter />
+      <SearchAndFilter
+            filterField='department'
+            searchField='description'
+            placeHolder='Search using subject description' 
+            setSearchQuery={setFilterValues}
+            
+            filterValues={filterValues.filterValue}
+        />
 
       <TableComponent
         data={subjectStore.subjects ?? []}

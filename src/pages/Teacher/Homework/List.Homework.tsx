@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, Eye, PencilLine, Trash } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/hooks/useStoreHooks';
 import { Pagination } from '@/components';
@@ -16,6 +16,9 @@ import Swal from "sweetalert2";
 import { paginationQuery } from '@/constants/pagination';
 import { usePagination } from '@/hooks/usePagination';
 import { TPaginationQuery } from '@/types/paginationTypes';
+import { BatchService } from '@/api/Services/batch.service';
+import { SubjectService } from '@/api/Services/subject.service';
+import { ITeacherBio } from '@/interfaces/ITeacher';
 
 // const statusColors = {
 //     pending: "bg-gray-200 text-gray-700",
@@ -32,6 +35,12 @@ const TeacherHomeworkTable = () => {
     const homeworks = useAppSelector((state) =>state.homeworks);
     
     const {user}=useAppSelector((state)=>state?.currentUser);
+
+    //Filter + Search query
+    const [filterValues,setFilterValues] = useState<{
+            filterValue:{name:string,value:string}[],
+            searchQuery:Record<string,string|number> 
+        }>();
 
     const {nextPage,prevPage,pagination,setPagination} = usePagination(fetchHomeworks,paginationQuery.limit);
 
@@ -67,7 +76,7 @@ const TeacherHomeworkTable = () => {
 
     useEffect(() => {
         fetchHomeworks(paginationQuery);
-    }, [dispatch]);
+    }, [dispatch,filterValues.searchQuery]);
 
     const handleDelete = async (id: string) => { //have to reload page
 
@@ -101,6 +110,44 @@ const TeacherHomeworkTable = () => {
         return true;
     };
 
+    const handleSubjectsMapper=(subjects:IAcademicSubject[])=>{
+        if(subjects.length<=0) return; //base-case
+
+        const subjectsMapped=subjects?.map(sub => {
+            return {name:sub?.name,value:sub._id}
+        });
+
+        return subjectsMapped;
+    }
+
+    useEffect(()=>{
+            
+            const handleFetchValues=async() => {
+                
+                const batchRes = await BatchService.getAllWithQuery({batchCounselor:user.id},paginationQuery) //user.id = teacher.id;
+                const {data}=batchRes.data?.data;
+
+                const batchData=data[0];
+                //{className:batch-name[0],tenantId} query tenantId
+    
+                const subjectRes=await SubjectService.getAllWithQuery({
+                    className:batchData.name[0],tenantId:batchData.tenantId
+                });
+    
+                const subjects=subjectRes.data.data;
+    
+                //mapper
+                const mappedSubjects= handleSubjectsMapper(subjects);
+                
+                setFilterValues((prev)=>({
+                    ...prev,
+                    filterValue:mappedSubjects
+                }));
+            }
+    
+            handleFetchValues();
+    },[]);
+
 
     const handleEdit = (homeworkId?: string) => {
         if (!homeworkId) return;
@@ -122,7 +169,17 @@ const TeacherHomeworkTable = () => {
             <Bell className="text-green-700 w-5 h-5" />
         </div>
         
-        <SearchAndFilter />
+        <SearchAndFilter
+        
+            filterField='subjectId'
+            filterValues={filterValues.filterValue}
+            
+            searchField='title'
+            placeHolder='Search using Homework title' 
+
+            setSearchQuery={setFilterValues}
+
+        />
 
         <TableComponent
             data={homeworks?.homeworks ?? []}
