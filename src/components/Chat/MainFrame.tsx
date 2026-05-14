@@ -15,49 +15,65 @@ const ChatPage = ({ userId, role }: Record<string,string>) => {
     const [roomId, setRoomId] = useState<string>();
     const [directChatWith, setDirectChatWith] = useState<ITeacherBio|IStudent|null>(null);
 
-    useEffect(  ()=> {
+    useEffect(() => {
 
-        const switchTab=async()=>{
-            
-            if (activeTab=='direct') { //call direct activeTab api call;
-                
-                let user2Id='something';
+        const switchTab = async () => {
 
-                if(role==Roles.Student){
-                    const resTeacher=await TeacherService.getById(directChatWith?._id);
+            if (!directChatWith?._id) return;
 
-                    const {teacher}=resTeacher.data?.data;
+            try {
 
-                    user2Id=teacher?.teacherId;
+                if (activeTab === 'direct') {
 
-                } else {
-                    
-                    //role==teacher; then figure out the studentId
-                    const res=await StudentService.getById(directChatWith?._id);
+                    let user2Id = '';
 
-                    const student=res.data?.data;
-                    
-                    user2Id=student?._id;
+                    if (role === Roles.Student) {
+
+                        const resTeacher = await TeacherService.getById(
+                            directChatWith._id
+                        );
+
+                        const { teacher } = resTeacher.data.data;
+
+                        user2Id = teacher.teacherId;
+
+                    } else {
+
+                        const res = await StudentService.getById(
+                            directChatWith._id
+                        );
+
+                        const student = res.data.data;
+
+                        user2Id = student._id;
+                    }
+
+                    const res = await ChatService.createDirectChat(
+                        userId,
+                        user2Id
+                    );
+
+                    if (!res.success) {
+                        return;
+                    }
+
+                    const room = res.data.data;
+
+                    setRoomId(room._id);
+
+                } else if (activeTab === 'batch') {
+
+                    await handleCreateBatchChat();
                 }
 
-                const res=await ChatService.createDirectChat(userId,user2Id);
-
-                if(!res.success){
-                    //toast.info(res.error.message);
-
-                    return res.success;
-                }
-                
-                const room=res.data.data;
-                
-                setRoomId(room._id)//room id;
-            } else if(activeTab =='batch') {
-
-                await handleCreateBatchChat();
+            } catch (error) {
+                console.error(error);
             }
-        }
+        };
+
         switchTab();
-    },[activeTab,directChatWith]);
+
+    }, [activeTab, directChatWith?._id]);
 
     async function handleCreateBatchChat () {
         let batchId:string='batchId';
