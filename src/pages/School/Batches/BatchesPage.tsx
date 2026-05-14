@@ -44,7 +44,7 @@ const BatchesPage = () => {
 
 
   async function fetchBatches(): Promise<void> {
-    const res = await BatchService.getAllWithQuery({...filterValues.searchQuery},paginationQuery);;
+    const res = await BatchService.getAllWithQuery({...filterValues?.searchQuery},paginationQuery);;
 
     if (!res.success) {
       toast.warn(res.error.message);
@@ -65,7 +65,7 @@ const BatchesPage = () => {
 
   useEffect(() => {
     fetchBatches();
-  }, [dispatch, batchReduxStore.loading,filterValues.searchQuery]);
+  }, [dispatch, batchReduxStore.loading,filterValues?.searchQuery]);
 
 
 
@@ -151,7 +151,7 @@ const BatchesPage = () => {
             placeHolder='Search using batch code' 
             filterField='status'
             
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue}
         />
 
       <TableComponent

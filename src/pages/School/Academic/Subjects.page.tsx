@@ -34,7 +34,7 @@ const SubjectsPage = () => {
     
     (async () => {
 
-      const res = await SubjectService.getAllWithQuery({...filterValues.searchQuery});
+      const res = await SubjectService.getAllWithQuery({...filterValues?.searchQuery});
 
       const subjects = res.data?.data || [];
 
@@ -42,7 +42,7 @@ const SubjectsPage = () => {
 
     })();
 
-  }, [dispatch, subjectStore.loading,filterValues.searchQuery]);
+  }, [dispatch, subjectStore.loading,filterValues?.searchQuery]);
 
   const handleDelete = async (id: string) => {
     const result = await Swal.fire({
@@ -89,7 +89,7 @@ const SubjectsPage = () => {
             placeHolder='Search using subject description' 
             setSearchQuery={setFilterValues}
             
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue}
         />
 
       <TableComponent

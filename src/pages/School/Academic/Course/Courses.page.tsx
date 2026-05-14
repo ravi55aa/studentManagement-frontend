@@ -96,7 +96,7 @@ const CourseListPage = () => {
         setSearchQuery={setFilterValues}
 
             filterField='status'      
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue}
         />
 
       <TableComponent

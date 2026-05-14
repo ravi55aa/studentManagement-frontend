@@ -56,7 +56,7 @@ const StudentCourse = () => {
         };
         
             fetchCourses();
-        }, [dispatch,filterValues.searchQuery]);
+        }, [dispatch,filterValues?.searchQuery]);
 
     const handleView = async (id: string) => {
     try {
@@ -127,7 +127,7 @@ const StudentCourse = () => {
             placeHolder='search for course using name'
             setSearchQuery={setFilterValues}
             
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue}
             // FIGURE OUT THE FILTER VALUES {name:string,value:string}[] for FILTER{}
             // PROBLEM IS TWO COLLECTION [COURSE AND COURSE_META]
             // NEED TO QUERY ON ONLY ONE EITHER COURSE OR C_META

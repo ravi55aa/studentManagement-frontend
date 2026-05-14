@@ -51,7 +51,7 @@ export default function FeeListPage() {
         }
 
         const res = await HomeworkService.getAllWithQuery(paginationQuery,
-            {batch:user.batchId,...removeEmptyFields(filterValues.searchQuery)}
+            {batch:user.batchId,...removeEmptyFields(filterValues?.searchQuery)}
         );
 
         if (!res.success) {
@@ -59,7 +59,7 @@ export default function FeeListPage() {
             return 
         }
 
-        const {data,page,totalPages,total}=res.data.data;
+        const {data,page,totalPages,total}=res?.data?.data;
 
         setPagination({page,totalPages,total});
 
@@ -70,7 +70,7 @@ export default function FeeListPage() {
 
     useEffect(() => {
         fetchHomeworks(paginationQuery);
-    }, [dispatch,filterValues.searchQuery]);
+    }, [dispatch,filterValues?.searchQuery]);
 
     useEffect(()=>{
 
@@ -171,7 +171,7 @@ export default function FeeListPage() {
 
         <SearchAndFilter 
             filterField='subjectId'
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue||[]}
             
             searchField='title'
             placeHolder='Search using Homework title' 

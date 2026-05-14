@@ -49,7 +49,7 @@ export default function StudentFeeListPage() {
         //  filtering the query, by the there are specific
         //  center, course may vary.  
         const res = await FeeService.getAllWithQuery(paginationQuery,
-            {...filterValues.searchQuery}); 
+            {...filterValues?.searchQuery}); 
         
         dispatch(toggleFeeLoading(false));
 
@@ -84,7 +84,7 @@ export default function StudentFeeListPage() {
     useEffect(() => {
             handleGetStudentFees(paginationQuery);
             handleGetStudentPaidFeeDetail();
-    }, [filterValues.searchQuery]);
+    }, [filterValues?.searchQuery]);
 
     const handlePay = (feeAmount: number,feeId: string) => {
         const locationState={
@@ -132,7 +132,7 @@ export default function StudentFeeListPage() {
 
         <SearchAndFilter
             filterField='type'
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue}
             
             searchField='name'
             placeHolder='Search homework using fee names' 

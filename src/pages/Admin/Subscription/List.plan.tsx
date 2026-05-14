@@ -50,7 +50,7 @@ const UserPlanList = () => {
 
             const res = await PlanService.getAll({ 
                 isActive: true,
-                ...filterValues.searchQuery
+                ...filterValues?.searchQuery
             });
 
             if (!res.success) {
@@ -123,7 +123,7 @@ const UserPlanList = () => {
             placeHolder='Search using Plan description' 
             setSearchQuery={setFilterValues}
             
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue}
         />
 
         <TableComponent

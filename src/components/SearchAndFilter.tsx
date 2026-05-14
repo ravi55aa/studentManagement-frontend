@@ -43,9 +43,9 @@ const SearchAndFilter = (props:IProps) => {
       //     }
       //   : undefined,
 
-      [props.searchField]: filterValues[props.searchField]
-        ? filterValues[props.searchField]
-        : undefined,
+      [props.searchField]: filterValues[props?.searchField]
+        ? filterValues[props?.searchField]
+        : '',
     };
 
     // remove empty/undefined values

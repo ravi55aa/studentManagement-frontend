@@ -76,7 +76,7 @@ const TeacherHomeworkTable = () => {
 
     useEffect(() => {
         fetchHomeworks(paginationQuery);
-    }, [dispatch,filterValues.searchQuery]);
+    }, [dispatch,filterValues?.searchQuery]);
 
     const handleDelete = async (id: string) => { //have to reload page
 
@@ -172,7 +172,7 @@ const TeacherHomeworkTable = () => {
         <SearchAndFilter
         
             filterField='subjectId'
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue}
             
             searchField='title'
             placeHolder='Search using Homework title' 
