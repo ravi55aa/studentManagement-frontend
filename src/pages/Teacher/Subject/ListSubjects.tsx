@@ -114,7 +114,7 @@ const TeacherSubjects = () => {
             placeHolder='Search using subject description' 
             setSearchQuery={setFilterValues}
             
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue}
         />
 
         <TableComponent

@@ -1,22 +1,25 @@
 import { useAppSelector } from '@/hooks/useStoreHooks';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-interface ProtectedRouteProps {
-  redirectPath?: string;
-}
+const ProtectedRoute = () => {
 
-const path=window.location.pathname;
-const parentPath=path.split('/')[1];
-
-const ProtectedRoute = ({ redirectPath = `/${parentPath}/login` }: ProtectedRouteProps) => {
   const { user } = useAppSelector((state) => state.currentUser);
 
-  if (!user || Object.keys(user).length<=0) {
+  const location = useLocation();
+
+  const parentPath = location.pathname.split('/')[1];
+  
+  let redirectPath = `/${parentPath}/login`;
+  
+  if(parentPath=='dashboard'){
+    redirectPath='/login'
+  }
+
+  if (!user || Object.keys(user).length <= 0) {
     return <Navigate to={redirectPath} replace />;
   }
 
   return <Outlet />;
 };
-
 
 export default ProtectedRoute;

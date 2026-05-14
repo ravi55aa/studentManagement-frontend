@@ -144,7 +144,7 @@ const CentersPage = () => {
             setSearchQuery={setFilterValues}
             
             filterField='code'
-            filterValues={filterValues.filterValue}
+            filterValues={filterValues?.filterValue}
         />
 
       <TableComponent

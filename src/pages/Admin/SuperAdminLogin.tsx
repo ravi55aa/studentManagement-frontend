@@ -38,8 +38,6 @@ const SignIn = () => {
 
         const res = await  handleAdminSignIn(form,'SuperAdmin');
 
-        console.log('@SuperAdminLogin res', res);
-
         if (!res.success) {
             setError(res.error.message);
             return res.success;
@@ -50,7 +48,7 @@ const SignIn = () => {
         const user = { id: adminData?._id, role: form.userType };
         dispatch(storeCurrentUser(user));
         
-        navigate('/admin/dashboard');
+        navigate('/dashboard');
 
         return res.success;
     };

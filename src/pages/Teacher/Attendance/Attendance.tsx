@@ -3,6 +3,7 @@ import { AttendanceService } from '@/api/Services/Student/attendanceService';
 import { StudentService } from '@/api/Services/Student/student.service'
 import { ActionBtn, Pagination } from '@/components'
 import RemarkModal, { ViewStudentModal } from '@/components/Attendance';
+import { PaginationDemo } from '@/components/Pagination.c';
 import SearchAndFilter from '@/components/SearchAndFilter'
 import { TableComponent } from '@/components/Table.Component'
 import { Roles } from '@/constants/role.enum';
@@ -169,7 +170,7 @@ const Attendance = () => {
         const res=await AttendanceService.getLeaveHistory(student._id,selectedDate);
 
         if(!res.success){
-            console.log(res.success);
+            toast.info(res?.error?.message)
             return res.success;
         }
         
@@ -330,6 +331,8 @@ const Attendance = () => {
                 },
             ]}
             />
+
+            <PaginationDemo/>
 
         <ViewStudentModal 
             viewModal={viewModal} 

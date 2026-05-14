@@ -1,15 +1,20 @@
 import { useAppSelector } from '@/hooks/useStoreHooks';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-interface PublicRouteProps {
-  redirectPath?: string;
-}
 
-const path=window.location.pathname;
-const parentPath=path.split('/')[1];
+const PublicRoute = () => {
 
-const PublicRoute = ({ redirectPath = `/${parentPath}/dashboard` }: PublicRouteProps) => {
   const { user } = useAppSelector((state) => state.currentUser);
+
+  const location = useLocation();
+
+  const parentPath = location.pathname.split('/')[1];
+  
+  let redirectPath = `/${parentPath}/dashboard`;
+  
+  if(parentPath=='login'){
+    redirectPath='/dashboard'
+  }
 
   if (user) {
     return <Navigate to={redirectPath} replace />;
@@ -17,5 +22,6 @@ const PublicRoute = ({ redirectPath = `/${parentPath}/dashboard` }: PublicRouteP
 
   return <Outlet />;
 };
+
 
 export default PublicRoute;

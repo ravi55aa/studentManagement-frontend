@@ -14,6 +14,7 @@ import { TeacherService } from '@/api/Services/teacher.service';
 import { paginationQuery } from '@/constants/pagination';
 import { TPaginationQuery } from '@/types/paginationTypes';
 import { usePagination } from '@/hooks/usePagination';
+import { department_filter_values } from '@/constants/deparment';
 
 
 const TeachersListPage = () => {
@@ -21,6 +22,18 @@ const TeachersListPage = () => {
   const teachersStore = useAppSelector((state) => state.teacher);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<ITeacherBio | null>(null);
+
+
+  //search + filter
+    const [filterValues,setFilterValues]=useState<{
+        filterValue:{name:string,value:string}[],
+        searchQuery:Record<string,string|number> 
+    }>(
+        {
+            filterValue:department_filter_values,
+            searchQuery:{}
+        }
+    );
 
   const handleOpen = (teacher: ITeacherBio) => {
     setSelectedTeacher(teacher);
@@ -77,7 +90,14 @@ const TeachersListPage = () => {
         {/* <Bell className="w-5 h-5 text-green-700 cursor-pointer" /> */}
       </div>
 
-      <SearchAndFilter />
+      <SearchAndFilter
+            filterField='department'
+            searchField='firstName'
+            placeHolder='Search using teacher name' 
+            setSearchQuery={setFilterValues}
+            
+            filterValues={filterValues.filterValue}
+        />
 
       <TableComponent
         data={teachersStore?.bio ?? []}

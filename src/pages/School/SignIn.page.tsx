@@ -52,11 +52,14 @@ const SignInSchool = () => {
     }
 
     const schoolData=res.data?.data;
+    
+    console.log('tadaaa');
+    navigate('/school/dashboard');
+    console.log('iam navigating tot he route');
 
     const user = { id: schoolData?._id, role: Roles.School };
-    dispatch(storeCurrentUser(user));
 
-    navigate('/school/dashboard');
+    dispatch(storeCurrentUser(user));
 
     return res.success;
   };

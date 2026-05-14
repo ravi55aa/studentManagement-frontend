@@ -90,7 +90,8 @@ const App = () => {
         <Route path="*" element={<NotFound />} />
         
         {/* SuperAdminLogin */}
-        <Route element={<PublicRoute redirectPath='/admin/dashboard' />}>
+        {/* <Route element={<PublicRoute redirectPath='/admin/dashboard' />}> */}
+        <Route element={<PublicRoute  />}>
           <Route path="/login" element={<SuperAdminLogin />} />
         </Route>
 
@@ -230,7 +231,8 @@ const App = () => {
         {/*.*/}
         {/* SuperAdmin */}
 
-        <Route element={<ProtectedRoute redirectPath='/login' />} >
+        {/* <Route element={<ProtectedRoute redirectPath='/login' />} > */}
+        <Route element={<ProtectedRoute />} >
         <Route path="/dashboard" element={<SuperAdminDashboard />} >
             <Route index element={<SuperAdminDashboardHome />} />
             
