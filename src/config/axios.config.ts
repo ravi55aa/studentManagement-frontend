@@ -3,7 +3,7 @@ import axios from 'axios';
 const host=window.location.hostname;
 let subdomain=host.split('.')[0]+'.';
 
-if(subdomain=='localhost'){
+if(subdomain=='localhost.'){
   subdomain=''
 }
 
