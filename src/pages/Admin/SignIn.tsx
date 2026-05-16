@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { handleAdminSignIn } from '@/api/auth.api';
+import { handleAdminSignIn } from '@/constants/loginauth'; 
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router';
 import { signInSchema } from '@/validation/register.schema';

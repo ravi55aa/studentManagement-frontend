@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInSchema } from '@/validation/register.schema';
 import { handleValidationOF } from '@/validation/validateFormData';
 import Login from '@/components/Auth/Login.component';
-import { handleAdminSignIn } from '@/api/auth.api';
+import { handleAdminSignIn } from '@/constants/loginauth';
 import { storeCurrentUser } from '@/utils/Redux/Reducer/currentUser.reducer';
 import { useAppDispatch } from '@/hooks/useStoreHooks';
 import { Roles } from '@/constants/role.enum';

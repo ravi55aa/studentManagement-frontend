@@ -11,7 +11,7 @@ import { handleValidationOF } from '@/validation/validateFormData';
 import { school_LoginIn_Schema } from '@/constants/createSchool';
 import { InputField } from '@/components';
 import { schoolSignInSchema } from '@/validation/school.validator';
-import { handleSchoolSignIn } from '@/api/school.api';
+import { handleSchoolSignIn } from '@/constants/loginauth'; 
 import { useAppDispatch } from '@/hooks/useStoreHooks';
 import { storeCurrentUser } from '@/utils/Redux/Reducer/currentUser.reducer';
 import { Roles } from '@/constants/role.enum';

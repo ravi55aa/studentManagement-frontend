@@ -1,3 +1,5 @@
+import { lazy, Suspense } from 'react';
+
 import {
   /*Super Admin */
   SuperAdminLogin,
@@ -7,7 +9,7 @@ import {
   Subscriptions,
   SuperAdminSchools,
 
-  HomePage,
+  // HomePage,
   NotFound,
   Register,
   Login,
@@ -79,11 +81,17 @@ import EditTeacherPage from './pages/Teacher/Edit.Teacher.page';
 import CheckoutPage from './components/Stripe.Checkout.page'; 
 import PaymentSuccess from './components/Success.Component';
 import { ProtectedRoute, PublicRoute } from './utils/protectedRoutes';
+import AppLoader from './components/LazyLoader';
+const HomePage = lazy(()=>import ('./pages/HomePage')); 
 
 const App = () => {
   return (
     <div>
+
+      <Suspense fallback={<AppLoader/>}/>
+
       <ToastContainer position="top-right" autoClose={3000} />
+
       <Routes>
         {/*.*/}
         

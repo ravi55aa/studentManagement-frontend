@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { InputField } from '@/components';
 import { addressValidate } from '@/validation/school.validator';
 import { handleValidationOF } from '@/validation/validateFormData';
-import { handleAddressCreateSchoolApi } from '@/api/school.api';
+import { handleAddressCreateSchoolApi } from '@/constants/loginauth'; 
 import { useAppHandleInputChange as _useAppHandleInputChange } from '@/hooks/useHandleInputChange';
 
 export default function AddAddress() {
@@ -27,11 +27,14 @@ export default function AddAddress() {
     if (!isValidated.success) {
       return isValidated.success;
     }
-
+    console.log('1')
     const res = await handleAddressCreateSchoolApi(formData);
+    
     if (!res.success) {
+      console.log('2')
       return res.success;
     }
+    console.log('3')
 
     navigate('/school/register/uploadDocuments');
     return res.success;

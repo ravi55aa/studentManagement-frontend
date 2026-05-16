@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { handleDocsUploadCreateSchoolApi } from '@/api/school.api';
+import { handleDocsUploadCreateSchoolApi } from '@/constants/loginauth'; 
 import { useNavigate } from 'react-router-dom';
 
 export default function UploadDocuments() {

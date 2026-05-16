@@ -35,16 +35,19 @@ const CourseListPage = () => {
           dispatch(toggleAcademicCourseLoading(true));
 
           const res = await CourseService.getAll();
+          
           dispatch(toggleAcademicCourseLoading(false));
 
           if (!res.success) {
+            dispatch(storeSchoolAcademicCourses([]));
+            dispatch(storeSchoolAcademicCoursesMeta([]));
             toast.error(res.error.message);
             return ;
           }
 
-          const { courses, courses_meta } = res.data.data;
-          dispatch(storeSchoolAcademicCourses(courses));
-          dispatch(storeSchoolAcademicCoursesMeta(courses_meta));
+          const { courses, courses_meta } = res?.data?.data;
+          dispatch(storeSchoolAcademicCourses(courses||[]));
+          dispatch(storeSchoolAcademicCoursesMeta(courses_meta||[]));
         } catch (err) {
           toast.error(err.message);
         }

@@ -1,4 +1,4 @@
-import { handleAdminRegister } from '@/api/auth.api';
+import { handleAdminRegister } from '@/constants/loginauth'; 
 import { RegisterSchema } from '@/validation/register.schema';
 import { ChangeEventHandler, useState } from 'react';
 import { useNavigate } from 'react-router-dom';

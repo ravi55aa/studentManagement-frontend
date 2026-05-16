@@ -39,15 +39,18 @@ const AcademicYearsPage = () => {
   async function fetchAcademicYears (paginationQuery:TPaginationQuery) {
 
     dispatch(toggleAcademicLoading(true));
+    
     const res = await AcademicYearService.getAll(paginationQuery);
 
+    dispatch(toggleAcademicLoading(false));
+
     if (!res.success) {
+      dispatch(storeSchoolAcademicYears([]));
       return ;
     }
 
     const {data,page,total,totalPages} = res?.data?.data;
 
-    dispatch(toggleAcademicLoading(false));
     
     dispatch(storeSchoolAcademicYears(data||[]));
 

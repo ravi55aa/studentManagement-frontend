@@ -33,13 +33,13 @@ export const handleAddressCreateSchoolApi = async (
 ): Promise<IResponse<null>> => {
   try {
     const res: IResponse<null> = await axiosBaseURL.post(
-      SchoolRoute.register_add_Address,
-      formData,
-      { headers: { role: 'Admin' } },
-    );
+
+      SchoolRoute.register_add_Address,formData);
 
     return res.data;
+
   } catch (err) {
+
     console.error(err, { cause: err.message });
 
     return returnErrorObj(err);
@@ -51,7 +51,7 @@ export const handleDocsUploadCreateSchoolApi = async (formData): Promise<IRespon
     const res: IResponse<null> = await axiosBaseURL.post(
       SchoolRoute.register__add_documents,
       formData,
-      { headers: { role: 'Admin', 'Content-Type': 'multipart/formData' } },
+      { headers: { 'Content-Type': 'multipart/formData' } },
     );
 
     return res.data;
@@ -65,12 +65,13 @@ export const handleDocsUploadCreateSchoolApi = async (formData): Promise<IRespon
 export const handleSchoolSignIn = async (payload: object) => {
   try {
     const response = await axiosBaseURL.get(SchoolRoute.login, {
-      params: payload,
-      headers: { role: 'Admin' },
+      params: payload
     });
 
     return { success: true, data: response?.data };
+
   } catch (error) {
+    
     console.error('SignIn error:', error.response?.data || error.message);
 
     return {
