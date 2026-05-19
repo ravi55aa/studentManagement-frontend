@@ -18,8 +18,11 @@ export const useDebounce = () => {
 export const removeEmptyFields = (
     obj: Record<string, string | number>
     ) => {
-    return Object.fromEntries(
-        Object.entries(obj).filter(
+    
+        if(!obj) return {};
+
+    return Object?.fromEntries(
+        Object?.entries(obj)?.filter(
         ([_, value]) =>
             value !== "" &&
             value !== null &&

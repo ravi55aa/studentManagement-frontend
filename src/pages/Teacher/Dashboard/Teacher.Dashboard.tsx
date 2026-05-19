@@ -120,7 +120,9 @@ const TeacherDashboard = () => {
             return {
                 subject:homework?.subjectId?.name, 
                 title:homework?.title, 
-                due:String(homework.dueDate).slice(0,10)}
+                due:String(homework.dueDate).slice(0,10),
+                link:`homework/view/submissions/${homework._id}`
+            }
         });
 
         return pendingHomeworks;
@@ -197,7 +199,7 @@ const TeacherDashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-emerald-50 p-4 md:p-8">
+        <div className="min-h-screen bg-linear-to-br from-slate-100 via-white to-emerald-50 p-4 md:p-8">
             
             {/* Header */}
             <div className="mb-8 flex flex-col gap-2">
@@ -247,7 +249,7 @@ const TeacherDashboard = () => {
                     </p>
 
                     <h2 className="text-4xl font-bold text-slate-800 mt-1">
-                    1
+                    {chartData.subjects?.length || "1"}
                     </h2>
                 </div>
 
@@ -271,7 +273,7 @@ const TeacherDashboard = () => {
                     </p>
 
                     <h2 className="text-4xl font-bold text-slate-800 mt-1">
-                    1
+                    {chartData.courses?.length || "1"}
                     </h2>
                 </div>
 

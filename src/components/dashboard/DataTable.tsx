@@ -1,6 +1,9 @@
+import { Link, useNavigate } from "react-router-dom";
+
 interface Column {
     key: string;
     label: string;
+    link?:string;
 }
 
 interface Props {
@@ -9,6 +12,7 @@ interface Props {
 }
 
 const DataTable = ({ columns, data }: Props) => {
+    const navigate=useNavigate();
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-green-100 overflow-hidden">
         <table className="w-full text-sm">
@@ -27,8 +31,18 @@ const DataTable = ({ columns, data }: Props) => {
                 data.map((row, i) => (
                 <tr key={i} className="border-t hover:bg-green-50">
                     {columns.map((col) => (
-                    <td key={col.key} className="p-3">
+                    <td  key={col.key} className="p-3">
+                        <button
+                        type="button"
+                        onClick={() => {
+                            const path = row['link'] ? row['link'] : null;
+
+                            if (path) navigate(path);
+                        }}
+                        className="text-black-500 hover:text-blue-700"
+                        >
                         {row[col.key]}
+                        </button>
                     </td>
                     ))}
                 </tr>

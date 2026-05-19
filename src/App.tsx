@@ -88,7 +88,7 @@ const App = () => {
   return (
     <div>
 
-      <Suspense fallback={<AppLoader/>}/>
+      <Suspense fallback={<AppLoader/>}>
 
       <ToastContainer position="top-right" autoClose={3000} />
 
@@ -254,6 +254,8 @@ const App = () => {
         </Route>
         
       </Routes>
+
+      </Suspense>
     </div>
   );
 };

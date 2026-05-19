@@ -51,11 +51,11 @@ export default function FeeListPage() {
         }
 
         const res = await HomeworkService.getAllWithQuery(paginationQuery,
-            {batch:user.batchId,...removeEmptyFields(filterValues?.searchQuery)}
+            {batch:user.batchId,...removeEmptyFields(filterValues?.searchQuery  || {})}
         );
 
         if (!res.success) {
-            toast.error(res.error.message);
+            toast.error(res.error?.message);
             return 
         }
 

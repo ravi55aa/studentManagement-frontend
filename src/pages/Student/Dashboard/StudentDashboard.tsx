@@ -80,7 +80,9 @@ const StudentDashboard = () => {
             return {
                 subject:homework?.subjectId?.name, 
                 title:homework?.title, 
-                due:String(homework.dueDate).slice(0,10)}
+                due:String(homework?.dueDate)?.slice(0,10),
+                link:`homework/add/${homework?._id}`,
+            }
         });
 
         return pendingHomeworks;
@@ -122,7 +124,7 @@ const StudentDashboard = () => {
     // };
 
     return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-blue-50 p-4 md:p-8">
+            <div className="min-h-screen bg-linear-to-br from-slate-100 via-white to-blue-50 p-4 md:p-8">
 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
@@ -174,7 +176,7 @@ const StudentDashboard = () => {
                     {/* Progress */}
                     <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-gradient-to-r from-emerald-500 to-green-600 rounded-full"
+                        className="h-full bg-linear-to-r from-emerald-500 to-green-600 rounded-full"
                         style={{ width: "85%" }}
                     />
                     </div>
@@ -257,7 +259,7 @@ const StudentDashboard = () => {
                     <div className="p-4">
                     <DataTable
                         columns={[
-                        { key: "subject", label: "Subject" },
+                        { key: "subject", label: "Subject", },
                         { key: "title", label: "Task" },
                         { key: "due", label: "Due" },
                         ]}
@@ -287,7 +289,7 @@ const StudentDashboard = () => {
                 </div>
 
                 {/* Extra Performance Section */}
-                <div className="mt-8 rounded-3xl bg-gradient-to-r from-indigo-600 to-blue-600 p-8 text-white shadow-xl">
+                <div className="mt-8 rounded-3xl bg-linear-to-r from-indigo-600 to-blue-600 p-8 text-white shadow-xl">
 
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
 
