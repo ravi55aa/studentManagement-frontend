@@ -11,7 +11,7 @@ if(subdomain=='localhost.'){
 const userType=window.location.pathname.split('/')[1];
 
 export const axiosBaseURL = axios.create({
-  baseURL: `http://${subdomain}localhost:4000`, //import.meta.env.VITE_BACKEND_URL
+  baseURL: `http://host.docker.internal:4000`, //import.meta.env.VITE_BACKEND_URL //${subdomain}localhost:4000
   withCredentials: true, //allow [cookie/sessionData]
   timeout: 15000,
   headers: {
