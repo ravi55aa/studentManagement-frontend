@@ -36,7 +36,7 @@ const PricingSection: React.FC = () => {
         try {
             dispatch(togglePlansLoading(true));
             
-            const data = await fetch(`${import.meta.env.VITE_BACKEND_URL}admin/plans?isActive=true`, { method: "GET"});
+            const data = await fetch(`${import.meta.env.VITE_API_URL}admin/plans?isActive=true`, { method: "GET"});
             
             const res=await data.json();
 
