@@ -123,7 +123,7 @@ const SubjectsPage = () => {
       />
 
       {/* <Pagination /> */}
-      {subjectStore.subjects?.length && <PaginationDemo /> }
+      {!subjectStore.subjects?.length && <PaginationDemo /> }
     </div>
   );
 };

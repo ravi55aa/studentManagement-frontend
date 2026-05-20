@@ -200,7 +200,7 @@ const CentersPage = () => {
       </div>
 
       {/* <Pagination /> */}
-      {filteredCenters.length && <PaginationDemo /> } 
+      {!filteredCenters.length && <PaginationDemo /> } 
     </div>
   );
 };

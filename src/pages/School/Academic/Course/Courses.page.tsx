@@ -139,7 +139,7 @@ const CourseListPage = () => {
         ]}
       />
 
-        {courses?.length && <PaginationDemo />}
+        {!courses?.length && <PaginationDemo />}
       
     </div>
   );
