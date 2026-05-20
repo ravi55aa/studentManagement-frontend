@@ -36,18 +36,14 @@ const PricingSection: React.FC = () => {
         try {
             dispatch(togglePlansLoading(true));
             
-            const data = await fetch(`${import.meta.env.VITE_API_URL}/admin/plans?isActive=true`, { method: "GET"});
-            
-            const res=await data.json();
-
-            PlanService.getAll({ isActive: true });
+            const res=await PlanService.getAll({ isActive: true });
 
             if (!res.success) {
             toast.error(res.error?.message);
             return;
             }
 
-            dispatch(setPlans(res.data));
+            dispatch(setPlans(res?.data?.data));
 
         } catch (err: any) {
 
