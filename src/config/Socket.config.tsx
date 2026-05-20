@@ -22,7 +22,7 @@ const SocketProvider = ({ children }) => {
       
       //!Later update the production url
       
-      const newSocket = io(`http://${subdomain}localhost:4000`, { 
+      const newSocket = io(import.meta.env.VITE_SOCKET_URL, { 
         auth: {
           userId: user.id,
           role: user.role,

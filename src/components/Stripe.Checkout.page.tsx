@@ -26,7 +26,7 @@ const CheckoutPage = () => {
       const {userId,studentFeeId,amount,role}=state;
 
       try{
-        const response=await fetch(`http://localhost:4000${StripeRouter.pay}`, { 
+        const response=await fetch(`${import.meta.env.VITE_API_URL}/${StripeRouter.pay}`, { 
           method:'post',
           body:JSON.stringify(
             { 'amount':amount,

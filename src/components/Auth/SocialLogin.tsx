@@ -4,7 +4,7 @@ const SocialLogin = () => {
       {/* Social Buttons */}
       <button
         type="button"
-        onClick={() => (window.location.href = 'http://localhost:4000/google/auth')}
+        onClick={() => (window.location.href = `${import.meta.env.VITE_API_URL}/google/auth`)}
         className="border border-gray-300 rounded-md py-2 text-sm flex justify-center items-center gap-2 hover:bg-gray-50"
       >
         <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-4 h-4" />
